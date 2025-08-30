@@ -766,7 +766,7 @@
 
         // Data categories
         const dataCategories = {
-            'shapefiles': { name: 'Shapefiles', files: [] },
+            'shapefiles': { name: 'Shapefiles', files: ['data_dictionary.csv'] },
             'epi_routine': { name: 'Epi Routine Data', files: [] },
             'intervention': { name: 'Intervention Data', files: [] },
             'campaign_survey': { name: 'Campaign/Survey Data', files: [] },
@@ -1114,15 +1114,3 @@
     </script>
 </body>
 </html>
-                        <p><strong>Excel File Preview</strong></p>
-                        <p>${file.content}</p>
-                        <br>
-                        <button class="download-all-btn" onclick="downloadFile('${fileName}')">
-                            ⬇️ Download to view full content
-                        </button>
-                    </div>
-                `;
-            } else if (file.type === 'image') {
-                content = `
-                    <div style="padding: 20px; text-align: center; color: #8b949e;">
-                        <div style="font-size: 48px; margin-bottom: 10px;">${file.icon}</div>
