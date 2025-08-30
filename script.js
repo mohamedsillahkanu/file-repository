@@ -10,65 +10,153 @@ const validCredentials = {
     'analyst': 'epi_secure'
 };
 
-// Sample dataset files
-const files = [
-    {
-        name: 'comparative_analysis_2021.xlsx',
-        size: '856 KB',
-        type: 'excel',
-        icon: '📊',
-        path: '/data/historical/comparative_analysis_2021.xlsx',
-        content: 'Excel file containing 2021 epidemiological data with district and chiefdom level information. Includes columns: FIRST_DNAM, FIRST_CHIE, allout_u5_2021, allout_ov5_2021, and additional health metrics.'
-    },
-    {
-        name: 'comparative_analysis_2022.xlsx',
-        size: '923 KB',
-        type: 'excel',
-        icon: '📊',
-        path: '/data/historical/comparative_analysis_2022.xlsx',
-        content: 'Excel file containing 2022 epidemiological data with enhanced tracking metrics and expanded geographic coverage.'
-    },
-    {
-        name: 'comparative_analysis_2023.xlsx',
-        size: '1.1 MB',
-        type: 'excel',
-        icon: '📊',
-        path: '/data/historical/comparative_analysis_2023.xlsx',
-        content: 'Excel file containing 2023 epidemiological data with improved data quality and additional health outcome indicators.'
-    },
-    {
-        name: 'comparative_analysis_2024.xlsx',
-        size: '1.2 MB',
-        type: 'excel',
-        icon: '📊',
-        path: '/data/historical/comparative_analysis_2024.xlsx',
-        content: 'Excel file containing 2024 epidemiological data with comprehensive district and chiefdom level analysis.'
-    },
-    {
-        name: 'comparative_analysis_2025.xlsx',
-        size: '987 KB',
-        type: 'excel',
-        icon: '📊',
-        path: '/data/historical/comparative_analysis_2025.xlsx',
-        content: 'Excel file containing 2025 epidemiological data (partial year) with latest health metrics and trends.'
-    },
-    {
-        name: 'national_comparative_analysis.xlsx',
-        size: '8.7 MB',
-        type: 'excel',
-        icon: '📊',
-        path: '/data/national/national_comparative_analysis.xlsx',
-        content: 'Comprehensive Excel file containing all districts and variables (2021-2025) in a single workbook with multiple sheets.'
-    }
-];
-
-// Data categories
+// Data categories with sample data
 const dataCategories = {
-    'shapefiles': { name: 'Shapefiles', files: [] },
-    'epi_routine': { name: 'Epi Routine Data', files: [] },
-    'intervention': { name: 'Intervention Data', files: [] },
-    'campaign_survey': { name: 'Campaign/Survey Data', files: [] },
-    'reports': { name: 'Reports', files: [] },
+    'shapefiles': { 
+        name: 'Shapefiles', 
+        files: [
+            {
+                name: 'district_boundaries.shp',
+                size: '2.3 MB',
+                type: 'shapefile',
+                icon: '🗺️',
+                path: '/data/shapefiles/district_boundaries.shp',
+                content: 'ESRI Shapefile containing administrative boundary polygons for all districts. Includes attributes: DISTRICT_ID, DISTRICT_NAME, AREA_KM2, POPULATION_2021, and geographic coordinates in WGS84 projection.'
+            },
+            {
+                name: 'health_facilities.shp',
+                size: '856 KB',
+                type: 'shapefile',
+                icon: '🗺️',
+                path: '/data/shapefiles/health_facilities.shp',
+                content: 'Point shapefile of health facility locations including hospitals, clinics, and health posts. Contains facility type, capacity, coordinates, and operational status data.'
+            },
+            {
+                name: 'chiefdom_boundaries.shp',
+                size: '4.1 MB',
+                type: 'shapefile',
+                icon: '🗺️',
+                path: '/data/shapefiles/chiefdom_boundaries.shp',
+                content: 'Detailed chiefdom boundary polygons with demographic and administrative data. Includes population density, area measurements, and hierarchical administrative codes.'
+            }
+        ]
+    },
+    'epi_routine': { 
+        name: 'Epi Routine Data', 
+        files: [
+            {
+                name: 'weekly_surveillance_2024.csv',
+                size: '3.2 MB',
+                type: 'csv',
+                icon: '📊',
+                path: '/data/surveillance/weekly_surveillance_2024.csv',
+                content: 'Weekly epidemiological surveillance data for 2024. Contains disease incidence, case counts, age groups, geographic distribution, and reporting completeness by health facility.'
+            },
+            {
+                name: 'disease_outbreak_alerts.xlsx',
+                size: '1.8 MB',
+                type: 'excel',
+                icon: '📊',
+                path: '/data/surveillance/disease_outbreak_alerts.xlsx',
+                content: 'Outbreak alert database with case investigations, laboratory confirmations, response measures, and epidemiological curves. Includes cholera, measles, and meningitis outbreaks.'
+            },
+            {
+                name: 'mortality_surveillance.csv',
+                size: '2.1 MB',
+                type: 'csv',
+                icon: '📊',
+                path: '/data/surveillance/mortality_surveillance.csv',
+                content: 'Mortality surveillance data with cause-specific death rates, age-stratified mortality, maternal and child death reviews, and facility-based death reporting.'
+            }
+        ]
+    },
+    'intervention': { 
+        name: 'Intervention Data', 
+        files: [
+            {
+                name: 'vaccination_campaigns_2023.xlsx',
+                size: '2.7 MB',
+                type: 'excel',
+                icon: '💉',
+                path: '/data/interventions/vaccination_campaigns_2023.xlsx',
+                content: 'Mass vaccination campaign data including target populations, coverage rates, vaccine types, adverse events, and geographic distribution of immunization activities.'
+            },
+            {
+                name: 'bed_net_distribution.csv',
+                size: '1.4 MB',
+                type: 'csv',
+                icon: '🛏️',
+                path: '/data/interventions/bed_net_distribution.csv',
+                content: 'Insecticide-treated bed net distribution records with household registration, distribution dates, net types, and post-distribution monitoring surveys.'
+            },
+            {
+                name: 'water_sanitation_projects.xlsx',
+                size: '3.5 MB',
+                type: 'excel',
+                icon: '🚰',
+                path: '/data/interventions/water_sanitation_projects.xlsx',
+                content: 'WASH intervention tracking with water point construction, latrine coverage, hygiene education sessions, and community engagement metrics by district and chiefdom.'
+            }
+        ]
+    },
+    'campaign_survey': { 
+        name: 'Campaign/Survey Data', 
+        files: [
+            {
+                name: 'household_health_survey_2024.xlsx',
+                size: '8.9 MB',
+                type: 'excel',
+                icon: '🏠',
+                path: '/data/surveys/household_health_survey_2024.xlsx',
+                content: 'Comprehensive household survey data with demographics, health seeking behavior, access to services, socioeconomic indicators, and health outcomes by geographic area.'
+            },
+            {
+                name: 'knowledge_attitudes_practices.csv',
+                size: '2.3 MB',
+                type: 'csv',
+                icon: '🧠',
+                path: '/data/surveys/knowledge_attitudes_practices.csv',
+                content: 'KAP survey results on disease prevention, treatment-seeking behavior, traditional medicine use, and health education effectiveness across different demographic groups.'
+            },
+            {
+                name: 'facility_readiness_assessment.xlsx',
+                size: '4.6 MB',
+                type: 'excel',
+                icon: '🏥',
+                path: '/data/surveys/facility_readiness_assessment.xlsx',
+                content: 'Health facility assessment data covering infrastructure, equipment availability, staff capacity, drug stock levels, and quality of care indicators.'
+            }
+        ]
+    },
+    'reports': { 
+        name: 'Reports', 
+        files: [
+            {
+                name: 'annual_epidemiological_report_2024.pdf',
+                size: '12.4 MB',
+                type: 'pdf',
+                icon: '📄',
+                path: '/data/reports/annual_epidemiological_report_2024.pdf',
+                content: 'Comprehensive annual report analyzing disease trends, outbreak responses, surveillance system performance, and recommendations for public health action.'
+            },
+            {
+                name: 'malaria_program_evaluation.docx',
+                size: '5.7 MB',
+                type: 'document',
+                icon: '📋',
+                path: '/data/reports/malaria_program_evaluation.docx',
+                content: 'Detailed evaluation of national malaria control program including intervention effectiveness, cost analysis, and strategic recommendations for program improvement.'
+            },
+            {
+                name: 'covid19_response_summary.pdf',
+                size: '8.2 MB',
+                type: 'pdf',
+                icon: '📄',
+                path: '/data/reports/covid19_response_summary.pdf',
+                content: 'COVID-19 pandemic response analysis covering surveillance, case management, vaccination rollout, public health measures, and lessons learned.'
+            }
+        ]
+    },
     'other': { name: 'Other Files', files: [...files] }
 };
 
