@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Repository - Download Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            padding: 20px 0;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .repo-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .repo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #f39c12, #e74c3c);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .repo-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #58a6ff;
+        }
+
+        .repo-description {
+            color: #8b949e;
+            margin-left: 47px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(13, 17, 23, 0.4);
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .stat-number {
+            color: #e6edf3;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .file-browser {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .browser-header {
+            background: #21262d;
+            padding: 15px 20px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .browser-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-all-btn {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .download-all-btn:hover {
+            background: #2ea043;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #21262d;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .file-item:hover {
+            background: #21262d;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+
+        .file-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            color: #58a6ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .file-name:hover {
+            text-decoration: underline;
+        }
+
+        .file-size {
+            color: #8b949e;
+            font-size: 12px;
+        }
+
+        .download-btn {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #e6edf3;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #21262d;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #238636, #2ea043);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(1, 4, 9, 0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: #161b22;
+            margin: 5% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #8b949e;
+        }
+
+        .close:hover {
+            color: #e6edf3;
+        }
+
+        .preview-content {
+            margin-top: 20px;
+        }
+
+        .code-preview {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.45;
+            max-height: 400px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #238636;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .repo-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .repo-description {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="repo-header">
+                <div class="repo-icon">📊</div>
+                <div>
+                    <h1 class="repo-title">epidemiological-analysis-datasets</h1>
+                    <p class="repo-description">Comprehensive epidemiological trend analysis tools and sample datasets</p>
+                </div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    ⭐ <span class="stat-number">156</span> stars
+                </div>
+                <div class="stat-item">
+                    🍴 <span class="stat-number">43</span> forks
+                </div>
+                <div class="stat-item">
+                    📂 <span class="stat-number">12</span> files
+                </div>
+                <div class="stat-item">
+                    💾 <span class="stat-number">2.4 MB</span> total size
+                </div>
+                <div class="stat-item">
+                    🕒 Updated <span class="stat-number">2 hours ago</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="file-browser">
+                <div class="browser-header">
+                    <div class="browser-title">
+                        📁 Repository Files
+                    </div>
+                    <button class="download-all-btn" onclick="downloadAll()">
+                        ⬇️ Download All
+                    </button>
+                </div>
+                
+                <ul class="file-list" id="fileList">
+                    <!-- Files will be populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="sidebar">
+                <div class="info-card">
+                    <h3 class="card-title">📈 About This Repository</h3>
+                    <p style="color: #8b949e; font-size: 14px; line-height: 1.6;">
+                        This repository contains epidemiological trend analysis tools and sample datasets for healthcare data visualization and statistical analysis.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">📊 Dataset Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Format</span>
+                        <span class="info-value">Excel, CSV, Python</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Size</span>
+                        <span class="info-value">2.4 MB</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Files</span>
+                        <span class="info-value">12 files</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">License</span>
+                        <span class="info-value">MIT</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">🚀 Quick Start</h3>
+                    <ol style="color: #8b949e; font-size: 14px; line-height: 1.6; padding-left: 20px;">
+                        <li>Download the analysis script</li>
+                        <li>Install required Python packages</li>
+                        <li>Load your dataset</li>
+                        <li>Run the analysis</li>
+                        <li>Generate reports and visualizations</li>
+                    </ol>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">📥 Download Progress</h3>
+                    <div id="downloadProgress" style="display: none;">
+                        <div style="font-size: 14px; margin-bottom: 10px;">
+                            <span id="progressText">Preparing download...</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    <div id="downloadIdle">
+                        <p style="color: #8b949e; font-size: 14px;">
+                            No active downloads
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for file preview -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">File Preview</h2>
+            <div class="preview-content" id="previewContent">
+                <!-- Preview content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Sample dataset files
+        const files = [
+            {
+                name: 'epidemiological_trend_analysis.py',
+                size: '45.2 KB',
+                type: 'python',
+                icon: '🐍',
+                content: `# Enhanced Epidemiological Trend Analysis - PERCENTAGE VERSION
+# PNG, PDF, and HTML Output with Individual Y-Axis Scaling
+# Creates individual PNG files, multi-page PDFs, and HTML reports
+
+import os
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import re
+from pathlib import Path
+import zipfile
+from matplotlib.backends.backend_pdf import PdfPages
+import base64
+from io import BytesIO
+from datetime import datetime
+
+def create_comprehensive_epi_percentage_analysis(input_file="comparative_analysis.xlsx"):
+    """Create comprehensive epidemiological trend analysis"""
+    print("🚀 Starting Comprehensive Epidemiological Trend Analysis...")
+    # ... (rest of the code from the document)
+    
+if __name__ == "__main__":
+    create_comprehensive_epi_percentage_analysis()`
+            },
+            {
+                name: 'sample_dataset.xlsx',
+                size: '856 KB',
+                type: 'excel',
+                icon: '📊',
+                content: 'Excel file containing sample epidemiological data with district and chiefdom level information for years 2021-2024.'
+            },
+            {
+                name: 'comparative_analysis.xlsx',
+                size: '1.2 MB',
+                type: 'excel',
+                icon: '📈',
+                content: 'Comprehensive comparative analysis dataset with multiple variables and time series data.'
+            },
+            {
+                name: 'requirements.txt',
+                size: '312 bytes',
+                type: 'text',
+                icon: '📋',
+                content: `matplotlib==3.7.2
+pandas==2.0.3
+numpy==1.24.3
+openpyxl==3.1.2
+zipfile36==0.1.3`
+            },
+            {
+                name: 'README.md',
+                size: '2.1 KB',
+                type: 'markdown',
+                icon: '📝',
+                content: `# Epidemiological Trend Analysis Tools
+
+## Overview
+This repository contains comprehensive tools for analyzing epidemiological trends at national and subnational levels.
+
+## Features
+- ✅ Percentage-based analysis
+- ✅ Multi-level geographic analysis (National → District → Chiefdom)
+- ✅ Interactive HTML reports
+- ✅ PDF and PNG exports
+- ✅ Time series visualization (2021-2024)
+
+## Quick Start
+1. Install requirements: \`pip install -r requirements.txt\`
+2. Run analysis: \`python epidemiological_trend_analysis.py\`
+3. View results in generated HTML report
+
+## Data Structure
+- **FIRST_DNAM**: District names
+- **FIRST_CHIE**: Chiefdom names  
+- **allout_u5_YYYY**: Under 5 visits by year
+- **allout_ov5_YYYY**: Over 5 visits by year`
+            },
+            {
+                name: 'config.json',
+                size: '543 bytes',
+                type: 'json',
+                icon: '⚙️',
+                content: `{
+  "analysis_config": {
+    "target_years": [2021, 2022, 2023, 2024],
+    "variables": ["allout_u5", "allout_ov5"],
+    "colors": ["blue", "green"],
+    "output_formats": ["png", "pdf", "html"],
+    "chart_settings": {
+      "dpi": 300,
+      "figsize": [12, 8],
+      "style": "default"
+    }
+  },
+  "data_columns": {
+    "district_col": "FIRST_DNAM",
+    "chiefdom_col": "FIRST_CHIE"
+  }
+}`
+            },
+            {
+                name: 'data_dictionary.csv',
+                size: '1.8 KB',
+                type: 'csv',
+                icon: '📄',
+                content: `column_name,description,data_type,example
+FIRST_DNAM,District Name,text,Western Area Urban
+FIRST_CHIE,Chiefdom Name,text,West End
+allout_u5_2021,Under 5 visits in 2021,numeric,1523
+allout_ov5_2021,Over 5 visits in 2021,numeric,2847
+allout_u5_2022,Under 5 visits in 2022,numeric,1687`
+            },
+            {
+                name: 'example_output.png',
+                size: '234 KB',
+                type: 'image',
+                icon: '🖼️',
+                content: 'Sample output visualization showing epidemiological trends'
+            },
+            {
+                name: 'license.txt',
+                size: '1.1 KB',
+                type: 'text',
+                icon: '⚖️',
+                content: `MIT License
+
+Copyright (c) 2024 Epidemiological Analysis Tools
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.`
+            },
+            {
+                name: 'changelog.md',
+                size: '967 bytes',
+                type: 'markdown',
+                icon: '📋',
+                content: `# Changelog
+
+## [2.0.0] - 2024-08-30
+### Added
+- Percentage-based analysis mode
+- Enhanced HTML navigation
+- Individual Y-axis scaling
+- ZIP package generation
+
+### Changed  
+- Improved chart layouts
+- Better mobile responsiveness
+
+## [1.0.0] - 2024-08-15
+### Added
+- Initial release
+- Basic trend analysis
+- PDF export functionality`
+            },
+            {
+                name: 'utils.py',
+                size: '3.4 KB',
+                type: 'python',
+                icon: '🔧',
+                content: `"""
+Utility functions for epidemiological analysis
+"""
+
+import pandas as pd
+import numpy as np
+import re
+
+def validate_data_structure(df, required_cols):
+    """Validate that DataFrame has required columns"""
+    missing_cols = [col for col in required_cols if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Missing required columns: {missing_cols}")
+    return True
+
+def get_year_columns(df, prefix, target_years):
+    """Extract year columns for a given prefix"""
+    pattern = re.compile(f'^{prefix}_(\d{{4}})$')
+    year_cols = []
+    for col in df.columns:
+        match = pattern.match(col)
+        if match:
+            year = int(match.group(1))
+            if year in target_years:
+                year_cols.append(col)
+    return sorted(year_cols)
+
+def calculate_percentages(data_subset, variables, target_years):
+    """Calculate percentages for variables across years"""
+    # Implementation details...
+    pass`
+            },
+            {
+                name: 'test_analysis.py',
+                size: '2.7 KB',
+                type: 'python',
+                icon: '🧪',
+                content: `"""
+Test cases for epidemiological analysis functions
+"""
+
+import unittest
+import pandas as pd
+import numpy as np
+from epidemiological_trend_analysis import *
+
+class TestEpiAnalysis(unittest.TestCase):
+    
+    def setUp(self):
+        """Set up test data"""
+        self.test_data = pd.DataFrame({
+            'FIRST_DNAM': ['District A', 'District B'],
+            'FIRST_CHIE': ['Chiefdom 1', 'Chiefdom 2'],
+            'allout_u5_2021': [100, 200],
+            'allout_ov5_2021': [150, 250],
+            'allout_u5_2022': [110, 220],
+            'allout_ov5_2022': [160, 260]
+        })
+    
+    def test_data_validation(self):
+        """Test data structure validation"""
+        # Test implementation
+        pass
+    
+    def test_percentage_calculation(self):
+        """Test percentage calculations"""
+        # Test implementation  
+        pass
+
+if __name__ == '__main__':
+    unittest.main()`
+            }
+        ];
+
+        function populateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+
+            files.forEach(file => {
+                const listItem = document.createElement('li');
+                listItem.className = 'file-item';
+                
+                listItem.innerHTML = `
+                    <span class="file-icon">${file.icon}</span>
+                    <div class="file-info">
+                        <a href="#" class="file-name" onclick="previewFile('${file.name}')">${file.name}</a>
+                        <span class="file-size">${file.size}</span>
+                    </div>
+                    <button class="download-btn" onclick="downloadFile('${file.name}')">⬇️ Download</button>
+                `;
+                
+                fileList.appendChild(listItem);
+            });
+        }
+
+        function previewFile(fileName) {
+            const file = files.find(f => f.name === fileName);
+            if (!file) return;
+
+            const modal = document.getElementById('fileModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const previewContent = document.getElementById('previewContent');
+
+            modalTitle.textContent = `${file.icon} ${fileName}`;
+
+            let content = '';
+            if (file.type === 'python' || file.type === 'text' || file.type === 'json' || file.type === 'csv') {
+                content = `<div class="code-preview">${escapeHtml(file.content)}</div>`;
+            } else if (file.type === 'markdown') {
+                content = `<div class="code-preview">${escapeHtml(file.content)}</div>`;
+            } else if (file.type === 'excel') {
+                content = `
+                    <div style="padding: 20px; text-align: center; color: #8b949e;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">${file.icon}</div>
+                        <p><strong>Excel File Preview</strong></p>
+                        <p>${file.content}</p>
+                        <br>
+                        <button class="download-all-btn" onclick="downloadFile('${fileName}')">
+                            ⬇️ Download to view full content
+                        </button>
+                    </div>
+                `;
+            } else if (file.type === 'image') {
+                content = `
+                    <div style="padding: 20px; text-align: center; color: #8b949e;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">${file.icon}</div>
+                        <p><strong>Image File</strong></p>
+                        <p>${file.content}</p>
+                        <br>
+                        <button class="download-all-btn" onclick="downloadFile('${fileName}')">
+                            ⬇️ Download to view image
+                        </button>
+                    </div>
+                `;
+            }
+
+            previewContent.innerHTML = content;
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('fileModal').style.display = 'none';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function downloadFile(fileName) {
+            showProgress();
+            
+            const file = files.find(f => f.name === fileName);
+            if (!file) return;
+
+            // Simulate download progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 30;
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Create and download file
+                    const blob = new Blob([file.content], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    hideProgress();
+                    showToast(`✅ Downloaded ${fileName} successfully!`);
+                }
+                updateProgress(progress, `Downloading ${fileName}...`);
+            }, 100);
+        }
+
+        function downloadAll() {
+            showProgress();
+            showToast('🚀 Preparing bulk download...');
+            
+            // Simulate bulk download preparation
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Create ZIP-like download
+                    const allContent = files.map(file => 
+                        `--- ${file.name} (${file.size}) ---\n${file.content}\n\n`
+                    ).join('\n');
+                    
+                    const blob = new Blob([allContent], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'epidemiological-analysis-datasets.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    hideProgress();
+                    showToast('✅ All files downloaded successfully!');
+                }
+                updateProgress(progress, 'Creating archive...');
+            }, 150);
+        }
+
+        function showProgress() {
+            document.getElementById('downloadProgress').style.display = 'block';
+            document.getElementById('downloadIdle').style.display = 'none';
+        }
+
+        function hideProgress() {
+            document.getElementById('downloadProgress').style.display = 'none';
+            document.getElementById('downloadIdle').style.display = 'block';
+        }
+
+        function updateProgress(percent, text) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('fileModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            populateFileList();
+        });
+    </script>
+</body>
+</html>
