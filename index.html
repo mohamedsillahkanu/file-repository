@@ -37,15 +37,27 @@
             margin-bottom: 30px;
         }
 
-        .repo-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(45deg, #f39c12, #e74c3c);
-            border-radius: 6px;
+        .logos-container {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            border: 2px solid #30363d;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            object-fit: cover;
+        }
+
+        .logo-primary {
+            background: linear-gradient(45deg, #f39c12, #e74c3c);
+        }
+
+        .logo-secondary {
+            background: linear-gradient(45deg, #2563eb, #1d4ed8);
         }
 
         .repo-title {
@@ -310,6 +322,109 @@
             max-height: 400px;
         }
 
+        .download-section {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .download-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .year-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            background: #21262d;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            min-width: 180px;
+            justify-content: space-between;
+        }
+
+        .dropdown-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: #21262d;
+            min-width: 180px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            z-index: 100;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            color: #e6edf3;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #30363d;
+            color: #58a6ff;
+        }
+
+        .download-btn-primary {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-btn-primary:hover {
+            background: #2ea043;
+        }
+
+        .download-btn-primary:disabled {
+            background: #30363d;
+            color: #8b949e;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
         .toast {
             position: fixed;
             top: 20px;
@@ -354,42 +469,76 @@
     <header class="header">
         <div class="container">
             <div class="repo-header">
-                <div class="repo-icon">📊</div>
+                <div class="logos-container">
+                    <img src="https://via.placeholder.com/150x150/f39c12/ffffff?text=LEFT" alt="Left Logo" class="logo logo-primary">
+                    <img src="https://via.placeholder.com/150x150/2563eb/ffffff?text=RIGHT" alt="Right Logo" class="logo logo-secondary">
+                </div>
                 <div>
-                    <h1 class="repo-title">epidemiological-analysis-datasets</h1>
+                    <h1 class="repo-title">Clean Data Repository</h1>
                     <p class="repo-description">Comprehensive epidemiological trend analysis tools and sample datasets</p>
                 </div>
             </div>
             
             <div class="stats-bar">
                 <div class="stat-item">
-                    ⭐ <span class="stat-number">156</span> stars
+                    <span class="stat-number">6</span> files
                 </div>
                 <div class="stat-item">
-                    🍴 <span class="stat-number">43</span> forks
+                    <span class="stat-number">14.2 MB</span> total size
                 </div>
                 <div class="stat-item">
-                    📂 <span class="stat-number">12</span> files
-                </div>
-                <div class="stat-item">
-                    💾 <span class="stat-number">2.4 MB</span> total size
-                </div>
-                <div class="stat-item">
-                    🕒 Updated <span class="stat-number">2 hours ago</span>
+                    Updated <span class="stat-number">2 hours ago</span>
                 </div>
             </div>
         </div>
     </header>
 
     <div class="container">
+        <div class="download-section">
+            <div class="card-title">Download Datasets by District</div>
+            <div class="download-controls">
+                <div class="year-dropdown">
+                    <button class="dropdown-btn" onclick="toggleDistrictDropdown()">
+                        <span id="selectedDistrict">Select District</span>
+                        <span id="districtDropdownArrow">▼</span>
+                    </button>
+                    <div class="dropdown-content" id="districtDropdown">
+                        <div class="dropdown-item" onclick="selectDistrict('all')">All Districts</div>
+                        <div class="dropdown-item" onclick="selectDistrict('western_area_urban')">Western Area Urban</div>
+                        <div class="dropdown-item" onclick="selectDistrict('western_area_rural')">Western Area Rural</div>
+                        <div class="dropdown-item" onclick="selectDistrict('bo')">Bo District</div>
+                        <div class="dropdown-item" onclick="selectDistrict('kenema')">Kenema District</div>
+                        <div class="dropdown-item" onclick="selectDistrict('kailahun')">Kailahun District</div>
+                        <div class="dropdown-item" onclick="selectDistrict('bombali')">Bombali District</div>
+                        <div class="dropdown-item" onclick="selectDistrict('port_loko')">Port Loko District</div>
+                        <div class="dropdown-item" onclick="selectDistrict('tonkolili')">Tonkolili District</div>
+                    </div>
+                </div>
+                <div class="year-dropdown">
+                    <button class="dropdown-btn" onclick="toggleVariableDropdown()">
+                        <span id="selectedVariable">Select Variables</span>
+                        <span id="variableDropdownArrow">▼</span>
+                    </button>
+                    <div class="dropdown-content" id="variableDropdown">
+                        <div class="dropdown-item" onclick="selectVariable('allout')">All Outpatient Variables</div>
+                        <div class="dropdown-item" onclick="selectVariable('suspected')">Suspected Variables</div>
+                        <div class="dropdown-item" onclick="selectVariable('custom')">Custom Selection</div>
+                    </div>
+                </div>
+                <button class="download-btn-primary" onclick="downloadSelectedDistrict()" id="downloadDistrictBtn" disabled>
+                    Download Selected
+                </button>
+            </div>
+        </div>
+
         <div class="main-content">
             <div class="file-browser">
                 <div class="browser-header">
                     <div class="browser-title">
-                        📁 Repository Files
+                        Repository Files
                     </div>
                     <button class="download-all-btn" onclick="downloadAll()">
-                        ⬇️ Download All
+                        Download All
                     </button>
                 </div>
                 
@@ -431,7 +580,7 @@
                     <ol style="color: #8b949e; font-size: 14px; line-height: 1.6; padding-left: 20px;">
                         <li>Download the analysis script</li>
                         <li>Install required Python packages</li>
-                        <li>Load your dataset</li>
+                        <li>Load your dataset (2021-2025)</li>
                         <li>Run the analysis</li>
                         <li>Generate reports and visualizations</li>
                     </ol>
@@ -472,253 +621,461 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // Sample dataset files
+        // Sample Excel dataset files only
         const files = [
             {
-                name: 'epidemiological_trend_analysis.py',
-                size: '45.2 KB',
-                type: 'python',
-                icon: '🐍',
-                content: `# Enhanced Epidemiological Trend Analysis - PERCENTAGE VERSION
-# PNG, PDF, and HTML Output with Individual Y-Axis Scaling
-# Creates individual PNG files, multi-page PDFs, and HTML reports
-
-import os
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-import re
-from pathlib import Path
-import zipfile
-from matplotlib.backends.backend_pdf import PdfPages
-import base64
-from io import BytesIO
-from datetime import datetime
-
-def create_comprehensive_epi_percentage_analysis(input_file="comparative_analysis.xlsx"):
-    """Create comprehensive epidemiological trend analysis"""
-    print("🚀 Starting Comprehensive Epidemiological Trend Analysis...")
-    # ... (rest of the code from the document)
-    
-if __name__ == "__main__":
-    create_comprehensive_epi_percentage_analysis()`
-            },
-            {
-                name: 'sample_dataset.xlsx',
+                name: 'comparative_analysis_2021.xlsx',
                 size: '856 KB',
                 type: 'excel',
-                icon: '📊',
-                content: 'Excel file containing sample epidemiological data with district and chiefdom level information for years 2021-2024.'
+                icon: '',
+                path: '/data/historical/comparative_analysis_2021.xlsx',
+                content: 'Excel file containing 2021 epidemiological data with district and chiefdom level information. Includes columns: FIRST_DNAM, FIRST_CHIE, allout_u5_2021, allout_ov5_2021, and additional health metrics.'
             },
             {
-                name: 'comparative_analysis.xlsx',
+                name: 'comparative_analysis_2022.xlsx',
+                size: '923 KB',
+                type: 'excel',
+                icon: '',
+                path: '/data/historical/comparative_analysis_2022.xlsx',
+                content: 'Excel file containing 2022 epidemiological data with enhanced tracking metrics and expanded geographic coverage.'
+            },
+            {
+                name: 'comparative_analysis_2023.xlsx',
+                size: '1.1 MB',
+                type: 'excel',
+                icon: '',
+                path: '/data/historical/comparative_analysis_2023.xlsx',
+                content: 'Excel file containing 2023 epidemiological data with improved data quality and additional health outcome indicators.'
+            },
+            {
+                name: 'comparative_analysis_2024.xlsx',
                 size: '1.2 MB',
                 type: 'excel',
-                icon: '📈',
-                content: 'Comprehensive comparative analysis dataset with multiple variables and time series data.'
+                icon: '',
+                path: '/data/historical/comparative_analysis_2024.xlsx',
+                content: 'Excel file containing 2024 epidemiological data with comprehensive district and chiefdom level analysis.'
             },
             {
-                name: 'requirements.txt',
-                size: '312 bytes',
-                type: 'text',
-                icon: '📋',
-                content: `matplotlib==3.7.2
-pandas==2.0.3
-numpy==1.24.3
-openpyxl==3.1.2
-zipfile36==0.1.3`
+                name: 'comparative_analysis_2025.xlsx',
+                size: '987 KB',
+                type: 'excel',
+                icon: '',
+                path: '/data/historical/comparative_analysis_2025.xlsx',
+                content: 'Excel file containing 2025 epidemiological data (partial year) with latest health metrics and trends.'
             },
             {
-                name: 'README.md',
-                size: '2.1 KB',
-                type: 'markdown',
-                icon: '📝',
-                content: `# Epidemiological Trend Analysis Tools
-
-## Overview
-This repository contains comprehensive tools for analyzing epidemiological trends at national and subnational levels.
-
-## Features
-- ✅ Percentage-based analysis
-- ✅ Multi-level geographic analysis (National → District → Chiefdom)
-- ✅ Interactive HTML reports
-- ✅ PDF and PNG exports
-- ✅ Time series visualization (2021-2024)
-
-## Quick Start
-1. Install requirements: \`pip install -r requirements.txt\`
-2. Run analysis: \`python epidemiological_trend_analysis.py\`
-3. View results in generated HTML report
-
-## Data Structure
-- **FIRST_DNAM**: District names
-- **FIRST_CHIE**: Chiefdom names  
-- **allout_u5_YYYY**: Under 5 visits by year
-- **allout_ov5_YYYY**: Over 5 visits by year`
-            },
-            {
-                name: 'config.json',
-                size: '543 bytes',
-                type: 'json',
-                icon: '⚙️',
-                content: `{
-  "analysis_config": {
-    "target_years": [2021, 2022, 2023, 2024],
-    "variables": ["allout_u5", "allout_ov5"],
-    "colors": ["blue", "green"],
-    "output_formats": ["png", "pdf", "html"],
-    "chart_settings": {
-      "dpi": 300,
-      "figsize": [12, 8],
-      "style": "default"
-    }
-  },
-  "data_columns": {
-    "district_col": "FIRST_DNAM",
-    "chiefdom_col": "FIRST_CHIE"
-  }
-}`
-            },
-            {
-                name: 'data_dictionary.csv',
-                size: '1.8 KB',
-                type: 'csv',
-                icon: '📄',
-                content: `column_name,description,data_type,example
-FIRST_DNAM,District Name,text,Western Area Urban
-FIRST_CHIE,Chiefdom Name,text,West End
-allout_u5_2021,Under 5 visits in 2021,numeric,1523
-allout_ov5_2021,Over 5 visits in 2021,numeric,2847
-allout_u5_2022,Under 5 visits in 2022,numeric,1687`
-            },
-            {
-                name: 'example_output.png',
-                size: '234 KB',
-                type: 'image',
-                icon: '🖼️',
-                content: 'Sample output visualization showing epidemiological trends'
-            },
-            {
-                name: 'license.txt',
-                size: '1.1 KB',
-                type: 'text',
-                icon: '⚖️',
-                content: `MIT License
-
-Copyright (c) 2024 Epidemiological Analysis Tools
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.`
-            },
-            {
-                name: 'changelog.md',
-                size: '967 bytes',
-                type: 'markdown',
-                icon: '📋',
-                content: `# Changelog
-
-## [2.0.0] - 2024-08-30
-### Added
-- Percentage-based analysis mode
-- Enhanced HTML navigation
-- Individual Y-axis scaling
-- ZIP package generation
-
-### Changed  
-- Improved chart layouts
-- Better mobile responsiveness
-
-## [1.0.0] - 2024-08-15
-### Added
-- Initial release
-- Basic trend analysis
-- PDF export functionality`
-            },
-            {
-                name: 'utils.py',
-                size: '3.4 KB',
-                type: 'python',
-                icon: '🔧',
-                content: `"""
-Utility functions for epidemiological analysis
-"""
-
-import pandas as pd
-import numpy as np
-import re
-
-def validate_data_structure(df, required_cols):
-    """Validate that DataFrame has required columns"""
-    missing_cols = [col for col in required_cols if col not in df.columns]
-    if missing_cols:
-        raise ValueError(f"Missing required columns: {missing_cols}")
-    return True
-
-def get_year_columns(df, prefix, target_years):
-    """Extract year columns for a given prefix"""
-    pattern = re.compile(f'^{prefix}_(\d{{4}})$')
-    year_cols = []
-    for col in df.columns:
-        match = pattern.match(col)
-        if match:
-            year = int(match.group(1))
-            if year in target_years:
-                year_cols.append(col)
-    return sorted(year_cols)
-
-def calculate_percentages(data_subset, variables, target_years):
-    """Calculate percentages for variables across years"""
-    # Implementation details...
-    pass`
-            },
-            {
-                name: 'test_analysis.py',
-                size: '2.7 KB',
-                type: 'python',
-                icon: '🧪',
-                content: `"""
-Test cases for epidemiological analysis functions
-"""
-
-import unittest
-import pandas as pd
-import numpy as np
-from epidemiological_trend_analysis import *
-
-class TestEpiAnalysis(unittest.TestCase):
-    
-    def setUp(self):
-        """Set up test data"""
-        self.test_data = pd.DataFrame({
-            'FIRST_DNAM': ['District A', 'District B'],
-            'FIRST_CHIE': ['Chiefdom 1', 'Chiefdom 2'],
-            'allout_u5_2021': [100, 200],
-            'allout_ov5_2021': [150, 250],
-            'allout_u5_2022': [110, 220],
-            'allout_ov5_2022': [160, 260]
-        })
-    
-    def test_data_validation(self):
-        """Test data structure validation"""
-        # Test implementation
-        pass
-    
-    def test_percentage_calculation(self):
-        """Test percentage calculations"""
-        # Test implementation  
-        pass
-
-if __name__ == '__main__':
-    unittest.main()`
+                name: 'national_comparative_analysis.xlsx',
+                size: '8.7 MB',
+                type: 'excel',
+                icon: '',
+                path: '/data/national/national_comparative_analysis.xlsx',
+                content: 'Comprehensive Excel file containing all districts and variables (2021-2025) in a single workbook with multiple sheets.'
             }
         ];
+
+        // District-specific datasets mapping
+        const districtDatasets = {
+            'western_area_urban': {
+                name: 'Western Area Urban',
+                files: [
+                    {
+                        name: 'western_area_urban_allout_variables.xlsx',
+                        size: '1.2 MB',
+                        description: 'All outpatient variables for Western Area Urban (2021-2025)',
+                        variables: ['allout_u5', 'allout_ov5', 'allout_total']
+                    },
+                    {
+                        name: 'western_area_urban_suspected_variables.xlsx', 
+                        size: '890 KB',
+                        description: 'Suspected disease cases for Western Area Urban',
+                        variables: ['suspected_malaria', 'suspected_pneumonia', 'suspected_diarrhea']
+                    }
+                ]
+            },
+            'western_area_rural': {
+                name: 'Western Area Rural',
+                files: [
+                    {
+                        name: 'western_area_rural_allout_variables.xlsx',
+                        size: '967 KB', 
+                        description: 'All outpatient variables for Western Area Rural (2021-2025)',
+                        variables: ['allout_u5', 'allout_ov5', 'allout_total']
+                    },
+                    {
+                        name: 'western_area_rural_suspected_variables.xlsx',
+                        size: '723 KB',
+                        description: 'Suspected disease cases for Western Area Rural',
+                        variables: ['suspected_malaria', 'suspected_pneumonia', 'suspected_diarrhea']
+                    }
+                ]
+            },
+            'bo': {
+                name: 'Bo District',
+                files: [
+                    {
+                        name: 'bo_district_allout_variables.xlsx',
+                        size: '1.1 MB',
+                        description: 'All outpatient variables for Bo District (2021-2025)',
+                        variables: ['allout_u5', 'allout_ov5', 'allout_total']
+                    },
+                    {
+                        name: 'bo_district_suspected_variables.xlsx',
+                        size: '834 KB',
+                        description: 'Suspected disease cases for Bo District',
+                        variables: ['suspected_malaria', 'suspected_pneumonia', 'suspected_diarrhea']
+                    }
+                ]
+            },
+            'kenema': {
+                name: 'Kenema District',
+                files: [
+                    {
+                        name: 'kenema_district_allout_variables.xlsx',
+                        size: '1.0 MB',
+                        description: 'All outpatient variables for Kenema District (2021-2025)',
+                        variables: ['allout_u5', 'allout_ov5', 'allout_total']
+                    },
+                    {
+                        name: 'kenema_district_suspected_variables.xlsx',
+                        size: '756 KB',
+                        description: 'Suspected disease cases for Kenema District',
+                        variables: ['suspected_malaria', 'suspected_pneumonia', 'suspected_diarrhea']
+                    }
+                ]
+            },
+            'kailahun': {
+                name: 'Kailahun District',
+                files: [
+                    {
+                        name: 'kailahun_district_allout_variables.xlsx',
+                        size: '912 KB',
+                        description: 'All outpatient variables for Kailahun District (2021-2025)',
+                        variables: ['allout_u5', 'allout_ov5', 'allout_total']
+                    },
+                    {
+                        name: 'kailahun_district_suspected_variables.xlsx',
+                        size: '687 KB',
+                        description: 'Suspected disease cases for Kailahun District',
+                        variables: ['suspected_malaria', 'suspected_pneumonia', 'suspected_diarrhea']
+                    }
+                ]
+            },
+            'bombali': {
+                name: 'Bombali District',
+                files: [
+                    {
+                        name: 'bombali_district_allout_variables.xlsx',
+                        size: '1.3 MB',
+                        description: 'All outpatient variables for Bombali District (2021-2025)',
+                        variables: ['allout_u5', 'allout_ov5', 'allout_total']
+                    },
+                    {
+                        name: 'bombali_district_suspected_variables.xlsx',
+                        size: '945 KB',
+                        description: 'Suspected disease cases for Bombali District',
+                        variables: ['suspected_malaria', 'suspected_pneumonia', 'suspected_diarrhea']
+                    }
+                ]
+            },
+            'port_loko': {
+                name: 'Port Loko District',
+                files: [
+                    {
+                        name: 'port_loko_district_allout_variables.xlsx',
+                        size: '1.1 MB',
+                        description: 'All outpatient variables for Port Loko District (2021-2025)',
+                        variables: ['allout_u5', 'allout_ov5', 'allout_total']
+                    },
+                    {
+                        name: 'port_loko_district_suspected_variables.xlsx',
+                        size: '812 KB',
+                        description: 'Suspected disease cases for Port Loko District',
+                        variables: ['suspected_malaria', 'suspected_pneumonia', 'suspected_diarrhea']
+                    }
+                ]
+            },
+            'tonkolili': {
+                name: 'Tonkolili District',
+                files: [
+                    {
+                        name: 'tonkolili_district_allout_variables.xlsx',
+                        size: '987 KB',
+                        description: 'All outpatient variables for Tonkolili District (2021-2025)',
+                        variables: ['allout_u5', 'allout_ov5', 'allout_total']
+                    },
+                    {
+                        name: 'tonkolili_district_suspected_variables.xlsx',
+                        size: '734 KB',
+                        description: 'Suspected disease cases for Tonkolili District',
+                        variables: ['suspected_malaria', 'suspected_pneumonia', 'suspected_diarrhea']
+                    }
+                ]
+            },
+            'all': {
+                name: 'All Districts',
+                files: [
+                    {
+                        name: 'national_comparative_analysis.xlsx',
+                        size: '8.7 MB',
+                        description: 'Complete national dataset with all districts and variables (2021-2025)',
+                        variables: ['allout_u5', 'allout_ov5', 'suspected_malaria', 'suspected_pneumonia', 'suspected_diarrhea']
+                    },
+                    {
+                        name: 'epidemiological_trend_analysis.py',
+                        size: '45.2 KB',
+                        description: 'Analysis script for processing all districts'
+                    },
+                    {
+                        name: 'utils.py',
+                        size: '3.4 KB',
+                        description: 'Utility functions for data processing'
+                    }
+                ]
+            }
+        };
+
+        let selectedDistrict = null;
+        let selectedVariable = 'allout';
+
+        function toggleDistrictDropdown() {
+            const dropdown = document.getElementById('districtDropdown');
+            const arrow = document.getElementById('districtDropdownArrow');
+            const variableDropdown = document.getElementById('variableDropdown');
+            
+            // Close variable dropdown if open
+            variableDropdown.classList.remove('show');
+            document.getElementById('variableDropdownArrow').style.transform = 'rotate(0deg)';
+            
+            dropdown.classList.toggle('show');
+            arrow.style.transform = dropdown.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function toggleVariableDropdown() {
+            const dropdown = document.getElementById('variableDropdown');
+            const arrow = document.getElementById('variableDropdownArrow');
+            const districtDropdown = document.getElementById('districtDropdown');
+            
+            // Close district dropdown if open
+            districtDropdown.classList.remove('show');
+            document.getElementById('districtDropdownArrow').style.transform = 'rotate(0deg)';
+            
+            dropdown.classList.toggle('show');
+            arrow.style.transform = dropdown.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function selectDistrict(district) {
+            selectedDistrict = district;
+            const selectedDistrictSpan = document.getElementById('selectedDistrict');
+            const downloadBtn = document.getElementById('downloadDistrictBtn');
+            
+            if (district === 'all') {
+                selectedDistrictSpan.textContent = '📊 All Districts';
+            } else {
+                const districtData = districtDatasets[district];
+                selectedDistrictSpan.textContent = `🏘️ ${districtData.name}`;
+            }
+            
+            downloadBtn.disabled = false;
+            downloadBtn.style.opacity = '1';
+            
+            // Close dropdown
+            document.getElementById('districtDropdown').classList.remove('show');
+            document.getElementById('districtDropdownArrow').style.transform = 'rotate(0deg)';
+            
+            // Show available datasets popup
+            showDistrictDatasets(district);
+        }
+
+        function selectVariable(variable) {
+            selectedVariable = variable;
+            const selectedVariableSpan = document.getElementById('selectedVariable');
+            
+            const variableNames = {
+                'allout': '📈 All Outpatient Variables',
+                'suspected': '🔍 Suspected Variables', 
+                'custom': '⚙️ Custom Selection'
+            };
+            
+            selectedVariableSpan.textContent = variableNames[variable];
+            
+            // Close dropdown
+            document.getElementById('variableDropdown').classList.remove('show');
+            document.getElementById('variableDropdownArrow').style.transform = 'rotate(0deg)';
+        }
+
+        function showDistrictDatasets(district) {
+            if (!district || district === 'all') return;
+            
+            const districtData = districtDatasets[district];
+            if (!districtData) return;
+            
+            // Create popup content
+            const modal = document.getElementById('fileModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const previewContent = document.getElementById('previewContent');
+            
+            modalTitle.textContent = `📊 Available Datasets: ${districtData.name}`;
+            
+            let content = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #58a6ff; margin-bottom: 15px;">📋 Available Datasets for ${districtData.name}</h3>
+                    <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 20px;">
+            `;
+            
+            districtData.files.forEach((file, index) => {
+                const variableList = file.variables ? file.variables.join(', ') : 'N/A';
+                content += `
+                    <div style="background: #161b22; border: 1px solid #21262d; border-radius: 6px; padding: 15px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <div>
+                                <h4 style="color: #e6edf3; margin: 0; font-size: 16px;">📊 ${file.name}</h4>
+                                <p style="color: #8b949e; margin: 5px 0 0 0; font-size: 14px;">${file.description}</p>
+                            </div>
+                            <span style="color: #58a6ff; font-weight: 600; font-size: 14px;">${file.size}</span>
+                        </div>
+                        ${file.variables ? `
+                        <div style="margin-top: 10px;">
+                            <strong style="color: #f79000; font-size: 13px;">Variables:</strong> 
+                            <span style="color: #8b949e; font-size: 13px;">${variableList}</span>
+                        </div>
+                        ` : ''}
+                        <button class="download-btn-primary" onclick="downloadDistrictFile('${file.name}', '${district}')" style="margin-top: 10px; font-size: 12px; padding: 6px 12px;">
+                            ⬇️ Download This File
+                        </button>
+                    </div>
+                `;
+            });
+            
+            content += `
+                    </div>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="download-btn-primary" onclick="downloadAllDistrictFiles('${district}')" style="padding: 12px 24px;">
+                            📦 Download All ${districtData.name} Files
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            previewContent.innerHTML = content;
+            modal.style.display = 'block';
+        }
+
+        function downloadSelectedDistrict() {
+            if (!selectedDistrict) {
+                showToast('❌ Please select a district first');
+                return;
+            }
+
+            showProgress();
+            
+            const districtData = districtDatasets[selectedDistrict];
+            const districtLabel = selectedDistrict === 'all' ? 'All Districts' : districtData.name;
+            
+            showToast(`🚀 Preparing ${districtLabel} dataset download...`);
+            
+            // Simulate download progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 25;
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Create download content
+                    let downloadContent = `=== EPIDEMIOLOGICAL DATASETS - ${districtLabel.toUpperCase()} ===\n\n`;
+                    downloadContent += `Variable Type: ${selectedVariable.toUpperCase()}\n`;
+                    downloadContent += `Selected District: ${districtLabel}\n`;
+                    downloadContent += `Download Date: ${new Date().toISOString().split('T')[0]}\n\n`;
+                    
+                    districtData.files.forEach(dataset => {
+                        downloadContent += `FILE: ${dataset.name}\n`;
+                        downloadContent += `SIZE: ${dataset.size}\n`;
+                        downloadContent += `DESCRIPTION: ${dataset.description}\n`;
+                        downloadContent += `PATH: /data/districts/${selectedDistrict}/${dataset.name}\n`;
+                        if (dataset.variables) {
+                            downloadContent += `VARIABLES: ${dataset.variables.join(', ')}\n`;
+                        }
+                        downloadContent += `\n--- SAMPLE DATA STRUCTURE ---\n`;
+                        downloadContent += `Columns: FIRST_DNAM, FIRST_CHIE, [variable]_2021, [variable]_2022, [variable]_2023, [variable]_2024, [variable]_2025\n`;
+                        downloadContent += `District: ${districtData.name}\n`;
+                        downloadContent += '\n' + '='.repeat(80) + '\n\n';
+                    });
+                    
+                    // Create and trigger download
+                    const blob = new Blob([downloadContent], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `epidemiological_dataset_${selectedDistrict}_${selectedVariable}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    hideProgress();
+                    showToast(`✅ ${districtLabel} dataset downloaded successfully!`);
+                }
+                updateProgress(progress, `Downloading ${districtLabel} dataset...`);
+            }, 120);
+        }
+
+        function downloadDistrictFile(fileName, district) {
+            showProgress();
+            showToast(`📥 Downloading ${fileName}...`);
+            
+            // Simulate file download
+            setTimeout(() => {
+                const fileContent = `=== ${fileName.toUpperCase()} ===\n\nFile Path: /data/districts/${district}/${fileName}\nDistrict: ${districtDatasets[district].name}\nGenerated: ${new Date().toISOString()}\n\nThis file contains epidemiological data for the selected district.\nColumns include district names, chiefdom names, and health metrics for 2021-2025.\n\n--- END OF FILE ---`;
+                
+                const blob = new Blob([fileContent], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                hideProgress();
+                showToast(`✅ ${fileName} downloaded successfully!`);
+            }, 1500);
+        }
+
+        function downloadAllDistrictFiles(district) {
+            showProgress();
+            const districtData = districtDatasets[district];
+            showToast(`📦 Downloading all ${districtData.name} files...`);
+            
+            // Simulate bulk download
+            setTimeout(() => {
+                let allContent = `=== ALL ${districtData.name.toUpperCase()} DATASETS ===\n\n`;
+                
+                districtData.files.forEach(file => {
+                    allContent += `FILE: ${file.name}\n`;
+                    allContent += `SIZE: ${file.size}\n`;
+                    allContent += `DESCRIPTION: ${file.description}\n`;
+                    if (file.variables) {
+                        allContent += `VARIABLES: ${file.variables.join(', ')}\n`;
+                    }
+                    allContent += '\n' + '-'.repeat(60) + '\n\n';
+                });
+                
+                const blob = new Blob([allContent], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${district}_all_datasets.txt`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                hideProgress();
+                showToast(`✅ All ${districtData.name} files downloaded!`);
+                closeModal();
+            }, 2000);
+        }
 
         function populateFileList() {
             const fileList = document.getElementById('fileList');
@@ -731,15 +1088,38 @@ if __name__ == '__main__':
                 listItem.innerHTML = `
                     <span class="file-icon">${file.icon}</span>
                     <div class="file-info">
-                        <a href="#" class="file-name" onclick="previewFile('${file.name}')">${file.name}</a>
+                        <div>
+                            <a href="#" class="file-name" onclick="previewFile('${file.name}')">${file.name}</a>
+                            <div style="font-size: 11px; color: #8b949e; margin-top: 2px;">${file.path}</div>
+                        </div>
                         <span class="file-size">${file.size}</span>
                     </div>
-                    <button class="download-btn" onclick="downloadFile('${file.name}')">⬇️ Download</button>
+                    <button class="download-btn" onclick="downloadFile('${file.name}')">⬇️</button>
                 `;
                 
                 fileList.appendChild(listItem);
             });
         }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const districtDropdown = document.getElementById('districtDropdown');
+            const variableDropdown = document.getElementById('variableDropdown');
+            const isDropdownClick = event.target.closest('.dropdown-btn') || event.target.closest('.dropdown-content');
+            
+            if (!isDropdownClick) {
+                if (districtDropdown) {
+                    districtDropdown.classList.remove('show');
+                    const districtArrow = document.getElementById('districtDropdownArrow');
+                    if (districtArrow) districtArrow.style.transform = 'rotate(0deg)';
+                }
+                if (variableDropdown) {
+                    variableDropdown.classList.remove('show');
+                    const variableArrow = document.getElementById('variableDropdownArrow');
+                    if (variableArrow) variableArrow.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
 
         function previewFile(fileName) {
             const file = files.find(f => f.name === fileName);
