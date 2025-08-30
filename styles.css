@@ -38,8 +38,8 @@ body {
 }
 
 .logo {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 2000px;
     border-radius: 8px;
     border: 2px solid #30363d;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
