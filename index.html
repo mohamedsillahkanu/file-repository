@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Repository - Epidemiological Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            padding: 20px 0;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .repo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .logo {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .logo-primary {
+            order: -1;
+        }
+
+        .logo-secondary {
+            order: 1;
+        }
+
+        .repo-info {
+            flex: 1;
+            text-align: center;
+        }
+
+        .repo-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #58a6ff;
+        }
+
+        .repo-description {
+            color: #8b949e;
+            margin-top: 8px;
+        }
+
+        .user-info {
+            color: #58a6ff;
+            font-size: 14px;
+            display: none;
+        }
+
+        .logout-btn {
+            background: #f85149;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .logout-btn:hover {
+            background: #da3633;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 15px;
+            background: rgba(13, 17, 23, 0.4);
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .stat-number {
+            color: #e6edf3;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        .categories-container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .categories-header {
+            background: #21262d;
+            padding: 15px 20px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .categories-title {
+            font-weight: 600;
+            color: #e6edf3;
+        }
+
+        .category {
+            border-bottom: 1px solid #21262d;
+        }
+
+        .category:last-child {
+            border-bottom: none;
+        }
+
+        .category-header {
+            background: #161b22;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #58a6ff;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .category-header:hover {
+            background: #21262d;
+        }
+
+        .category-header:focus {
+            outline: 2px solid #58a6ff;
+            outline-offset: -2px;
+        }
+
+        .category-arrow {
+            transition: transform 0.2s;
+            font-size: 12px;
+        }
+
+        .category-arrow.expanded {
+            transform: rotate(90deg);
+        }
+
+        .files {
+            display: none;
+            background: #0d1117;
+        }
+
+        .files.expanded {
+            display: block;
+        }
+
+        .file {
+            padding: 15px 20px;
+            border-bottom: 1px solid #21262d;
+            transition: background 0.2s;
+        }
+
+        .file:hover {
+            background: #161b22;
+        }
+
+        .file:last-child {
+            border-bottom: none;
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #e6edf3;
+            font-size: 14px;
+        }
+
+        .file-size {
+            color: #58a6ff;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .file-description {
+            color: #8b949e;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .download-btn {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #2ea043;
+        }
+
+        .download-btn:focus {
+            outline: 2px solid #2ea043;
+            outline-offset: 2px;
+        }
+
+        .preview-btn {
+            background: transparent;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .preview-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .preview-btn:focus {
+            outline: 2px solid #58a6ff;
+            outline-offset: 2px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #e6edf3;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #e6edf3;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(1, 4, 9, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #161b22;
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal h2 {
+            color: #58a6ff;
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .lock-icon {
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: #e6edf3;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background: #0d1117;
+            color: #e6edf3;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .login-btn:hover {
+            background: #2ea043;
+        }
+
+        .login-btn:focus {
+            outline: 2px solid #2ea043;
+            outline-offset: 2px;
+        }
+
+        .demo-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #58a6ff;
+        }
+
+        .demo-info p {
+            color: #8b949e;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .error-message {
+            color: #f85149;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-message {
+            color: #238636;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #238636;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #f85149;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-left: 8px;
+            border: 2px solid #58a6ff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .repo-header {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .logo {
+                height: 45px;
+            }
+
+            .repo-info {
+                order: 0;
+            }
+
+            .logo-primary {
+                order: -1;
+            }
+
+            .logo-secondary {
+                order: 1;
+            }
+
+            .user-info {
+                order: 2;
+                margin-top: 10px;
+            }
+
+            .file-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .file-actions {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Screen reader only content */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .category-header:focus {
+                outline: 3px solid;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="repo-header">
+                <img src="NMCP.png" alt="NMCP Logo" class="logo logo-primary">
+                <div class="repo-info">
+                    <h1 class="repo-title">Clean Malaria Data Repository</h1>
+                    <p class="repo-description">Comprehensive epidemiological trend analysis tools and sample datasets</p>
+                </div>
+                <img src="ICF-SL.jpg" alt="ICF Sierra Leone Logo" class="logo logo-secondary">
+                <div class="user-info" id="userInfo">
+                    Logged in as: <span id="currentUser"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalFiles">0</span> files
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalSize">0</span> total size
+                </div>
+                <div class="stat-item">
+                    Updated <span class="stat-number">2 hours ago</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="main-content">
+            <div class="categories-container">
+                <div class="categories-header">
+                    <div class="categories-title">Dataset Categories</div>
+                </div>
+                <div id="categories-container" role="region" aria-label="Dataset categories">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <aside class="sidebar">
+                <div class="info-card">
+                    <h3 class="card-title">About This Repository</h3>
+                    <p style="color: #8b949e; font-size: 14px; line-height: 1.6;">
+                        This repository contains epidemiological trend analysis tools and sample datasets for healthcare data visualization and statistical analysis.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Dataset Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Total Categories</span>
+                        <span class="info-value" id="categoryCount">6</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">File Types</span>
+                        <span class="info-value">Excel, PDF, Shapefiles</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Data Period</span>
+                        <span class="info-value">2021</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">License</span>
+                        <span class="info-value">MIT</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Quick Start</h3>
+                    <ol style="color: #8b949e; font-size: 14px; line-height: 1.6; padding-left: 20px;">
+                        <li>Login with demo credentials</li>
+                        <li>Browse dataset categories</li>
+                        <li>Preview or download files</li>
+                        <li>Use data for analysis</li>
+                    </ol>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal" role="dialog" aria-labelledby="loginTitle" aria-modal="true">
+        <div class="modal-content">
+            <h2 id="loginTitle">🔒 Repository Access</h2>
+            <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;">
+                Please enter your credentials to access the epidemiological datasets
+            </p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+                
+                <button type="button" class="login-btn" id="loginButton">Login</button>
+            </form>
+            
+            <div class="error-message" id="errorMessage" role="alert" aria-live="polite">
+                Invalid credentials. Please try again.
+            </div>
+
+            <div class="success-message" id="successMessage" role="alert" aria-live="polite">
+                Login successful! Loading datasets...
+            </div>
+            
+            <div class="demo-info">
+                <p><strong>Demo Credentials:</strong></p>
+                <p>Username: admin | Password: 1234</p>
+                <p>Username: researcher | Password: data2024</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+    <script>
+        let isLoggedIn = false;
+        let currentToast = null;
+
+        // Sample files for each category
+        const shapefiles = [
+            { 
+                name: 'Chiefdom2021', 
+                size: '1 MB', 
+                type: 'shapefile', 
+                icon: '🗺️', 
+                path: '/data/shapefiles/Chiefdom2021', 
+                content: 'Shapefile for chiefdom boundaries in 2021 containing geographic data for administrative divisions.',
+                files: ['Chiefdom2021.shp', 'Chiefdom2021.shx', 'Chiefdom2021.dbf']
+            },
+            { 
+                name: 'District2021', 
+                size: '900 KB', 
+                type: 'shapefile', 
+                icon: '🗺️', 
+                path: '/data/shapefiles/District2021', 
+                content: 'Shapefile for district boundaries in 2021 with complete administrative mapping data.',
+                files: ['District2021.shp', 'District2021.shx', 'District2021.dbf']
+            }
+        ];
+
+        const epiRoutineFiles = [
+            { name: 'epi_data_2021.xlsx', size: '856 KB', type: 'excel', icon: '📊', path: '/data/epi/epi_data_2021.xlsx', content: 'Excel file with comprehensive epidemiological data at district and chiefdom level including case counts and demographics.' }
+        ];
+
+        const interventionFiles = [
+            { name: 'intervention_2021.xlsx', size: '512 KB', type: 'excel', icon: '📊', path: '/data/intervention/intervention_2021.xlsx', content: 'Intervention coverage data for 2021 including vaccination rates and treatment coverage statistics.' }
+        ];
+
+        const campaignSurveyFiles = [
+            { name: 'survey_2021.xlsx', size: '768 KB', type: 'excel', icon: '📊', path: '/data/survey/survey_2021.xlsx', content: 'Survey and campaign data for 2021 with population health indicators and campaign effectiveness metrics.' }
+        ];
+
+        const reportFiles = [
+            { name: 'annual_report_2021.pdf', size: '1.2 MB', type: 'pdf', icon: '📄', path: '/data/reports/annual_report_2021.pdf', content: 'Comprehensive annual epidemiological report for 2021 with analysis and recommendations.' }
+        ];
+
+        const otherFiles = [
+            { name: 'comparative_analysis_2021.xlsx', size: '856 KB', type: 'excel', icon: '📊', path: '/data/historical/comparative_analysis_2021.xlsx', content: 'Excel file containing 2021 epidemiological data with district and chiefdom comparative analysis.' }
+        ];
+
+        // Data categories
+        const dataCategories = {
+            'shapefiles': { name: 'Shapefiles', files: [...shapefiles] },
+            'epi_routine': { name: 'Epi Routine Data', files: [...epiRoutineFiles] },
+            'intervention': { name: 'Intervention Data', files: [...interventionFiles] },
+            'campaign_survey': { name: 'Campaign/Survey Data', files: [...campaignSurveyFiles] },
+            'reports': { name: 'Reports', files: [...reportFiles] },
+            'other': { name: 'Other Files', files: [...otherFiles] }
+        };
+
+        // Valid credentials
+        const validCredentials = {
+            'admin': '1234',
+            'researcher': 'data2024'
+        };
+
+        // Utility function to sanitize input
+        const sanitizeInput = (input) => {
+            return input.replace(/[<>]/g, '').trim();
+        };
+
+        // Show login modal
+        const showLoginModal = () => {
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex';
+            // Focus the first input for accessibility
+            setTimeout(() => {
+                document.getElementById('username').focus();
+            }, 100);
+        };
+
+        // Hide login modal
+        const hideLoginModal = () => {
+            document.getElementById('loginModal').style.display = 'none';
+        };
+
+        // Login function
+        const login = (event) => {
+            if (event) {
+                event.preventDefault();
+            }
+
+            const loginButton = document.getElementById('loginButton');
+            const user = sanitizeInput(document.getElementById('username').value);
+            const pass = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Reset messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            // Validate inputs
+            if (!user || !pass) {
+                errorMessage.textContent = 'Please enter both username and password.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Show loading state
+            loginButton.classList.add('loading');
+            loginButton.disabled = true;
+
+            // Simulate API call delay
+            setTimeout(() => {
+                loginButton.classList.remove('loading');
+                loginButton.disabled = false;
+
+                if (validCredentials[user] && validCredentials[user] === pass) {
+                    isLoggedIn = true;
+                    successMessage.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        hideLoginModal();
+                        document.getElementById('currentUser').textContent = user;
+                        document.getElementById('userInfo').style.display = 'block';
+                        
+                        renderCategories();
+                        updateStats();
+                        showToast(`Welcome, ${user}! Access granted to dataset repository.`);
+                        
+                        // Clear form
+                        document.getElementById('username').value = '';
+                        document.getElementById('password').value = '';
+                        successMessage.style.display = 'none';
+                    }, 1000);
+                } else {
+                    errorMessage.textContent = 'Invalid credentials. Please check your username and password.';
+                    errorMessage.style.display = 'block';
+                    document.getElementById('password').value = '';
+                    // Focus back to username for better UX
+                    document.getElementById('username').focus();
+                }
+            }, 800);
+        };
+
+        // Logout function
+        const logout = () => {
+            if (confirm('Are you sure you want to logout?')) {
+                isLoggedIn = false;
+                document.getElementById('userInfo').style.display = 'none';
+                document.getElementById('categories-container').innerHTML = '';
+                document.getElementById('totalFiles').textContent = '0';
+                document.getElementById('totalSize').textContent = '0';
+                showLoginModal();
+                showToast('Logged out successfully.');
+            }
+        };
+
+        // Render categories and files
+        const renderCategories = () => {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = '';
+
+            Object.keys(dataCategories).forEach((key, index) => {
+                const category = dataCategories[key];
+
+                const categoryDiv = document.createElement('div');
+                categoryDiv.classList.add('category');
+
+                const headerButton = document.createElement('button');
+                headerButton.classList.add('category-header');
+                headerButton.setAttribute('aria-expanded', 'false');
+                headerButton.setAttribute('aria-controls', `files-${key}`);
+                headerButton.innerHTML = `
+                    <span>${category.name} (${category.files.length} files)</span>
+                    <span class="category-arrow">▶</span>
+                `;
+                headerButton.addEventListener('click', () => toggleCategory(key));
+                categoryDiv.appendChild(headerButton);
+
+                const filesDiv = document.createElement('div');
+                filesDiv.classList.add('files');
+                filesDiv.id = `files-${key}`;
+                filesDiv.setAttribute('role', 'region');
+                filesDiv.setAttribute('aria-label', `${category.name} files`);
+
+                category.files.forEach((file, fileIndex) => {
+                    const fileDiv = document.createElement('div');
+                    fileDiv.classList.add('file');
+                    fileDiv.innerHTML = `
+                        <div class="file-header">
+                            <div class="file-name">${file.icon} ${file.name}</div>
+                            <div class="file-size">${file.size}</div>
+                        </div>
+                        <div class="file-description">${file.content}</div>
+                        <div class="file-actions">
+                            <button class="download-btn" onclick="downloadFile('${file.name}', '${file.type}')" aria-describedby="download-desc-${key}-${fileIndex}">
+                                Download
+                            </button>
+                            <button class="preview-btn" onclick="previewFile('${file.name}')" aria-describedby="preview-desc-${key}-${fileIndex}">
+                                Preview
+                            </button>
+                        </div>
+                        <div id="download-desc-${key}-${fileIndex}" class="sr-only">Download ${file.name} (${file.size})</div>
+                        <div id="preview-desc-${key}-${fileIndex}" class="sr-only">Preview ${file.name}</div>
+                    `;
+                    filesDiv.appendChild(fileDiv);
+                });
+
+                categoryDiv.appendChild(filesDiv);
+                container.appendChild(categoryDiv);
+            });
+        };
+
+        // Toggle category visibility
+        const toggleCategory = (categoryKey) => {
+            const filesDiv = document.getElementById(`files-${categoryKey}`);
+            const headerButton = document.querySelector(`[aria-controls="files-${categoryKey}"]`);
+            const arrow = headerButton.querySelector('.category-arrow');
+            
+            if (filesDiv.classList.contains('expanded')) {
+                filesDiv.classList.remove('expanded');
+                arrow.classList.remove('expanded');
+                headerButton.setAttribute('aria-expanded', 'false');
+            } else {
+                filesDiv.classList.add('expanded');
+                arrow.classList.add('expanded');
+                headerButton.setAttribute('aria-expanded', 'true');
+            }
+        };
+
+        // Update statistics
+        const updateStats = () => {
+            let totalFiles = 0;
+            let totalSizeKB = 0;
+            
+            Object.values(dataCategories).forEach(category => {
+                totalFiles += category.files.length;
+                category.files.forEach(file => {
+                    const sizeMatch = file.size.match(/(\d+(?:\.\d+)?)\s*(KB|MB)/i);
+                    if (sizeMatch) {
+                        const size = parseFloat(sizeMatch[1]);
+                        const unit = sizeMatch[2].toUpperCase();
+                        totalSizeKB += unit === 'MB' ? size * 1024 : size;
+                    }
+                });
+            });
+            
+            document.getElementById('totalFiles').textContent = totalFiles;
+            document.getElementById('totalSize').textContent = totalSizeKB > 1024 
+                ? `${(totalSizeKB / 1024).toFixed(1)} MB` 
+                : `${Math.round(totalSizeKB)} KB`;
+        };
+
+        // Simulated download with error handling
+        const downloadFile = (fileName, fileType) => {
+            if (!fileName) {
+                showToast('Error: Invalid file name', 'error');
+                return;
+            }
+
+            showToast(`Downloading ${fileName}...`);
+            
+            // Simulate download with potential failure
+            setTimeout(() => {
+                const success = Math.random() > 0.1; // 90% success rate
+                if (success) {
+                    showToast(`${fileName} downloaded successfully!`);
+                } else {
+                    showToast(`Failed to download ${fileName}. Please try again.`, 'error');
+                }
+            }, 1500);
+        };
+
+        // Preview file (placeholder) with error handling
+        const previewFile = (fileName) => {
+            if (!fileName) {
+                showToast('Error: Invalid file name', 'error');
+                return;
+            }
+            showToast(`Opening preview for ${fileName}...`);
+            
+            // Simulate preview loading
+            setTimeout(() => {
+                showToast('Preview feature coming soon!');
+            }, 1000);
+        };
+
+        // Show toast notification with type support
+        const showToast = (message, type = 'success') => {
+            if (currentToast) {
+                clearTimeout(currentToast);
+            }
+
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            currentToast = setTimeout(() => {
+                toast.classList.remove('show');
+                currentToast = null;
+            }, 4000);
+        };
+
+        // Keyboard navigation support
+        const setupKeyboardNavigation = () => {
+            document.addEventListener('keydown', (e) => {
+                // Escape key to close modal
+                if (e.key === 'Escape' && document.getElementById('loginModal').style.display === 'flex') {
+                    if (isLoggedIn) {
+                        hideLoginModal();
+                    }
+                }
+            });
+        };
+
+        // Initialize application
+        const initializeApp = () => {
+            setupKeyboardNavigation();
+            
+            // Show login modal if not logged in
+            if (!isLoggedIn) {
+                showLoginModal();
+            }
+        };
+
+        // Simple login function that works
+        const simpleLogin = () => {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Clear previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            console.log('Login attempt:', user, pass); // Debug log
+            
+            if (validCredentials[user] && validCredentials[user] === pass) {
+                console.log('Login successful!'); // Debug log
+                isLoggedIn = true;
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('currentUser').textContent = user;
+                document.getElementById('userInfo').style.display = 'block';
+                
+                renderCategories();
+                updateStats();
+                showToast(`Welcome, ${user}! Access granted.`);
+                
+                // Clear form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            } else {
+                console.log('Login failed for:', user); // Debug log
+                errorMessage.style.display = 'block';
+                document.getElementById('password').value = '';
+            }
+        };
+
+        // Enhanced download function with validation
+        const downloadFileEnhanced = (fileName, fileType) => {
+            if (!isLoggedIn) {
+                showToast('Please log in first', 'error');
+                return;
+            }
+
+            showToast(`Downloading ${fileName}...`);
+            
+            setTimeout(() => {
+                showToast(`${fileName} downloaded successfully!`);
+            }, 1500);
+        };
+
+        // Enhanced preview function
+        const previewFileEnhanced = (fileName) => {
+            if (!isLoggedIn) {
+                showToast('Please log in first', 'error');
+                return;
+            }
+
+            showToast(`Opening preview for ${fileName}...`);
+            
+            setTimeout(() => {
+                showToast('Preview feature coming soon!');
+            }, 800);
+        };
+
+        // Add event listeners when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing...'); // Debug log
+            
+            // Set up login form
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginButton');
+            
+            // Remove the form onsubmit and use button click instead
+            loginBtn.onclick = simpleLogin;
+            
+            // Add enter key support
+            usernameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    simpleLogin();
+                }
+            });
+            
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    simpleLogin();
+                }
+            });
+
+            // Update global functions
+            window.downloadFile = downloadFileEnhanced;
+            window.previewFile = previewFileEnhanced;
+            window.login = simpleLogin;
+
+            // Show login modal
+            if (!isLoggedIn) {
+                showLoginModal();
+            }
+        });
+
+        // Graceful error boundary
+        window.addEventListener('error', (e) => {
+            console.error('Application error:', e.error);
+            showToast('An unexpected error occurred. Please refresh the page.', 'error');
+        });
+
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('Unhandled promise rejection:', e.reason);
+            showToast('A network error occurred. Please try again.', 'error');
+        });
+    </script>
+</body>
+</html>
