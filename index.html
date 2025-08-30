@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Repository - Download Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            padding: 20px 0;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .repo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .logos-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            border: 2px solid #30363d;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+            background: white;
+        }
+
+        .repo-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #58a6ff;
+        }
+
+        .repo-description {
+            color: #8b949e;
+            margin-left: 47px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(13, 17, 23, 0.4);
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .stat-number {
+            color: #e6edf3;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .file-browser {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .browser-header {
+            background: #21262d;
+            padding: 15px 20px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .browser-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #21262d;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .file-item:hover {
+            background: #21262d;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+
+        .file-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            color: #58a6ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .file-name:hover {
+            text-decoration: underline;
+        }
+
+        .file-size {
+            color: #8b949e;
+            font-size: 12px;
+        }
+
+        .download-btn {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #e6edf3;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #21262d;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #238636, #2ea043);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(1, 4, 9, 0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: #161b22;
+            margin: 5% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #8b949e;
+        }
+
+        .close:hover {
+            color: #e6edf3;
+        }
+
+        .preview-content {
+            margin-top: 20px;
+        }
+
+        .code-preview {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.45;
+            max-height: 400px;
+        }
+
+        .download-section {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .download-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .year-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            background: #21262d;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            min-width: 180px;
+            justify-content: space-between;
+        }
+
+        .dropdown-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: #21262d;
+            min-width: 180px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            z-index: 100;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            color: #e6edf3;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #30363d;
+            color: #58a6ff;
+        }
+
+        .download-btn-primary {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-btn-primary:hover {
+            background: #2ea043;
+        }
+
+        .download-btn-primary:disabled {
+            background: #30363d;
+            color: #8b949e;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .download-all-btn {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .download-all-btn:hover {
+            background: #2ea043;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #238636;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .repo-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .repo-description {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="repo-header">
+                <img src="https://via.placeholder.com/80x80/f39c12/ffffff?text=LEFT" alt="Left Logo" class="logo logo-primary">
+                <div>
+                    <h1 class="repo-title">Clean Data Repository</h1>
+                    <p class="repo-description">Comprehensive epidemiological trend analysis tools and sample datasets</p>
+                </div>
+                <img src="https://via.placeholder.com/80x80/2563eb/ffffff?text=RIGHT" alt="Right Logo" class="logo logo-secondary">
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number">15</span> files
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">23.4 MB</span> total size
+                </div>
+                <div class="stat-item">
+                    Updated <span class="stat-number">2 hours ago</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="download-section">
+            <div class="card-title">Data Categories</div>
+            <div class="download-controls">
+                <div class="year-dropdown">
+                    <button class="dropdown-btn" onclick="toggleCategoryDropdown()">
+                        <span id="selectedCategory">Select Category</span>
+                        <span id="categoryDropdownArrow">▼</span>
+                    </button>
+                    <div class="dropdown-content" id="categoryDropdown">
+                        <div class="dropdown-item" onclick="selectCategory('shapefiles')">Shapefiles</div>
+                        <div class="dropdown-item" onclick="selectCategory('epi_routine')">Epi Routine Data</div>
+                        <div class="dropdown-item" onclick="selectCategory('intervention')">Intervention Data</div>
+                        <div class="dropdown-item" onclick="selectCategory('campaign_survey')">Campaign/Survey Data</div>
+                        <div class="dropdown-item" onclick="selectCategory('reports')">Reports</div>
+                    </div>
+                </div>
+                <button class="download-btn-primary" onclick="downloadSelectedCategory()" id="downloadCategoryBtn" disabled>
+                    Download Selected
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="file-browser">
+                <div class="browser-header">
+                    <div class="browser-title">
+                        Repository Files
+                    </div>
+                </div>
+                
+                <ul class="file-list" id="fileList">
+                    <!-- Files will be populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="sidebar">
+                <div class="info-card">
+                    <h3 class="card-title">About This Repository</h3>
+                    <p style="color: #8b949e; font-size: 14px; line-height: 1.6;">
+                        This repository contains epidemiological trend analysis tools and sample datasets for healthcare data visualization and statistical analysis.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Dataset Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Format</span>
+                        <span class="info-value">Excel, CSV, PDF, SHP</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Size</span>
+                        <span class="info-value">23.4 MB</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Files</span>
+                        <span class="info-value">15 files</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">License</span>
+                        <span class="info-value">MIT</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Quick Start</h3>
+                    <ol style="color: #8b949e; font-size: 14px; line-height: 1.6; padding-left: 20px;">
+                        <li>Select a data category above</li>
+                        <li>Browse available datasets</li>
+                        <li>Download individual files or entire categories</li>
+                        <li>Use the analysis scripts provided</li>
+                        <li>Generate reports and visualizations</li>
+                    </ol>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Download Progress</h3>
+                    <div id="downloadProgress" style="display: none;">
+                        <div style="font-size: 14px; margin-bottom: 10px;">
+                            <span id="progressText">Preparing download...</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    <div id="downloadIdle">
+                        <p style="color: #8b949e; font-size: 14px;">
+                            No active downloads
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for file preview -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">File Preview</h2>
+            <div class="preview-content" id="previewContent">
+                <!-- Preview content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Login system
+        let isLoggedIn = false;
+        const validCredentials = {
+            'admin': 'password123',
+            'researcher': 'data2024',
+            'analyst': 'epi_secure'
+        };
+
+        // Sample dataset files organized by category
+        const files = {
+            'shapefiles': [
+                {
+                    name: 'districts_boundaries.shp',
+                    size: '2.1 MB',
+                    type: 'shapefile',
+                    icon: '🗺️',
+                    path: '/data/shapefiles/districts_boundaries.shp',
+                    content: 'Administrative boundaries for all 16 districts in Sierra Leone with demographic attributes and health facility locations.'
+                },
+                {
+                    name: 'chiefdoms_boundaries.shp',
+                    size: '4.7 MB',
+                    type: 'shapefile',
+                    icon: '🗺️',
+                    path: '/data/shapefiles/chiefdoms_boundaries.shp',
+                    content: 'Detailed chiefdom-level administrative boundaries with population density and accessibility indices.'
+                },
+                {
+                    name: 'health_facilities_points.shp',
+                    size: '892 KB',
+                    type: 'shapefile',
+                    icon: '🏥',
+                    path: '/data/shapefiles/health_facilities_points.shp',
+                    content: 'Geographic locations of hospitals, clinics, and community health posts with facility type and capacity attributes.'
+                }
+            ],
+            'epi_routine': [
+                {
+                    name: 'weekly_surveillance_2024.xlsx',
+                    size: '1.8 MB',
+                    type: 'excel',
+                    icon: '📈',
+                    path: '/data/routine/weekly_surveillance_2024.xlsx',
+                    content: 'Weekly epidemiological surveillance data including disease incidence, mortality rates, and outbreak alerts by district.'
+                },
+                {
+                    name: 'monthly_health_indicators.csv',
+                    size: '567 KB',
+                    type: 'csv',
+                    icon: '📋',
+                    path: '/data/routine/monthly_health_indicators.csv',
+                    content: 'Monthly aggregated health indicators including immunization coverage, maternal mortality, and under-5 mortality rates.'
+                },
+                {
+                    name: 'disease_outbreak_tracking.xlsx',
+                    size: '723 KB',
+                    type: 'excel',
+                    icon: '🦠',
+                    path: '/data/routine/disease_outbreak_tracking.xlsx',
+                    content: 'Real-time outbreak tracking data for cholera, measles, and other epidemic-prone diseases with response timelines.'
+                }
+            ],
+            'intervention': [
+                {
+                    name: 'vaccination_campaign_2023.xlsx',
+                    size: '1.4 MB',
+                    type: 'excel',
+                    icon: '💉',
+                    path: '/data/interventions/vaccination_campaign_2023.xlsx',
+                    content: 'Comprehensive vaccination campaign data including target populations, coverage rates, and adverse events by district and age group.'
+                },
+                {
+                    name: 'malaria_prevention_program.csv',
+                    size: '945 KB',
+                    type: 'csv',
+                    icon: '🦟',
+                    path: '/data/interventions/malaria_prevention_program.csv',
+                    content: 'Malaria prevention intervention data including bed net distribution, indoor residual spraying, and case management outcomes.'
+                },
+                {
+                    name: 'nutrition_supplementation.xlsx',
+                    size: '678 KB',
+                    type: 'excel',
+                    icon: '🍎',
+                    path: '/data/interventions/nutrition_supplementation.xlsx',
+                    content: 'Nutrition supplementation program data tracking vitamin A distribution, iron supplementation, and malnutrition treatment outcomes.'
+                }
+            ],
+            'campaign_survey': [
+                {
+                    name: 'household_health_survey_2024.xlsx',
+                    size: '3.2 MB',
+                    type: 'excel',
+                    icon: '🏠',
+                    path: '/data/surveys/household_health_survey_2024.xlsx',
+                    content: 'Comprehensive household health survey data including demographics, health-seeking behavior, and access to healthcare services.'
+                },
+                {
+                    name: 'community_knowledge_attitudes.csv',
+                    size: '834 KB',
+                    type: 'csv',
+                    icon: '🧠',
+                    path: '/data/surveys/community_knowledge_attitudes.csv',
+                    content: 'Community knowledge, attitudes, and practices survey data related to preventive health behaviors and disease awareness.'
+                },
+                {
+                    name: 'facility_readiness_assessment.xlsx',
+                    size: '1.1 MB',
+                    type: 'excel',
+                    icon: '🏥',
+                    path: '/data/surveys/facility_readiness_assessment.xlsx',
+                    content: 'Health facility readiness assessment data including infrastructure, equipment, staffing, and service availability indicators.'
+                }
+            ],
+            'reports': [
+                {
+                    name: 'annual_health_report_2023.pdf',
+                    size: '2.7 MB',
+                    type: 'pdf',
+                    icon: '📄',
+                    path: '/reports/annual_health_report_2023.pdf',
+                    content: 'Comprehensive annual health sector report covering disease trends, health system performance, and policy recommendations.'
+                },
+                {
+                    name: 'epidemic_response_evaluation.docx',
+                    size: '456 KB',
+                    type: 'document',
+                    icon: '📝',
+                    path: '/reports/epidemic_response_evaluation.docx',
+                    content: 'Detailed evaluation of epidemic response activities including lessons learned and recommendations for future preparedness.'
+                },
+                {
+                    name: 'district_health_profiles.xlsx',
+                    size: '1.9 MB',
+                    type: 'excel',
+                    icon: '📊',
+                    path: '/reports/district_health_profiles.xlsx',
+                    content: 'Comprehensive health profiles for all districts including demographic data, health indicators, and facility inventories.'
+                }
+            ]
+        };
+
+        // Data categories with populated files
+        const dataCategories = {
+            'shapefiles': { name: 'Shapefiles', files: files.shapefiles },
+            'epi_routine': { name: 'Epi Routine Data', files: files.epi_routine },
+            'intervention': { name: 'Intervention Data', files: files.intervention },
+            'campaign_survey': { name: 'Campaign/Survey Data', files: files.campaign_survey },
+            'reports': { name: 'Reports', files: files.reports }
+        };
+
+        let selectedCategory = null;
+
+        // Check login status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!isLoggedIn) {
+                showLoginModal();
+            } else {
+                populateFileList();
+            }
+        });
+
+        function showLoginModal() {
+            const loginModal = `
+                <div id="loginModal" style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 4, 9, 0.95); z-index: 2000;">
+                    <div style="position: relative; background: #161b22; margin: 10% auto; padding: 40px; width: 90%; max-width: 400px; border-radius: 8px; border: 1px solid #30363d; text-align: center;">
+                        <h2 style="color: #58a6ff; margin-bottom: 30px; font-size: 24px;">🔒 Dataset Repository Access</h2>
+                        <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;">Please enter your credentials to access the epidemiological datasets</p>
+                        
+                        <div id="loginError" style="background: #da3633; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px; display: none;">
+                            Invalid credentials. Please try again.
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; text-align: left;">
+                            <label style="display: block; color: #e6edf3; margin-bottom: 8px; font-size: 14px;">Username</label>
+                            <input type="text" id="usernameInput" style="width: 100%; padding: 12px; border: 1px solid #30363d; border-radius: 6px; background: #0d1117; color: #e6edf3; font-size: 14px;" placeholder="Enter username">
+                        </div>
+                        
+                        <div style="margin-bottom: 30px; text-align: left;">
+                            <label style="display: block; color: #e6edf3; margin-bottom: 8px; font-size: 14px;">Password</label>
+                            <input type="password" id="passwordInput" style="width: 100%; padding: 12px; border: 1px solid #30363d; border-radius: 6px; background: #0d1117; color: #e6edf3; font-size: 14px;" placeholder="Enter password">
+                        </div>
+                        
+                        <button onclick="attemptLogin()" style="width: 100%; background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; transition: background 0.2s;">
+                            Login
+                        </button>
+                        
+                        <div style="margin-top: 20px; padding: 15px; background: rgba(88, 166, 255, 0.1); border-radius: 6px; border-left: 3px solid #58a6ff;">
+                            <p style="color: #58a6ff; font-size: 12px; margin: 0; font-weight: 600;">Demo Credentials:</p>
+                            <p style="color: #8b949e; font-size: 12px; margin: 5px 0 0 0;">Username: admin | Password: password123</p>
+                            <p style="color: #8b949e; font-size: 12px; margin: 0;">Username: researcher | Password: data2024</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', loginModal);
+            
+            // Add enter key support
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    attemptLogin();
+                }
+            });
+            document.getElementById('usernameInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    attemptLogin();
+                }
+            });
+        }
+
+        function attemptLogin() {
+            const username = document.getElementById('usernameInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (validCredentials[username] && validCredentials[username] === password) {
+                isLoggedIn = true;
+                document.getElementById('loginModal').remove();
+                showToast(`Welcome, ${username}! Access granted to dataset repository.`);
+                populateFileList();
+                
+                // Update header to show logged in user
+                const header = document.querySelector('.repo-header');
+                const userInfo = document.createElement('div');
+                userInfo.style.cssText = 'position: absolute; top: 10px; right: 20px; color: #58a6ff; font-size: 12px;';
+                userInfo.innerHTML = `Logged in as: <strong>${username}</strong> | <a href="#" onclick="logout()" style="color: #f85149; text-decoration: none;">Logout</a>`;
+                header.style.position = 'relative';
+                header.appendChild(userInfo);
+                
+            } else {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Invalid username or password. Please check your credentials.';
+                
+                // Clear password field
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+                
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                isLoggedIn = false;
+                location.reload();
+            }
+        }
+
+        // Protect all download functions
+        function checkAuth() {
+            if (!isLoggedIn) {
+                showToast('Please login to access this feature');
+                return false;
+            }
+            return true;
+        }
+
+        function toggleCategoryDropdown() {
+            const dropdown = document.getElementById('categoryDropdown');
+            const arrow = document.getElementById('categoryDropdownArrow');
+            
+            dropdown.classList.toggle('show');
