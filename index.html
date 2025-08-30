@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Repository - Download Center</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="repo-header">
+                <img src="https://via.placeholder.com/80x80/f39c12/ffffff?text=LEFT" alt="Left Logo" class="logo logo-primary">
+                <div>
+                    <h1 class="repo-title">Clean Data Repository</h1>
+                    <p class="repo-description">Comprehensive epidemiological trend analysis tools and sample datasets</p>
+                </div>
+                <img src="https://via.placeholder.com/80x80/2563eb/ffffff?text=RIGHT" alt="Right Logo" class="logo logo-secondary">
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number">6</span> files
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">14.2 MB</span> total size
+                </div>
+                <div class="stat-item">
+                    Updated <span class="stat-number">2 hours ago</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="download-section">
+            <div class="card-title">Data Categories</div>
+            <div class="download-controls">
+                <div class="year-dropdown">
+                    <button class="dropdown-btn" id="categoryDropdownBtn">
+                        <span id="selectedCategory">Select Category</span>
+                        <span id="categoryDropdownArrow">▼</span>
+                    </button>
+                    <div class="dropdown-content" id="categoryDropdown">
+                        <div class="dropdown-item" data-category="shapefiles">Shapefiles</div>
+                        <div class="dropdown-item" data-category="epi_routine">Epi Routine Data</div>
+                        <div class="dropdown-item" data-category="intervention">Intervention Data</div>
+                        <div class="dropdown-item" data-category="campaign_survey">Campaign/Survey Data</div>
+                        <div class="dropdown-item" data-category="reports">Reports</div>
+                    </div>
+                </div>
+                <button class="download-btn-primary" id="downloadSelectedBtn" disabled>
+                    Download Selected
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="file-browser">
+                <div class="browser-header">
+                    <div class="browser-title">
+                        Repository Files
+                    </div>
+                    <button class="download-all-btn" id="downloadAllBtn">
+                        Download All
+                    </button>
+                </div>
+                
+                <ul class="file-list" id="fileList">
+                    <!-- Files will be populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="sidebar">
+                <div class="info-card">
+                    <h3 class="card-title">About This Repository</h3>
+                    <p style="color: #8b949e; font-size: 14px; line-height: 1.6;">
+                        This repository contains epidemiological trend analysis tools and sample datasets for healthcare data visualization and statistical analysis.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Dataset Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Format</span>
+                        <span class="info-value">Excel, CSV, Python</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Size</span>
+                        <span class="info-value">2.4 MB</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Files</span>
+                        <span class="info-value">12 files</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">License</span>
+                        <span class="info-value">MIT</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Quick Start</h3>
+                    <ol style="color: #8b949e; font-size: 14px; line-height: 1.6; padding-left: 20px;">
+                        <li>Download the analysis script</li>
+                        <li>Install required Python packages</li>
+                        <li>Load your dataset (2021-2025)</li>
+                        <li>Run the analysis</li>
+                        <li>Generate reports and visualizations</li>
+                    </ol>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Download Progress</h3>
+                    <div id="downloadProgress" style="display: none;">
+                        <div style="font-size: 14px; margin-bottom: 10px;">
+                            <span id="progressText">Preparing download...</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    <div id="downloadIdle">
+                        <p style="color: #8b949e; font-size: 14px;">
+                            No active downloads
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-content">
+            <h2 class="login-title">🔒 Dataset Repository Access</h2>
+            <p class="login-description">Please enter your credentials to access the epidemiological datasets</p>
+            
+            <div id="loginError" class="login-error">
+                Invalid credentials. Please try again.
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="usernameInput">Username</label>
+                <input type="text" id="usernameInput" class="form-input" placeholder="Enter username">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="passwordInput">Password</label>
+                <input type="password" id="passwordInput" class="form-input" placeholder="Enter password">
+            </div>
+            
+            <button class="login-btn" id="loginBtn">Login</button>
+            
+            <div class="demo-credentials">
+                <p class="demo-title">Demo Credentials:</p>
+                <p class="demo-text">Username: admin | Password: password123</p>
+                <p class="demo-text">Username: researcher | Password: data2024</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for file preview -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2 id="modalTitle">File Preview</h2>
+            <div class="preview-content" id="previewContent">
+                <!-- Preview content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
