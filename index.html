@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Repository - Download Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            padding: 20px 0;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .repo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            border: 2px solid #30363d;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+            background: white;
+        }
+
+        .repo-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #58a6ff;
+            text-align: center;
+        }
+
+        .user-info {
+            position: absolute;
+            top: -10px;
+            right: 0;
+            color: #58a6ff;
+            font-size: 12px;
+        }
+
+        .logout-link {
+            color: #f85149;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logout-link:hover {
+            text-decoration: underline;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(13, 17, 23, 0.4);
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .stat-number {
+            color: #e6edf3;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .file-browser {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .browser-header {
+            background: #21262d;
+            padding: 15px 20px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .browser-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-all-btn {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .download-all-btn:hover {
+            background: #2ea043;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #21262d;
+            transition: background 0.2s;
+        }
+
+        .file-item:hover {
+            background: #21262d;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+
+        .file-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            color: #58a6ff;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .file-name:hover {
+            text-decoration: underline;
+        }
+
+        .file-size {
+            color: #8b949e;
+            font-size: 12px;
+        }
+
+        .download-btn {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #e6edf3;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #21262d;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #238636, #2ea043);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(1, 4, 9, 0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: #161b22;
+            margin: 5% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #8b949e;
+        }
+
+        .close:hover {
+            color: #e6edf3;
+        }
+
+        .preview-content {
+            margin-top: 20px;
+        }
+
+        .code-preview {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.45;
+            max-height: 400px;
+        }
+
+        .download-section {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .download-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .year-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .dropdown-btn {
+            background: #21262d;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            width: 100%;
+            justify-content: space-between;
+            min-height: 44px;
+        }
+
+        .dropdown-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: #21262d;
+            width: 100%;
+            min-width: 250px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            z-index: 100;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            color: #e6edf3;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #30363d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #30363d;
+            color: #58a6ff;
+        }
+
+        .download-btn-primary {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-btn-primary:hover {
+            background: #2ea043;
+        }
+
+        .download-btn-primary:disabled {
+            background: #30363d;
+            color: #8b949e;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #238636;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(1, 4, 9, 0.95);
+            z-index: 2000;
+        }
+
+        .login-content {
+            position: relative;
+            background: #161b22;
+            margin: 10% auto;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            text-align: center;
+        }
+
+        .login-title {
+            color: #58a6ff;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .login-description {
+            color: #8b949e;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .login-error {
+            background: #da3633;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            color: #e6edf3;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background: #0d1117;
+            color: #e6edf3;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #2ea043;
+        }
+
+        .demo-credentials {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #58a6ff;
+        }
+
+        .demo-title {
+            color: #58a6ff;
+            font-size: 12px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .demo-text {
+            color: #8b949e;
+            font-size: 12px;
+            margin: 5px 0 0 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .repo-header {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .user-info {
+                position: static;
+                margin-top: 10px;
+            }
+
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .download-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                width: 100%;
+            }
+
+            .year-dropdown {
+                width: 100%;
+                max-width: none;
+            }
+
+            .dropdown-btn {
+                width: 100%;
+                min-height: 48px;
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+
+            .dropdown-content {
+                width: 100%;
+                min-width: auto;
+                left: 0;
+                right: 0;
+            }
+
+            .dropdown-item {
+                padding: 14px 16px;
+                font-size: 16px;
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+            }
+
+            .download-btn-primary {
+                width: 100%;
+                justify-content: center;
+                min-height: 48px;
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+
+            .file-item {
+                padding: 16px 20px;
+            }
+
+            .file-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .download-btn {
+                align-self: flex-end;
+                min-height: 40px;
+                min-width: 40px;
+            }
+
+            .modal-content {
+                margin: 2% auto;
+                width: 95%;
+                padding: 20px;
+                max-height: 90vh;
+            }
+
+            .login-content {
+                margin: 5% auto;
+                width: 95%;
+                padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .header {
+                padding: 15px 0;
+            }
+
+            .repo-title {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .browser-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+
+            .download-all-btn {
+                width: 100%;
+            }
+
+            .info-card {
+                padding: 15px;
+            }
+
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="repo-header">
+                <img src="https://via.placeholder.com/150x150/ffffff/000000?text=NMCP" alt="NMCP Logo" class="logo logo-primary">
+                <div>
+                    <h1 class="repo-title">NMCP Data Backup System</h1>
+                </div>
+                <img src="https://via.placeholder.com/150x150/ffffff/000000?text=ICF-SL" alt="ICF-SL Logo" class="logo logo-secondary">
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number">18</span> files
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">52.7 MB</span> total size
+                </div>
+                <div class="stat-item">
+                    Updated <span class="stat-number">2 hours ago</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="download-section">
+            <div class="card-title">Data Categories</div>
+            <div class="download-controls">
+                <div class="year-dropdown">
+                    <button class="dropdown-btn" id="categoryDropdownBtn">
+                        <span id="selectedCategory">Select Category</span>
+                        <span id="categoryDropdownArrow">▼</span>
+                    </button>
+                    <div class="dropdown-content" id="categoryDropdown">
+                        <div class="dropdown-item" data-category="shapefiles">Shapefiles</div>
+                        <div class="dropdown-item" data-category="epi_routine">Epi Routine Data</div>
+                        <div class="dropdown-item" data-category="intervention">Intervention Data</div>
+                        <div class="dropdown-item" data-category="campaign_survey">Campaign/Survey Data</div>
+                        <div class="dropdown-item" data-category="reports">Reports</div>
+                    </div>
+                </div>
+                <button class="download-btn-primary" id="downloadSelectedBtn" disabled>
+                    Download Selected
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="file-browser">
+                <div class="browser-header">
+                    <div class="browser-title">
+                        Repository Files
+                    </div>
+                    <button class="download-all-btn" id="downloadAllBtn">
+                        Download All
+                    </button>
+                </div>
+                
+                <ul class="file-list" id="fileList">
+                    <!-- Files will be populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="sidebar">
+                <div class="info-card">
+                    <h3 class="card-title">About This Repository</h3>
+                    <p style="color: #8b949e; font-size: 14px; line-height: 1.6;">
+                        This repository contains epidemiological trend analysis tools and sample datasets for healthcare data visualization and statistical analysis.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Dataset Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Format</span>
+                        <span class="info-value">Excel, CSV, Python</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Size</span>
+                        <span class="info-value">52.7 MB</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Files</span>
+                        <span class="info-value">18 files</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">License</span>
+                        <span class="info-value">MIT</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Quick Start</h3>
+                    <ol style="color: #8b949e; font-size: 14px; line-height: 1.6; padding-left: 20px;">
+                        <li>Download the analysis script</li>
+                        <li>Install required Python packages</li>
+                        <li>Load your dataset (2021-2025)</li>
+                        <li>Run the analysis</li>
+                        <li>Generate reports and visualizations</li>
+                    </ol>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="card-title">Download Progress</h3>
+                    <div id="downloadProgress" style="display: none;">
+                        <div style="font-size: 14px; margin-bottom: 10px;">
+                            <span id="progressText">Preparing download...</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    <div id="downloadIdle">
+                        <p style="color: #8b949e; font-size: 14px;">
+                            No active downloads
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-content">
+            <h2 class="login-title">🔒 Dataset Repository Access</h2>
+            <p class="login-description">Please enter your credentials to access the epidemiological datasets</p>
+            
+            <div id="loginError" class="login-error">
+                Invalid credentials. Please try again.
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="usernameInput">Username</label>
+                <input type="text" id="usernameInput" class="form-input" placeholder="Enter username">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="passwordInput">Password</label>
+                <input type="password" id="passwordInput" class="form-input" placeholder="Enter password">
+            </div>
+            
+            <button class="login-btn" id="loginBtn">Login</button>
+            
+            <div class="demo-credentials">
+                <p class="demo-title">Demo Credentials:</p>
+                <p class="demo-text">Username: admin | Password: password123</p>
+                <p class="demo-text">Username: researcher | Password: data2024</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for file preview -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2 id="modalTitle">File Preview</h2>
+            <div class="preview-content" id="previewContent">
+                <!-- Preview content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Sample files data
+        const files = [
+            {
+                name: 'epidemiological_analysis.py',
+                size: '15.2 KB',
+                type: 'python',
+                icon: '🐍',
+                path: '/analysis/epidemiological_analysis.py',
+                content: `import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime, timedelta
+
+# Epidemiological Data Analysis Tool
+# National Malaria Control Programme (NMCP) - Sierra Leone
+
+class EpidemiologicalAnalyzer:
+    def __init__(self, data_file):
+        self.data = pd.read_csv(data_file)
+        self.processed_data = None
+        
+    def load_surveillance_data(self):
+        """Load and validate surveillance data"""
+        required_columns = ['date', 'district', 'cases', 'deaths', 'population']
+        missing_cols = [col for col in required_columns if col not in self.data.columns]
+        
+        if missing_cols:
+            raise ValueError(f"Missing required columns: {missing_cols}")
+            
+        # Convert date column
+        self.data['date'] = pd.to_datetime(self.data['date'])
+        
+        # Calculate incidence rate per 1000 population
+        self.data['incidence_rate'] = (self.data['cases'] / self.data['population']) * 1000
+        
+        return self.data
+    
+    def generate_weekly_report(self):
+        """Generate weekly epidemiological report"""
+        weekly_data = self.data.groupby([
+            pd.Grouper(key='date', freq='W'),
+            'district'
+        ]).agg({
+            'cases': 'sum',
+            'deaths': 'sum',
+            'population': 'first'
+        }).reset_index()
+        
+        # Calculate case fatality rate
+        weekly_data['cfr'] = (weekly_data['deaths'] / weekly_data['cases']) * 100
+        
+        return weekly_data
+    
+    def detect_outbreaks(self, threshold=2):
+        """Detect potential disease outbreaks using statistical thresholds"""
+        outbreak_alerts = []
+        
+        for district in self.data['district'].unique():
+            district_data = self.data[self.data['district'] == district].copy()
+            district_data = district_data.sort_values('date')
+            
+            # Calculate moving average and standard deviation
+            district_data['moving_avg'] = district_data['cases'].rolling(window=4).mean()
+            district_data['moving_std'] = district_data['cases'].rolling(window=4).std()
+            
+            # Identify weeks where cases exceed threshold
+            district_data['alert'] = district_data['cases'] > (
+                district_data['moving_avg'] + threshold * district_data['moving_std']
+            )
+            
+            alerts = district_data[district_data['alert']]
+            if not alerts.empty:
+                outbreak_alerts.append({
+                    'district': district,
+                    'alert_dates': alerts['date'].tolist(),
+                    'cases': alerts['cases'].tolist()
+                })
+        
+        return outbreak_alerts
+
+# Example usage
+if __name__ == "__main__":
+    analyzer = EpidemiologicalAnalyzer('surveillance_data.csv')
+    data = analyzer.load_surveillance_data()
+    weekly_report = analyzer.generate_weekly_report()
+    outbreaks = analyzer.detect_outbreaks()
+    
+    print(f"Loaded {len(data)} records")
+    print(f"Generated weekly report with {len(weekly_report)} entries")
+    print(f"Detected {len(outbreaks)} potential outbreak alerts")`
+            }
+        ];
+
+        // Application state
+        let isLoggedIn = false;
+        let currentUser = '';
+        let selectedCategory = null;
+
+        // Valid credentials for demo
+        const validCredentials = {
+            'admin': 'password123',
+            'researcher': 'data2024',
+            'analyst': 'epi_secure'
+        };
+
+        // Data categories with sample data
+        const dataCategories = {
+            'shapefiles': { 
+                name: 'Shapefiles', 
+                files: [
+                    {
+                        name: 'district_boundaries.shp',
+                        size: '2.3 MB',
+                        type: 'shapefile',
+                        icon: '🗺️',
+                        path: '/data/shapefiles/district_boundaries.shp',
+                        content: 'ESRI Shapefile containing administrative boundary polygons for all districts. Includes attributes: DISTRICT_ID, DISTRICT_NAME, AREA_KM2, POPULATION_2021, and geographic coordinates in WGS84 projection.'
+                    },
+                    {
+                        name: 'health_facilities.shp',
+                        size: '856 KB',
+                        type: 'shapefile',
+                        icon: '🗺️',
+                        path: '/data/shapefiles/health_facilities.shp',
+                        content: 'Point shapefile of health facility locations including hospitals, clinics, and health posts. Contains facility type, capacity, coordinates, and operational status data.'
+                    },
+                    {
+                        name: 'chiefdom_boundaries.shp',
+                        size: '4.1 MB',
+                        type: 'shapefile',
+                        icon: '🗺️',
+                        path: '/data/shapefiles/chiefdom_boundaries.shp',
+                        content: 'Detailed chiefdom boundary polygons with demographic and administrative data. Includes population density, area measurements, and hierarchical administrative codes.'
+                    }
+                ]
+            },
+            'epi_routine': { 
+                name: 'Epi Routine Data', 
+                files: [
+                    {
+                        name: 'weekly_surveillance_2024.csv',
+                        size: '3.2 MB',
+                        type: 'csv',
+                        icon: '📊',
+                        path: '/data/surveillance/weekly_surveillance_2024.csv',
+                        content: 'Weekly epidemiological surveillance data for 2024. Contains disease incidence, case counts, age groups, geographic distribution, and reporting completeness by health facility.'
+                    },
+                    {
+                        name: 'disease_outbreak_alerts.xlsx',
+                        size: '1.8 MB',
+                        type: 'excel',
+                        icon: '📊',
+                        path: '/data/surveillance/disease_outbreak_alerts.xlsx',
+                        content: 'Outbreak alert database with case investigations, laboratory confirmations, response measures, and epidemiological curves. Includes cholera, measles, and meningitis outbreaks.'
+                    },
+                    {
+                        name: 'mortality_surveillance.csv',
+                        size: '2.1 MB',
+                        type: 'csv',
+                        icon: '📊',
+                        path: '/data/surveillance/mortality_surveillance.csv',
+                        content: 'Mortality surveillance data with cause-specific death rates, age-stratified mortality, maternal and child death reviews, and facility-based death reporting.'
+                    }
+                ]
+            },
+            'intervention': { 
+                name: 'Intervention Data', 
+                files: [
+                    {
+                        name: 'vaccination_campaigns_2023.xlsx',
+                        size: '2.7 MB',
+                        type: 'excel',
+                        icon: '💉',
+                        path: '/data/interventions/vaccination_campaigns_2023.xlsx',
+                        content: 'Mass vaccination campaign data including target populations, coverage rates, vaccine types, adverse events, and geographic distribution of immunization activities.'
+                    },
+                    {
+                        name: 'bed_net_distribution.csv',
+                        size: '1.4 MB',
+                        type: 'csv',
+                        icon: '🛏️',
+                        path: '/data/interventions/bed_net_distribution.csv',
+                        content: 'Insecticide-treated bed net distribution records with household registration, distribution dates, net types, and post-distribution monitoring surveys.'
+                    },
+                    {
+                        name: 'water_sanitation_projects.xlsx',
+                        size: '3.5 MB',
+                        type: 'excel',
+                        icon: '🚰',
+                        path: '/data/interventions/water_sanitation_projects.xlsx',
+                        content: 'WASH intervention tracking with water point construction, latrine coverage, hygiene education sessions, and community engagement metrics by district and chiefdom.'
+                    }
+                ]
+            },
+            'campaign_survey': { 
+                name: 'Campaign/Survey Data', 
+                files: [
+                    {
+                        name: 'household_health_survey_2024.xlsx',
+                        size: '8.9 MB',
+                        type: 'excel',
+                        icon: '🏠',
+                        path: '/data/surveys/household_health_survey_2024.xlsx',
+                        content: 'Comprehensive household survey data with demographics, health seeking behavior, access to services, socioeconomic indicators, and health outcomes by geographic area.'
+                    },
+                    {
+                        name: 'knowledge_attitudes_practices.csv',
+                        size: '2.3 MB',
+                        type: 'csv',
+                        icon: '🧠',
+                        path: '/data/surveys/knowledge_attitudes_practices.csv',
+                        content: 'KAP survey results on disease prevention, treatment-seeking behavior, traditional medicine use, and health education effectiveness across different demographic groups.'
+                    },
+                    {
+                        name: 'facility_readiness_assessment.xlsx',
+                        size: '4.6 MB',
+                        type: 'excel',
+                        icon: '🏥',
+                        path: '/data/surveys/facility_readiness_assessment.xlsx',
+                        content: 'Health facility assessment data covering infrastructure, equipment availability, staff capacity, drug stock levels, and quality of care indicators.'
+                    }
+                ]
+            },
+            'reports': { 
+                name: 'Reports', 
+                files: [
+                    {
+                        name: 'annual_epidemiological_report_2024.pdf',
+                        size: '12.4 MB',
+                        type: 'pdf',
+                        icon: '📄',
+                        path: '/data/reports/annual_epidemiological_report_2024.pdf',
+                        content: 'Comprehensive annual report analyzing disease trends, outbreak responses, surveillance system performance, and recommendations for public health action.'
+                    },
+                    {
+                        name: 'malaria_program_evaluation.docx',
+                        size: '5.7 MB',
+                        type: 'document',
+                        icon: '📋',
+                        path: '/data/reports/malaria_program_evaluation.docx',
+                        content: 'Detailed evaluation of national malaria control program including intervention effectiveness, cost analysis, and strategic recommendations for program improvement.'
+                    },
+                    {
+                        name: 'covid19_response_summary.pdf',
+                        size: '8.2 MB',
+                        type: 'pdf',
+                        icon: '📄',
+                        path: '/data/reports/covid19_response_summary.pdf',
+                        content: 'COVID-19 pandemic response analysis covering surveillance, case management, vaccination rollout, public health measures, and lessons learned.'
+                    }
+                ]
+            }
+        };
+
+        // DOM Elements
+        let elements = {};
+
+        // Initialize the application
+        function init() {
+            // Cache DOM elements
+            elements = {
+                loginModal: document.getElementById('loginModal'),
+                loginBtn: document.getElementById('loginBtn'),
+                usernameInput: document.getElementById('usernameInput'),
+                passwordInput: document.getElementById('passwordInput'),
+                loginError: document.getElementById('loginError'),
+                categoryDropdownBtn: document.getElementById('categoryDropdownBtn'),
+                categoryDropdown: document.getElementById('categoryDropdown'),
+                categoryDropdownArrow: document.getElementById('categoryDropdownArrow'),
+                selectedCategory: document.getElementById('selectedCategory'),
+                downloadSelectedBtn: document.getElementById('downloadSelectedBtn'),
+                downloadAllBtn: document.getElementById('downloadAllBtn'),
+                fileList: document.getElementById('fileList'),
+                fileModal: document.getElementById('fileModal'),
+                modalTitle: document.getElementById('modalTitle'),
+                previewContent: document.getElementById('previewContent'),
+                closeModal: document.getElementById('closeModal'),
+                toast: document.getElementById('toast'),
+                downloadProgress: document.getElementById('downloadProgress'),
+                downloadIdle: document.getElementById('downloadIdle'),
+                progressFill: document.getElementById('progressFill'),
+                progressText: document.getElementById('progressText')
+            };
+
+            // Set up event listeners
+            setupEventListeners();
+
+            // Check login status
+            if (!isLoggedIn) {
+                showLoginModal();
+            } else {
+                populateFileList();
+            }
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Login system
+            elements.loginBtn.addEventListener('click', attemptLogin);
+            elements.usernameInput.addEventListener('keypress', handleLoginKeypress);
+            elements.passwordInput.addEventListener('keypress', handleLoginKeypress);
+
+            // Category dropdown
+            elements.categoryDropdownBtn.addEventListener('click', toggleCategoryDropdown);
+            
+            // Category selection
+            const categoryItems = elements.categoryDropdown.querySelectorAll('.dropdown-item');
+            categoryItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const category = item.getAttribute('data-category');
+                    selectCategory(category);
+                });
+            });
+
+            // Download buttons
+            elements.downloadSelectedBtn.addEventListener('click', downloadSelectedCategory);
+            elements.downloadAllBtn.addEventListener('click', downloadAll);
+
+            // Modal close
+            elements.closeModal.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === elements.fileModal) {
+                    closeModal();
+                }
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (event) => {
+                const isDropdownClick = event.target.closest('.dropdown-btn') || event.target.closest('.dropdown-content');
+                if (!isDropdownClick && elements.categoryDropdown) {
+                    elements.categoryDropdown.classList.remove('show');
+                    elements.categoryDropdownArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+
+        // Login functions
+        function showLoginModal() {
+            elements.loginModal.style.display = 'block';
+        }
+
+        function handleLoginKeypress(e) {
+            if (e.key === 'Enter') {
+                attemptLogin();
+            }
+        }
+
+        function attemptLogin() {
+            const username = elements.usernameInput.value.trim();
+            const password = elements.passwordInput.value;
+            
+            if (validCredentials[username] && validCredentials[username] === password) {
+                isLoggedIn = true;
+                currentUser = username;
+                elements.loginModal.style.display = 'none';
+                showToast(`Welcome, ${username}! Access granted to dataset repository.`);
+                populateFileList();
+                showUserInfo();
+            } else {
+                elements.loginError.style.display = 'block';
+                elements.loginError.textContent = 'Invalid username or password. Please check your credentials.';
+                
+                // Clear password field
+                elements.passwordInput.value = '';
+                elements.passwordInput.focus();
+                
+                setTimeout(() => {
+                    elements.loginError.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function showUserInfo() {
+            const header = document.querySelector('.repo-header');
+            const existingUserInfo = header.querySelector('.user-info');
+            
+            // Remove existing user info if present
+            if (existingUserInfo) {
+                existingUserInfo.remove();
+            }
+            
+            const userInfo = document.createElement('div');
+            userInfo.className = 'user-info';
+            userInfo.innerHTML = `Logged in as: <strong>${currentUser}</strong> | <span class="logout-link" onclick="logout()">Logout</span>`;
+            header.appendChild(userInfo);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                isLoggedIn = false;
+                currentUser = '';
+                location.reload();
+            }
+        }
+
+        // Authentication check
+        function checkAuth() {
+            if (!isLoggedIn) {
+                showToast('Please login to access this feature');
+                return false;
+            }
+            return true;
+        }
+
+        // Category dropdown functions
+        function toggleCategoryDropdown() {
+            elements.categoryDropdown.classList.toggle('show');
+            const isOpen = elements.categoryDropdown.classList.contains('show');
+            elements.categoryDropdownArrow.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function selectCategory(category) {
+            selectedCategory = category;
+            const categoryData = dataCategories[category];
+            
+            if (categoryData) {
+                elements.selectedCategory.textContent = categoryData.name;
+                elements.downloadSelectedBtn.disabled = false;
+                
+                // Close dropdown
+                elements.categoryDropdown.classList.remove('show');
+                elements.categoryDropdownArrow.style.transform = 'rotate(0deg)';
+                
+                // Show available datasets popup
+                showCategoryDatasets(category);
+            }
+        }
+
+        function showCategoryDatasets(category) {
+            if (!category) return;
+            
+            const categoryData = dataCategories[category];
+            if (!categoryData || categoryData.files.length === 0) {
+                showToast('No files found in this category');
+                return;
+            }
+            
+            elements.modalTitle.textContent = `Available Files: ${categoryData.name}`;
+            
+            let content = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #58a6ff; margin-bottom: 15px;">Files in ${categoryData.name}</h3>
+                    <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 20px;">
+            `;
+            
+            categoryData.files.forEach((file) => {
+                content += `
+                    <div style="background: #161b22; border: 1px solid #21262d; border-radius: 6px; padding: 15px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <div>
+                                <h4 style="color: #e6edf3; margin: 0; font-size: 16px;">${file.name}</h4>
+                                <p style="color: #8b949e; margin: 5px 0 0 0; font-size: 14px;">${file.path}</p>
+                                <p style="color: #8b949e; margin: 5px 0 0 0; font-size: 12px;">Type: ${file.type}</p>
+                            </div>
+                            <span style="color: #58a6ff; font-weight: 600; font-size: 14px;">${file.size}</span>
+                        </div>
+                        <p style="color: #8b949e; font-size: 12px; line-height: 1.4; margin: 10px 0;">${file.content}</p>
+                        <button class="download-btn-primary" onclick="downloadFile('${file.name}')" style="margin-top: 10px; font-size: 12px; padding: 6px 12px;">
+                            Download File
+                        </button>
+                    </div>
+                `;
+            });
+            
+            content += `
+                    </div>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="download-btn-primary" onclick="downloadAllCategoryFiles('${category}')" style="padding: 12px 24px;">
+                            Download All ${categoryData.name} Files
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            elements.previewContent.innerHTML = content;
+            elements.fileModal.style.display = 'block';
+        }
+
+        // Download functions
+        function downloadSelectedCategory() {
+            if (!checkAuth()) return;
+            
+            if (!selectedCategory) {
+                showToast('Please select a category first');
+                return;
+            }
+
+            const categoryData = dataCategories[selectedCategory];
+            if (!categoryData || categoryData.files.length === 0) {
+                showToast('No files found in selected category');
+                return;
+            }
+
+            showProgress();
+            showToast(`Preparing ${categoryData.name} download...`);
+            
+            // Simulate download progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 25;
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Create download content
+                    let downloadContent = `=== ${categoryData.name.toUpperCase()} FILES ===\n\n`;
+                    downloadContent += `Category: ${categoryData.name}\n`;
+                    downloadContent += `Total Files: ${categoryData.files.length}\n`;
+                    downloadContent += `Download Date: ${new Date().toISOString().split('T')[0]}\n\n`;
+                    
+                    categoryData.files.forEach(file => {
+                        downloadContent += `FILE: ${file.name}\n`;
+                        downloadContent += `SIZE: ${file.size}\n`;
+                        downloadContent += `TYPE: ${file.type}\n`;
+                        downloadContent += `PATH: ${file.path}\n`;
+                        downloadContent += `DESCRIPTION: ${file.content}\n`;
+                        downloadContent += '\n' + '='.repeat(60) + '\n\n';
+                    });
+                    
+                    // Create and trigger download
+                    const blob = new Blob([downloadContent], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${selectedCategory}_files.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    hideProgress();
+                    showToast(`${categoryData.name} files downloaded successfully!`);
+                }
+                updateProgress(progress, `Downloading ${categoryData.name}...`);
+            }, 120);
+        }
+
+        function downloadAllCategoryFiles(category) {
+            selectedCategory = category;
+            downloadSelectedCategory();
+        }
+
+        function downloadFile(fileName) {
+            if (!checkAuth()) return;
+            
+            showProgress();
+            
+            // Find file in all categories
+            let file = null;
+            for (const category of Object.values(dataCategories)) {
+                file = category.files?.find(f => f.name === fileName);
+                if (file) break;
+            }
+            
+            if (!file) {
+                file = files.find(f => f.name === fileName);
+            }
+            
+            if (!file) {
+                showToast('File not found');
+                hideProgress();
+                return;
+            }
+
+            // Simulate download progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 30;
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Create and download file
+                    const blob = new Blob([file.content], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    hideProgress();
+                    showToast(`Downloaded ${fileName} successfully!`);
+                }
+                updateProgress(progress, `Downloading ${fileName}...`);
+            }, 100);
+        }
+
+        function downloadAll() {
+            if (!checkAuth()) return;
+            
+            showProgress();
+            showToast('Preparing bulk download...');
+            
+            // Simulate bulk download preparation
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Create comprehensive download content
+                    let allContent = '=== NMCP DATASET REPOSITORY - COMPLETE DOWNLOAD ===\n\n';
+                    allContent += `Download Date: ${new Date().toISOString().split('T')[0]}\n`;
+                    allContent += `Total Categories: ${Object.keys(dataCategories).length}\n\n`;
+                    
+                    // Add all category files
+                    Object.entries(dataCategories).forEach(([categoryKey, categoryData]) => {
+                        allContent += `\n${'='.repeat(80)}\n`;
+                        allContent += `CATEGORY: ${categoryData.name.toUpperCase()}\n`;
+                        allContent += `${'='.repeat(80)}\n\n`;
+                        
+                        categoryData.files.forEach(file => {
+                            allContent += `FILE: ${file.name}\n`;
+                            allContent += `SIZE: ${file.size}\n`;
+                            allContent += `TYPE: ${file.type}\n`;
+                            allContent += `PATH: ${file.path}\n`;
+                            allContent += `DESCRIPTION: ${file.content}\n`;
+                            allContent += '\n' + '-'.repeat(60) + '\n\n';
+                        });
+                    });
+                    
+                    // Add individual files
+                    if (files.length > 0) {
+                        allContent += `\n${'='.repeat(80)}\n`;
+                        allContent += `ADDITIONAL FILES\n`;
+                        allContent += `${'='.repeat(80)}\n\n`;
+                        
+                        files.forEach(file => {
+                            allContent += `FILE: ${file.name}\n`;
+                            allContent += `SIZE: ${file.size}\n`;
+                            allContent += `TYPE: ${file.type}\n`;
+                            allContent += `CONTENT:\n${file.content}\n`;
+                            allContent += '\n' + '-'.repeat(60) + '\n\n';
+                        });
+                    }
+                    
+                    const blob = new Blob([allContent], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'NMCP_complete_dataset_repository.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    hideProgress();
+                    showToast('Complete repository downloaded successfully!');
+                }
+                updateProgress(progress, 'Creating comprehensive archive...');
+            }, 150);
+        }
+
+        // File list and preview functions
+        function populateFileList() {
+            elements.fileList.innerHTML = '';
+
+            // Add all files from categories
+            Object.values(dataCategories).forEach(categoryData => {
+                if (categoryData.files) {
+                    categoryData.files.forEach(file => {
+                        addFileToList(file);
+                    });
+                }
+            });
+
+            // Add individual files
+            files.forEach(file => {
+                addFileToList(file);
+            });
+        }
+
+        function addFileToList(file) {
+            const listItem = document.createElement('li');
+            listItem.className = 'file-item';
+            
+            listItem.innerHTML = `
+                <span class="file-icon">${file.icon}</span>
+                <div class="file-info">
+                    <div>
+                        <a href="#" class="file-name">${file.name}</a>
+                        <div style="font-size: 11px; color: #8b949e; margin-top: 2px;">${file.path}</div>
+                    </div>
+                    <span class="file-size">${file.size}</span>
+                </div>
+                <button class="download-btn">⬇️</button>
+            `;
+            
+            // Add event listeners to the newly created elements
+            const fileName = listItem.querySelector('.file-name');
+            const downloadBtn = listItem.querySelector('.download-btn');
+            
+            fileName.addEventListener('click', (e) => {
+                e.preventDefault();
+                previewFile(file.name);
+            });
+            
+            downloadBtn.addEventListener('click', () => {
+                downloadFile(file.name);
+            });
+            
+            elements.fileList.appendChild(listItem);
+        }
+
+        function previewFile(fileName) {
+            // Find file in all categories
+            let file = null;
+            for (const category of Object.values(dataCategories)) {
+                file = category.files?.find(f => f.name === fileName);
+                if (file) break;
+            }
+            
+            if (!file) {
+                file = files.find(f => f.name === fileName);
+            }
+            
+            if (!file) return;
+
+            elements.modalTitle.textContent = `${file.icon} ${fileName}`;
+
+            let content = '';
+            if (file.type === 'python' || file.type === 'text' || file.type === 'json' || file.type === 'csv') {
+                content = `<div class="code-preview">${escapeHtml(file.content)}</div>`;
+            } else if (file.type === 'markdown') {
+                content = `<div class="code-preview">${escapeHtml(file.content)}</div>`;
+            } else {
+                content = `
+                    <div style="padding: 20px; text-align: center; color: #8b949e;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">${file.icon}</div>
+                        <p><strong>${file.type.charAt(0).toUpperCase() + file.type.slice(1)} File Preview</strong></p>
+                        <p style="margin: 15px 0; line-height: 1.6;">${file.content}</p>
+                        <br>
+                        <button class="download-all-btn" onclick="downloadFile('${fileName}')">
+                            ⬇️ Download to view full content
+                        </button>
+                    </div>
+                `;
+            }
+
+            elements.previewContent.innerHTML = content;
+            elements.fileModal.style.display = 'block';
+        }
+
+        function closeModal() {
+            elements.fileModal.style.display = 'none';
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showProgress() {
+            elements.downloadProgress.style.display = 'block';
+            elements.downloadIdle.style.display = 'none';
+        }
+
+        function hideProgress() {
+            elements.downloadProgress.style.display = 'none';
+            elements.downloadIdle.style.display = 'block';
+        }
+
+        function updateProgress(percent, text) {
+            elements.progressFill.style.width = percent + '%';
+            elements.progressText.textContent = text;
+        }
+
+        function showToast(message) {
+            elements.toast.textContent = message;
+            elements.toast.classList.add('show');
+            setTimeout(() => {
+                elements.toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Make functions available globally
+        window.logout = logout;
+        window.downloadFile = downloadFile;
+        window.downloadAllCategoryFiles = downloadAllCategoryFiles;
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
