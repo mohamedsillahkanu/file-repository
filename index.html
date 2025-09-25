@@ -32,29 +32,36 @@
 
         .repo-header {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            gap: 20px;
+            margin-bottom: 30px;
+            gap: 25px;
+        }
+
+        .logos-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            width: 100%;
+            padding: 0 20px;
         }
 
         .logo {
-            height: 60px;
+            height: 100px;
             width: auto;
             object-fit: contain;
+            transition: transform 0.3s ease;
         }
 
-        .logo-primary {
-            order: -1;
-        }
-
-        .logo-secondary {
-            order: 1;
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .repo-info {
-            flex: 1;
             text-align: center;
+            width: 100%;
         }
 
         .repo-title {
@@ -514,32 +521,13 @@
                 gap: 10px;
             }
 
-            .repo-header {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-                text-align: center;
+            .logos-container {
+                gap: 20px;
+                padding: 0 10px;
             }
 
             .logo {
                 height: 80px;
-            }
-
-            .repo-info {
-                order: 0;
-            }
-
-            .logo-primary {
-                order: -1;
-            }
-
-            .logo-secondary {
-                order: 1;
-            }
-
-            .user-info {
-                order: 2;
-                margin-top: 10px;
             }
 
             .file-header {
@@ -550,6 +538,36 @@
 
             .file-actions {
                 flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .download-btn, .preview-btn, .external-link-btn {
+                min-width: 100px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logos-container {
+                gap: 15px;
+                justify-content: space-around;
+            }
+
+            .logo {
+                height: 60px;
+            }
+
+            .repo-title {
+                font-size: 24px;
+            }
+
+            .file-actions {
+                width: 100%;
+            }
+
+            .download-btn, .preview-btn, .external-link-btn {
+                flex: 1;
+                min-width: 0;
             }
         }
 
@@ -587,12 +605,16 @@
     <header class="header">
         <div class="container">
             <div class="repo-header">
-                <img src="NMCP.png" alt="NMCP Logo" class="logo logo-primary">
+                <div class="logos-container">
+                    <img src="https://via.placeholder.com/150x100/58a6ff/ffffff?text=Logo+1" alt="Organization Logo 1" class="logo">
+                    <img src="https://via.placeholder.com/150x100/238636/ffffff?text=Logo+2" alt="Organization Logo 2" class="logo">
+                    <img src="https://via.placeholder.com/150x100/8250df/ffffff?text=Logo+3" alt="Organization Logo 3" class="logo">
+                    <img src="https://via.placeholder.com/150x100/f85149/ffffff?text=Logo+4" alt="Organization Logo 4" class="logo">
+                    <img src="https://via.placeholder.com/150x100/ffa500/ffffff?text=Logo+5" alt="Organization Logo 5" class="logo">
+                </div>
                 <div class="repo-info">
                     <h1 class="repo-title">Clean Malaria Data Repository</h1>
-            
                 </div>
-                <img src="ICF-SL.jpg" alt="ICF Sierra Leone Logo" class="logo logo-secondary">
                 <div class="user-info" id="userInfo">
                     Logged in as: <span id="currentUser"></span>
                     <button class="logout-btn" onclick="logout()">Logout</button>
@@ -696,9 +718,8 @@
             </div>
             
             <div class="demo-info">
-                <p><strong>Demo Credentials:</strong></p>
-                <p>Username: admin | Password: 1234</p>
-                <p>Username: researcher | Password: data2024</p>
+                <p><strong>Login Credentials:</strong></p>
+                <p>Username: icf | Password: mpr2025</p>
             </div>
         </div>
     </div>
@@ -750,12 +771,75 @@
 
         const mprFiles = [
             { 
-                name: 'MPR_Data_2021.xlsx', 
+                name: 'MPR_Data_File_1.xlsx', 
                 size: 'External Link', 
                 type: 'google_sheets', 
                 icon: '📈', 
                 path: 'https://docs.google.com/spreadsheets/d/1qaEcbXoRc6uJ9LCfxWSv4lo1fpyoi0WPNTVYnfpMvu4/edit?gid=920290793#gid=920290793', 
-                content: 'Monthly Performance Report (MPR) data containing key performance indicators and operational metrics for malaria program monitoring.',
+                content: 'Monthly Performance Report (MPR) data file 1 - Primary operational metrics and performance indicators.',
+                isExternal: true
+            },
+            { 
+                name: 'MPR_Data_File_2.xlsx', 
+                size: 'External Link', 
+                type: 'google_sheets', 
+                icon: '📈', 
+                path: '#', 
+                content: 'Monthly Performance Report (MPR) data file 2 - Secondary performance metrics and analysis.',
+                isExternal: true
+            },
+            { 
+                name: 'MPR_Data_File_3.xlsx', 
+                size: 'External Link', 
+                type: 'google_sheets', 
+                icon: '📈', 
+                path: '#', 
+                content: 'Monthly Performance Report (MPR) data file 3 - Regional performance breakdown and trends.',
+                isExternal: true
+            },
+            { 
+                name: 'MPR_Data_File_4.xlsx', 
+                size: 'External Link', 
+                type: 'google_sheets', 
+                icon: '📈', 
+                path: '#', 
+                content: 'Monthly Performance Report (MPR) data file 4 - Case management and treatment outcomes.',
+                isExternal: true
+            },
+            { 
+                name: 'MPR_Data_File_5.xlsx', 
+                size: 'External Link', 
+                type: 'google_sheets', 
+                icon: '📈', 
+                path: '#', 
+                content: 'Monthly Performance Report (MPR) data file 5 - Prevention program effectiveness metrics.',
+                isExternal: true
+            },
+            { 
+                name: 'MPR_Data_File_6.xlsx', 
+                size: 'External Link', 
+                type: 'google_sheets', 
+                icon: '📈', 
+                path: '#', 
+                content: 'Monthly Performance Report (MPR) data file 6 - Community health worker performance data.',
+                isExternal: true
+            },
+            { 
+                name: 'MPR_Data_File_7.xlsx', 
+                size: 'External Link', 
+                type: 'google_sheets', 
+                icon: '📈', 
+                path: '#', 
+                content: 'Monthly Performance Report (MPR) data file 7 - Supply chain and logistics performance.',
+                isExternal: true
+            },
+            { 
+                name: 'MPR_Data_File_8.xlsx', 
+                size: 'External Link', 
+                type: 'google_sheets', 
+                icon: '📈', 
+                path: '#', 
+                content: 'Monthly Performance Report (MPR) data file 8 - Quality assurance and monitoring data.',
                 isExternal: true
             }
         ];
@@ -764,21 +848,20 @@
             { name: 'comparative_analysis_2021.xlsx', size: '856 KB', type: 'excel', icon: '📊', path: '/data/historical/comparative_analysis_2021.xlsx', content: 'Excel file containing 2021 epidemiological data with district and chiefdom comparative analysis.' }
         ];
 
-        // Data categories
+        // Data categories (MPR moved to top)
         const dataCategories = {
+            'mpr': { name: 'MPR (Monthly Performance Report)', files: [...mprFiles] },
             'shapefiles': { name: 'Shapefiles', files: [...shapefiles] },
             'epi_routine': { name: 'Epi Routine Data', files: [...epiRoutineFiles] },
             'intervention': { name: 'Intervention Data', files: [...interventionFiles] },
             'campaign_survey': { name: 'Campaign/Survey Data', files: [...campaignSurveyFiles] },
             'reports': { name: 'Reports', files: [...reportFiles] },
-            'mpr': { name: 'MPR (Monthly Performance Report)', files: [...mprFiles] },
             'other': { name: 'Other Files', files: [...otherFiles] }
         };
 
         // Valid credentials
         const validCredentials = {
-            'admin': '1234',
-            'researcher': 'data2024'
+            'icf': 'mpr2025'
         };
 
         // Utility function to sanitize input
