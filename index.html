@@ -963,37 +963,62 @@
 
                 downloadBtn.innerHTML = 'Converting to Excel...';
                 
-                // Parse CSV manually (more reliable than complex regex)
-                const lines = csvContent.trim().split('\n');
-                const data = lines.map(line => {
+                // Use a more robust CSV parser
+                const parseCSVLine = (line) => {
                     const result = [];
                     let current = '';
                     let inQuotes = false;
                     
                     for (let i = 0; i < line.length; i++) {
                         const char = line[i];
-                        const nextChar = line[i + 1];
                         
                         if (char === '"') {
-                            if (inQuotes && nextChar === '"') {
+                            if (inQuotes && line[i + 1] === '"') {
+                                // Handle escaped quotes
                                 current += '"';
                                 i++; // Skip next quote
                             } else {
+                                // Toggle quote state
                                 inQuotes = !inQuotes;
                             }
                         } else if (char === ',' && !inQuotes) {
-                            result.push(current);
+                            // End of field
+                            result.push(current.trim());
                             current = '';
                         } else {
                             current += char;
                         }
                     }
                     
-                    result.push(current);
+                    // Add the last field
+                    result.push(current.trim());
                     return result;
+                };
+
+                // Split into lines and parse each line
+                const lines = csvContent.split(/\r?\n/);
+                let data = [];
+                let maxColumns = 0;
+                
+                // First pass: parse all lines and find maximum columns
+                for (let line of lines) {
+                    if (line.trim()) { // Skip empty lines
+                        const parsed = parseCSVLine(line);
+                        data.push(parsed);
+                        maxColumns = Math.max(maxColumns, parsed.length);
+                    }
+                }
+                
+                // Second pass: normalize all rows to have same number of columns
+                data = data.map(row => {
+                    while (row.length < maxColumns) {
+                        row.push(''); // Fill missing columns with empty strings
+                    }
+                    return row.slice(0, maxColumns); // Trim extra columns if any
                 });
                 
-                // Filter out empty rows
+                
+                // Filter out completely empty rows (all cells empty)
                 const filteredData = data.filter(row => 
                     row.some(cell => cell && cell.toString().trim() !== '')
                 );
@@ -1001,23 +1026,42 @@
                 if (filteredData.length === 0) {
                     throw new Error('No valid data found in the sheet');
                 }
+
+                console.log(`Parsed data: ${filteredData.length} rows, ${maxColumns} columns`);
                 
                 // Create workbook and worksheet
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(filteredData);
                 
-                // Add some basic formatting
-                const range = XLSX.utils.decode_range(ws['!ref']);
-                for (let row = range.s.r; row <= range.e.r; row++) {
+                // Set column widths for better readability
+                const colWidths = [];
+                for (let col = 0; col < maxColumns; col++) {
+                    let maxWidth = 10; // Minimum width
+                    for (let row = 0; row < Math.min(filteredData.length, 100); row++) { // Check first 100 rows
+                        const cellValue = filteredData[row][col] || '';
+                        maxWidth = Math.max(maxWidth, cellValue.toString().length);
+                    }
+                    colWidths.push({ width: Math.min(maxWidth + 2, 50) }); // Cap at 50 characters
+                }
+                ws['!cols'] = colWidths;
+                
+                // Add basic formatting for headers
+                if (filteredData.length > 0) {
+                    const range = XLSX.utils.decode_range(ws['!ref']);
+                    
+                    // Format header row (first row)
                     for (let col = range.s.c; col <= range.e.c; col++) {
-                        const cellRef = XLSX.utils.encode_cell({r: row, c: col});
-                        if (!ws[cellRef]) continue;
-                        
-                        // Format header row
-                        if (row === 0) {
-                            ws[cellRef].s = {
-                                font: { bold: true },
-                                fill: { fgColor: { rgb: "EEEEEE" } }
+                        const headerCellRef = XLSX.utils.encode_cell({r: 0, c: col});
+                        if (ws[headerCellRef]) {
+                            ws[headerCellRef].s = {
+                                font: { bold: true, color: { rgb: "000000" } },
+                                fill: { fgColor: { rgb: "E6E6E6" } },
+                                border: {
+                                    top: { style: "thin", color: { rgb: "000000" } },
+                                    bottom: { style: "thin", color: { rgb: "000000" } },
+                                    left: { style: "thin", color: { rgb: "000000" } },
+                                    right: { style: "thin", color: { rgb: "000000" } }
+                                }
                             };
                         }
                     }
