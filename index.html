@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPR Data Repository - Malaria Program Review</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            padding: 20px 0;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .repo-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 25px;
+        }
+
+        .logos-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .logo {
+            height: 100px;
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .repo-info {
+            text-align: center;
+            width: 100%;
+        }
+
+        .repo-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #58a6ff;
+        }
+
+        .repo-description {
+            color: #8b949e;
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        .user-info {
+            color: #58a6ff;
+            font-size: 14px;
+            display: none;
+        }
+
+        .logout-btn {
+            background: #f85149;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .logout-btn:hover {
+            background: #da3633;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 15px;
+            background: rgba(13, 17, 23, 0.4);
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .stat-number {
+            color: #e6edf3;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #e6edf3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .file-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(88, 166, 255, 0.15);
+            border-color: #58a6ff;
+        }
+
+        .file-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #238636, #2ea043, #58a6ff);
+        }
+
+        .file-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .file-icon {
+            font-size: 32px;
+            margin-right: 15px;
+        }
+
+        .file-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e6edf3;
+            flex: 1;
+        }
+
+        .file-type {
+            background: #238636;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .file-description {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #238636;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2ea043;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+        }
+
+        .btn-secondary:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .btn-external {
+            background: #8250df;
+            color: white;
+        }
+
+        .btn-external:hover {
+            background: #9565e7;
+            transform: translateY(-1px);
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(1, 4, 9, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #161b22;
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal h2 {
+            color: #58a6ff;
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: #e6edf3;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background: #0d1117;
+            color: #e6edf3;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .login-btn:hover {
+            background: #2ea043;
+        }
+
+        .demo-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #58a6ff;
+        }
+
+        .demo-info p {
+            color: #8b949e;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .error-message {
+            color: #f85149;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #238636;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #f85149;
+        }
+
+        @media (max-width: 768px) {
+            .files-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .logos-container {
+                gap: 20px;
+            }
+
+            .logo {
+                height: 80px;
+            }
+
+            .file-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logos-container {
+                gap: 15px;
+            }
+
+            .logo {
+                height: 60px;
+            }
+
+            .repo-title {
+                font-size: 24px;
+            }
+
+            .file-card {
+                padding: 20px;
+            }
+
+            .file-title {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="repo-header">
+                <div class="logos-container">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/68683d5605845e9bfcb97564ea8e4d929f9fff0b/NMCP.png" alt="NMCP Logo" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/WHO.png" alt="WHO Logo" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/NU%20logo.png" alt="NU Logo" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/SORA.png" alt="SORA Logo" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/ICF-SL.jpg" alt="ICF-SL Logo" class="logo">
+                </div>
+                <div class="repo-info">
+                    <h1 class="repo-title">MPR Data Repository</h1>
+                    <p class="repo-description">Malaria Program Review - Comprehensive Data Collection</p>
+                </div>
+                <div class="user-info" id="userInfo">
+                    Logged in as: <span id="currentUser"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number">8</span> data files
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">External Links</span> Google Sheets
+                </div>
+                <div class="stat-item">
+                    Updated <span class="stat-number">2 hours ago</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 class="section-title">MPR Data Collection Files</h2>
+        <div class="files-grid" id="filesGrid">
+            <!-- Files will be populated by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal" role="dialog" aria-labelledby="loginTitle" aria-modal="true">
+        <div class="modal-content">
+            <h2 id="loginTitle">🔒 MPR Repository Access</h2>
+            <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;">
+                Please enter your credentials to access the MPR data files
+            </p>
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+            </div>
+            
+            <button type="button" class="login-btn" id="loginButton">Login</button>
+            
+            <div class="error-message" id="errorMessage">
+                Invalid credentials. Please try again.
+            </div>
+            
+            <div class="demo-info">
+                <p><strong>Login Credentials:</strong></p>
+                <p>Username: icf | Password: mpr2025</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let isLoggedIn = false;
+        let currentToast = null;
+
+        // MPR Data files with the specified categories
+        const mprFiles = [
+            {
+                name: 'Pharmacy',
+                icon: '💊',
+                description: 'Pharmaceutical inventory, drug distribution records, and medication management data for malaria treatment programs.',
+                url: 'https://docs.google.com/spreadsheets/d/1qaEcbXoRc6uJ9LCfxWSv4lo1fpyoi0WPNTVYnfpMvu4/edit?gid=920290793#gid=920290793',
+                type: 'Google Sheets'
+            },
+            {
+                name: 'Hospital/PHU OPD',
+                icon: '🏥',
+                description: 'Outpatient department data including patient visits, diagnoses, treatments, and referral patterns.',
+                url: '#',
+                type: 'Google Sheets'
+            },
+            {
+                name: 'In-patient Ward',
+                icon: '🛏️',
+                description: 'Inpatient admission records, length of stay, treatment outcomes, and discharge summaries for malaria patients.',
+                url: '#',
+                type: 'Google Sheets'
+            },
+            {
+                name: 'Hospital Laboratory',
+                icon: '🔬',
+                description: 'Laboratory test results, diagnostic procedures, quality control data, and testing capacity metrics.',
+                url: '#',
+                type: 'Google Sheets'
+            },
+            {
+                name: 'DHMT',
+                icon: '👥',
+                description: 'District Health Management Team reports, surveillance data, program monitoring, and administrative records.',
+                url: '#',
+                type: 'Google Sheets'
+            },
+            {
+                name: 'CHW',
+                icon: '🩺',
+                description: 'Community Health Worker activities, case management, community outreach, and training documentation.',
+                url: '#',
+                type: 'Google Sheets'
+            },
+            {
+                name: 'ANC',
+                icon: '🤱',
+                description: 'Antenatal Care data including IPTp coverage, pregnant women counseling, and prevention services.',
+                url: '#',
+                type: 'Google Sheets'
+            },
+            {
+                name: 'Community Focus Group',
+                icon: '👫',
+                description: 'Community feedback, focus group discussions, behavioral insights, and community engagement metrics.',
+                url: '#',
+                type: 'Google Sheets'
+            }
+        ];
+
+        // Valid credentials
+        const validCredentials = {
+            'icf': 'mpr2025'
+        };
+
+        // Show login modal
+        const showLoginModal = () => {
+            document.getElementById('loginModal').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('username').focus();
+            }, 100);
+        };
+
+        // Hide login modal
+        const hideLoginModal = () => {
+            document.getElementById('loginModal').style.display = 'none';
+        };
+
+        // Login function
+        const login = () => {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.style.display = 'none';
+
+            if (!user || !pass) {
+                errorMessage.textContent = 'Please enter both username and password.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (validCredentials[user] && validCredentials[user] === pass) {
+                isLoggedIn = true;
+                hideLoginModal();
+                document.getElementById('currentUser').textContent = user;
+                document.getElementById('userInfo').style.display = 'block';
+                
+                renderFiles();
+                showToast(`Welcome, ${user}! Access granted to MPR repository.`);
+                
+                // Clear form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('password').value = '';
+                document.getElementById('username').focus();
+            }
+        };
+
+        // Logout function
+        const logout = () => {
+            if (confirm('Are you sure you want to logout?')) {
+                isLoggedIn = false;
+                document.getElementById('userInfo').style.display = 'none';
+                document.getElementById('filesGrid').innerHTML = '';
+                showLoginModal();
+                showToast('Logged out successfully.');
+            }
+        };
+
+        // Render files as cards
+        const renderFiles = () => {
+            const grid = document.getElementById('filesGrid');
+            grid.innerHTML = '';
+
+            mprFiles.forEach((file, index) => {
+                const card = document.createElement('div');
+                card.className = 'file-card';
+                
+                // Create action buttons
+                let actionButtons = '';
+                if (file.url !== '#') {
+                    actionButtons = `
+                        <a href="${file.url}" target="_blank" class="btn btn-external" rel="noopener noreferrer">
+                            📊 Open in Sheets
+                        </a>
+                        <button class="btn btn-primary" onclick="downloadFile('${file.name}')">
+                            ⬇️ Download CSV
+                        </button>
+                    `;
+                } else {
+                    actionButtons = `
+                        <button class="btn btn-secondary" onclick="showToast('Coming soon!', 'info')">
+                            📊 View Data
+                        </button>
+                        <button class="btn btn-primary" onclick="showToast('Coming soon!', 'info')">
+                            ⬇️ Download
+                        </button>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="file-header">
+                        <div style="display: flex; align-items: center; flex: 1;">
+                            <div class="file-icon">${file.icon}</div>
+                            <div class="file-title">${file.name}</div>
+                        </div>
+                        <div class="file-type">${file.type}</div>
+                    </div>
+                    <div class="file-description">${file.description}</div>
+                    <div class="file-actions">
+                        ${actionButtons}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        };
+
+        // Download file function
+        const downloadFile = (fileName) => {
+            showToast(`Preparing ${fileName} for download...`);
+            
+            setTimeout(() => {
+                showToast(`${fileName} CSV download initiated!`);
+            }, 1000);
+        };
+
+        // Show toast notification
+        const showToast = (message, type = 'success') => {
+            if (currentToast) {
+                clearTimeout(currentToast);
+            }
+
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+            toast.classList.add('show');
+            
+            currentToast = setTimeout(() => {
+                toast.classList.remove('show');
+                currentToast = null;
+            }, 4000);
+        };
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', () => {
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginButton');
+            
+            // Set up event listeners
+            loginBtn.onclick = login;
+            
+            usernameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    login();
+                }
+            });
+            
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    login();
+                }
+            });
+
+            // Escape key to close modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && document.getElementById('loginModal').style.display === 'flex') {
+                    if (isLoggedIn) {
+                        hideLoginModal();
+                    }
+                }
+            });
+
+            // Show login modal initially
+            if (!isLoggedIn) {
+                showLoginModal();
+            }
+        });
+    </script>
+</body>
+</html>
