@@ -1,4 +1,4 @@
-<!DOCTYPE html>              
+<!DOCTYPE html>        
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -826,7 +826,84 @@
             return match ? match[1] : '0';
         };
 
-        // Download CSV function with proper Google Sheets export URL
+        // Function to create sample CSV data for demonstration
+        const createSampleData = (fileName) => {
+            const sampleData = {
+                'Pharmacy': [
+                    ['Date', 'Drug Name', 'Quantity', 'Batch Number', 'Expiry Date', 'Location'],
+                    ['2024-01-15', 'Artemether-Lumefantrine', '500', 'AL001', '2025-12-31', 'Main Store'],
+                    ['2024-01-16', 'Artesunate Injectable', '200', 'AS002', '2025-06-30', 'Emergency Ward'],
+                    ['2024-01-17', 'RDT Malaria', '1000', 'RDT003', '2025-03-31', 'Laboratory'],
+                    ['2024-01-18', 'Paracetamol', '300', 'PCM004', '2025-09-30', 'Main Store']
+                ],
+                'Hospital/PHU OPD': [
+                    ['Date', 'Patient ID', 'Age', 'Gender', 'Diagnosis', 'Treatment', 'Outcome'],
+                    ['2024-01-15', 'P001', '5', 'M', 'Malaria (Confirmed)', 'AL 20/120mg', 'Recovered'],
+                    ['2024-01-16', 'P002', '28', 'F', 'Malaria (Suspected)', 'AL 20/120mg', 'Recovered'],
+                    ['2024-01-17', 'P003', '12', 'M', 'Malaria (Confirmed)', 'AL 20/120mg', 'Recovered'],
+                    ['2024-01-18', 'P004', '35', 'F', 'Severe Malaria', 'Artesunate IV', 'Referred']
+                ],
+                'In-patient Ward': [
+                    ['Date', 'Patient ID', 'Age', 'Gender', 'Admission Diagnosis', 'Treatment', 'LOS (Days)', 'Outcome'],
+                    ['2024-01-15', 'IP001', '3', 'M', 'Severe Malaria', 'Artesunate IV + Supportive', '5', 'Discharged'],
+                    ['2024-01-16', 'IP002', '45', 'F', 'Cerebral Malaria', 'Artesunate IV + ICU Care', '8', 'Discharged'],
+                    ['2024-01-17', 'IP003', '2', 'F', 'Severe Anemia (Malaria)', 'Blood Transfusion + AL', '7', 'Discharged'],
+                    ['2024-01-18', 'IP004', '67', 'M', 'Severe Malaria + Complications', 'Artesunate IV + Dialysis', '12', 'Death']
+                ],
+                'Hospital Laboratory': [
+                    ['Date', 'Sample ID', 'Test Type', 'Result', 'Parasite Count', 'Species', 'Quality Control'],
+                    ['2024-01-15', 'L001', 'RDT', 'Positive', 'N/A', 'P. falciparum', 'Pass'],
+                    ['2024-01-16', 'L002', 'Microscopy', 'Positive', '++', 'P. falciparum', 'Pass'],
+                    ['2024-01-17', 'L003', 'RDT', 'Negative', 'N/A', 'N/A', 'Pass'],
+                    ['2024-01-18', 'L004', 'Microscopy', 'Positive', '+++', 'P. vivax', 'Pass']
+                ],
+                'DHMT': [
+                    ['Month', 'District', 'Total Cases', 'Confirmed Cases', 'Deaths', 'LLIN Distribution', 'IRS Coverage'],
+                    ['2024-01', 'Western Area', '2450', '1890', '12', '15000', '85%'],
+                    ['2024-01', 'Eastern Province', '3200', '2100', '18', '20000', '78%'],
+                    ['2024-01', 'Northern Province', '2800', '1950', '15', '18000', '82%'],
+                    ['2024-01', 'Southern Province', '1900', '1400', '8', '12000', '90%']
+                ],
+                'CHW': [
+                    ['Date', 'CHW Name', 'Community', 'Cases Tested', 'RDT Positive', 'Treatments Given', 'Referrals'],
+                    ['2024-01-15', 'Fatima Kamara', 'Kissy', '25', '8', '8', '2'],
+                    ['2024-01-16', 'Mohamed Sesay', 'Calaba Town', '30', '12', '12', '1'],
+                    ['2024-01-17', 'Aminata Conteh', 'Wellington', '20', '6', '6', '0'],
+                    ['2024-01-18', 'Ibrahim Kargbo', 'Waterloo', '35', '15', '14', '3']
+                ],
+                'ANC': [
+                    ['Date', 'Patient ID', 'Age', 'Gestation Week', 'IPTp Dose', 'LLIN Given', 'Counseling', 'Next Visit'],
+                    ['2024-01-15', 'ANC001', '24', '16', '1st', 'Yes', 'Completed', '2024-02-15'],
+                    ['2024-01-16', 'ANC002', '32', '28', '2nd', 'Yes', 'Completed', '2024-02-16'],
+                    ['2024-01-17', 'ANC003', '19', '12', '1st', 'Yes', 'Completed', '2024-02-17'],
+                    ['2024-01-18', 'ANC004', '28', '24', '2nd', 'Yes', 'Completed', '2024-02-18']
+                ],
+                'Community Focus Group': [
+                    ['Date', 'Community', 'Participants', 'Key Issues', 'Recommendations', 'Follow-up Required'],
+                    ['2024-01-15', 'Kissy', '15', 'LLIN Usage', 'Increase awareness campaigns', 'Yes'],
+                    ['2024-01-16', 'Calaba Town', '12', 'Treatment Seeking', 'Improve CHW visibility', 'Yes'],
+                    ['2024-01-17', 'Wellington', '18', 'Environmental Management', 'Community clean-up drives', 'No'],
+                    ['2024-01-18', 'Waterloo', '20', 'Health Facility Access', 'Mobile clinics needed', 'Yes']
+                ]
+            };
+            
+            return sampleData[fileName] || [['No data available']];
+        };
+
+        // Function to convert array data to CSV format
+        const arrayToCSV = (data) => {
+            return data.map(row => 
+                row.map(cell => {
+                    // Handle cells that contain commas, quotes, or newlines
+                    if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
+                        return `"${cell.replace(/"/g, '""')}"`;
+                    }
+                    return cell;
+                }).join(',')
+            ).join('\n');
+        };
+
+        // Function to download CSV with actual data
         const downloadFile = async (fileName) => {
             const file = mprFiles.find(f => f.name === fileName);
             if (!file) {
@@ -840,55 +917,97 @@
             
             downloadBtn.disabled = true;
             downloadBtn.classList.add('btn-loading');
-            downloadBtn.innerHTML = 'Downloading...';
+            downloadBtn.innerHTML = 'Preparing CSV...';
 
             try {
-                // Use the pre-configured CSV URL if available
-                let csvUrl = file.csvUrl;
+                // Get the CSV data
+                let csvData = '';
+                let csvContent = '';
+
+                // Try to fetch data from Google Sheets using CORS proxy
+                const sheetId = extractSheetId(file.url);
+                const gid = extractGid(file.url);
                 
-                // If no CSV URL is configured, construct it from the Google Sheets URL
-                if (!csvUrl) {
-                    const sheetId = extractSheetId(file.url);
-                    const gid = extractGid(file.url);
-                    
-                    if (sheetId) {
-                        csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
-                    } else {
-                        throw new Error('Invalid Google Sheets URL');
+                if (sheetId) {
+                    try {
+                        // Use Google Sheets public CSV export (works for publicly shared sheets)
+                        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+                        
+                        // Try to fetch using a CORS proxy for public sheets
+                        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`;
+                        
+                        downloadBtn.innerHTML = 'Fetching data...';
+                        const response = await fetch(proxyUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'text/csv,text/plain,*/*'
+                            }
+                        });
+
+                        if (response.ok) {
+                            csvContent = await response.text();
+                            
+                            // Check if we got actual CSV data (not an error page)
+                            if (csvContent && !csvContent.toLowerCase().includes('<!doctype html') && 
+                                !csvContent.toLowerCase().includes('<html') && csvContent.includes(',')) {
+                                downloadBtn.innerHTML = 'Creating download...';
+                                
+                                // Create and trigger download
+                                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                const downloadUrl = URL.createObjectURL(blob);
+                                
+                                const link = document.createElement('a');
+                                link.href = downloadUrl;
+                                link.download = `${fileName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')}_MPR_Data_${new Date().toISOString().split('T')[0]}.csv`;
+                                
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                
+                                // Clean up
+                                URL.revokeObjectURL(downloadUrl);
+                                
+                                showToast(`${fileName} CSV downloaded successfully!`, 'success');
+                                return;
+                            }
+                        }
+                    } catch (fetchError) {
+                        console.log('Direct fetch failed, using sample data:', fetchError.message);
                     }
                 }
 
-                // Try to fetch the CSV data to validate the URL
-                const response = await fetch(csvUrl);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
+                // Fallback: Use sample data
+                downloadBtn.innerHTML = 'Generating sample data...';
+                const sampleData = createSampleData(fileName);
+                csvContent = arrayToCSV(sampleData);
 
-                // Create download link
-                const link = document.createElement('a');
-                link.href = csvUrl;
-                link.download = `${fileName.replace(/[^a-zA-Z0-9]/g, '_')}_MPR_Data.csv`;
-                link.target = '_blank';
+                // Create and download the CSV file
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const downloadUrl = URL.createObjectURL(blob);
                 
-                // Trigger download
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = `${fileName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')}_MPR_Sample_Data_${new Date().toISOString().split('T')[0]}.csv`;
+                
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
                 
-                showToast(`${fileName} CSV download started successfully!`);
+                // Clean up
+                URL.revokeObjectURL(downloadUrl);
+                
+                showToast(`${fileName} sample CSV downloaded! (Note: Real data requires Google Sheets access)`, 'warning');
                 
             } catch (error) {
                 console.error('Download error:', error);
+                showToast(`Download failed: ${error.message}`, 'error');
                 
-                // Fallback: open the CSV URL in a new tab
-                const sheetId = extractSheetId(file.url);
-                if (sheetId) {
-                    const fallbackUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${extractGid(file.url)}`;
-                    window.open(fallbackUrl, '_blank');
-                    showToast(`Opening ${fileName} CSV in new tab...`, 'warning');
-                } else {
-                    showToast(`Download failed. Please try opening the sheet directly.`, 'error');
+                // Last resort: Open the original Google Sheet
+                if (file.url !== '#') {
+                    setTimeout(() => {
+                        window.open(file.url, '_blank');
+                        showToast('Opening Google Sheet - use File > Download > CSV from there', 'warning');
+                    }, 1000);
                 }
                 
             } finally {
