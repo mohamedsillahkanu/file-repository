@@ -170,10 +170,7 @@
             margin-bottom: 15px;
         }
 
-        .file-icon {
-            font-size: 32px;
-            margin-right: 15px;
-        }
+
 
         .file-title {
             font-size: 18px;
@@ -370,6 +367,114 @@
             background: #f85149;
         }
 
+        /* Intro Video Popup */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .intro-content {
+            text-align: center;
+            padding: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1f2937, #374151);
+            border: 2px solid #58a6ff;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .intro-logo {
+            height: 120px;
+            margin-bottom: 20px;
+            animation: fadeInScale 1s ease-out;
+        }
+
+        .intro-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #58a6ff;
+            margin-bottom: 10px;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        .intro-subtitle {
+            font-size: 18px;
+            color: #e6edf3;
+            margin-bottom: 10px;
+            animation: fadeInUp 1s ease-out 0.8s both;
+        }
+
+        .intro-tagline {
+            font-size: 16px;
+            color: #8b949e;
+            font-style: italic;
+            animation: fadeInUp 1s ease-out 1.1s both;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(88, 166, 255, 0.2);
+            border-radius: 2px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #238636, #58a6ff);
+            border-radius: 2px;
+            animation: progressFill 5s linear;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes progressFill {
+            from {
+                width: 0%;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        .main-content-hidden {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .main-content-visible {
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
             .files-grid {
                 grid-template-columns: 1fr;
@@ -457,12 +562,25 @@
         </div>
     </header>
 
-    <main class="container">
+    <main class="container main-content-hidden" id="mainContent">
         <h2 class="section-title">MPR Data Collection Files</h2>
         <div class="files-grid" id="filesGrid">
             <!-- Files will be populated by JavaScript -->
         </div>
     </main>
+
+    <!-- Intro Video Popup -->
+    <div id="introOverlay" class="intro-overlay">
+        <div class="intro-content">
+            <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/ICF-SL.jpg" alt="ICF-SL Logo" class="intro-logo">
+            <div class="intro-title">ICF-SL</div>
+            <div class="intro-subtitle">System Developer</div>
+            <div class="intro-tagline">"A local firm with international standards"</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal" role="dialog" aria-labelledby="loginTitle" aria-modal="true">
@@ -506,56 +624,48 @@
         const mprFiles = [
             {
                 name: 'Pharmacy',
-                icon: '💊',
                 description: 'Pharmaceutical inventory, drug distribution records, and medication management data for malaria treatment programs.',
                 url: 'https://docs.google.com/spreadsheets/d/1qaEcbXoRc6uJ9LCfxWSv4lo1fpyoi0WPNTVYnfpMvu4/edit?gid=920290793#gid=920290793',
                 type: 'Google Sheets'
             },
             {
                 name: 'Hospital/PHU OPD',
-                icon: '🏥',
                 description: 'Outpatient department data including patient visits, diagnoses, treatments, and referral patterns.',
                 url: '#',
                 type: 'Google Sheets'
             },
             {
                 name: 'In-patient Ward',
-                icon: '🛏️',
                 description: 'Inpatient admission records, length of stay, treatment outcomes, and discharge summaries for malaria patients.',
                 url: '#',
                 type: 'Google Sheets'
             },
             {
                 name: 'Hospital Laboratory',
-                icon: '🔬',
                 description: 'Laboratory test results, diagnostic procedures, quality control data, and testing capacity metrics.',
                 url: '#',
                 type: 'Google Sheets'
             },
             {
                 name: 'DHMT',
-                icon: '👥',
                 description: 'District Health Management Team reports, surveillance data, program monitoring, and administrative records.',
                 url: '#',
                 type: 'Google Sheets'
             },
             {
                 name: 'CHW',
-                icon: '🩺',
                 description: 'Community Health Worker activities, case management, community outreach, and training documentation.',
                 url: '#',
                 type: 'Google Sheets'
             },
             {
                 name: 'ANC',
-                icon: '🤱',
                 description: 'Antenatal Care data including IPTp coverage, pregnant women counseling, and prevention services.',
                 url: '#',
                 type: 'Google Sheets'
             },
             {
                 name: 'Community Focus Group',
-                icon: '👫',
                 description: 'Community feedback, focus group discussions, behavioral insights, and community engagement metrics.',
                 url: '#',
                 type: 'Google Sheets'
@@ -597,11 +707,12 @@
             if (validCredentials[user] && validCredentials[user] === pass) {
                 isLoggedIn = true;
                 hideLoginModal();
+                
+                // Show intro video popup
+                showIntroVideo();
+                
                 document.getElementById('currentUser').textContent = user;
                 document.getElementById('userInfo').style.display = 'block';
-                
-                renderFiles();
-                showToast(`Welcome, ${user}! Access granted to MPR repository.`);
                 
                 // Clear form
                 document.getElementById('username').value = '';
@@ -611,6 +722,24 @@
                 document.getElementById('password').value = '';
                 document.getElementById('username').focus();
             }
+        };
+
+        // Show intro video
+        const showIntroVideo = () => {
+            const overlay = document.getElementById('introOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            overlay.style.display = 'flex';
+            
+            // Hide intro and show main content after 5 seconds
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                mainContent.classList.remove('main-content-hidden');
+                mainContent.classList.add('main-content-visible');
+                
+                renderFiles();
+                showToast('Welcome to MPR Data Repository - Powered by ICF-SL');
+            }, 5000);
         };
 
         // Logout function
@@ -658,7 +787,6 @@
                 card.innerHTML = `
                     <div class="file-header">
                         <div style="display: flex; align-items: center; flex: 1;">
-                            <div class="file-icon">${file.icon}</div>
                             <div class="file-title">${file.name}</div>
                         </div>
                         <div class="file-type">${file.type}</div>
