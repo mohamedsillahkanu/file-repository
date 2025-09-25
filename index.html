@@ -40,19 +40,22 @@
 
         .logos-container {
             display: flex;
-            justify-content: center;
+            justify-content: space-evenly;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 30px;
+            flex-wrap: nowrap;
+            gap: 15px;
             width: 100%;
-            padding: 0 20px;
+            padding: 0 10px;
+            overflow-x: auto;
         }
 
         .logo {
-            height: 100px;
+            height: 80px;
             width: auto;
             object-fit: contain;
             transition: transform 0.3s ease;
+            flex-shrink: 0;
+            min-width: 80px;
         }
 
         .logo:hover {
@@ -487,11 +490,13 @@
             }
 
             .logos-container {
-                gap: 20px;
+                gap: 10px;
+                padding: 0 5px;
             }
 
             .logo {
-                height: 80px;
+                height: 60px;
+                min-width: 60px;
             }
 
             .file-actions {
@@ -505,11 +510,13 @@
 
         @media (max-width: 480px) {
             .logos-container {
-                gap: 15px;
+                gap: 8px;
+                padding: 0 5px;
             }
 
             .logo {
-                height: 60px;
+                height: 50px;
+                min-width: 50px;
             }
 
             .repo-title {
@@ -533,10 +540,10 @@
                 <div class="logos-container">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/68683d5605845e9bfcb97564ea8e4d929f9fff0b/NMCP.png" alt="NMCP Logo" class="logo">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/WHO.png" alt="WHO Logo" class="logo">
-                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/f31e66af445b71390c9d3bc946361355294c531f/CHAI2.png" alt="Sierra Leone Flag" class="logo">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/NU%20logo.png" alt="NU Logo" class="logo">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/SORA.png" alt="SORA Logo" class="logo">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/ICF-SL.jpg" alt="ICF-SL Logo" class="logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Flag_of_Sierra_Leone.svg/1200px-Flag_of_Sierra_Leone.svg.png" alt="Sierra Leone Flag" class="logo">
                 </div>
                 <div class="repo-info">
                     <h1 class="repo-title">MPR Data Repository</h1>
@@ -556,7 +563,7 @@
                     <span class="stat-number">External Links</span> Google Sheets
                 </div>
                 <div class="stat-item">
-                    Updated <span class="stat-number">2 hours ago</span>
+                    Updated <span class="stat-number" id="lastUpdated">just now</span>
                 </div>
             </div>
         </div>
@@ -605,11 +612,6 @@
             <div class="error-message" id="errorMessage">
                 Invalid credentials. Please try again.
             </div>
-            
-            <div class="demo-info">
-                <p><strong>Login Credentials:</strong></p>
-                <p>Username: icf | Password: mpr2025</p>
-            </div>
         </div>
     </div>
 
@@ -619,6 +621,35 @@
     <script>
         let isLoggedIn = false;
         let currentToast = null;
+        let pageLoadTime = Date.now();
+
+        // Function to update the "last updated" time
+        const updateLastUpdatedTime = () => {
+            const now = Date.now();
+            const elapsed = now - pageLoadTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            let timeText = '';
+            if (days > 0) {
+                timeText = `${days} day${days > 1 ? 's' : ''} ago`;
+            } else if (hours > 0) {
+                timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            } else if (minutes > 0) {
+                timeText = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            } else {
+                timeText = 'just now';
+            }
+
+            const element = document.getElementById('lastUpdated');
+            if (element) {
+                element.textContent = timeText;
+            }
+        };
+
+        // Update time every minute
+        setInterval(updateLastUpdatedTime, 60000);
 
         // MPR Data files with the specified categories
         const mprFiles = [
