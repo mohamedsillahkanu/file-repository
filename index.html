@@ -173,8 +173,6 @@
             margin-bottom: 15px;
         }
 
-
-
         .file-title {
             font-size: 18px;
             font-weight: 600;
@@ -216,6 +214,14 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         .btn-primary {
@@ -223,7 +229,7 @@
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: #2ea043;
             transform: translateY(-1px);
         }
@@ -234,7 +240,7 @@
             border: 1px solid #30363d;
         }
 
-        .btn-secondary:hover {
+        .btn-secondary:hover:not(:disabled) {
             background: #30363d;
             border-color: #58a6ff;
         }
@@ -244,12 +250,36 @@
             color: white;
         }
 
-        .btn-external:hover {
+        .btn-external:hover:not(:disabled) {
             background: #9565e7;
             transform: translateY(-1px);
         }
 
-        /* Login Modal */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -326,20 +356,6 @@
             background: #2ea043;
         }
 
-        .demo-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(88, 166, 255, 0.1);
-            border-radius: 6px;
-            border-left: 3px solid #58a6ff;
-        }
-
-        .demo-info p {
-            color: #8b949e;
-            font-size: 12px;
-            margin: 0;
-        }
-
         .error-message {
             color: #f85149;
             font-size: 12px;
@@ -370,7 +386,11 @@
             background: #f85149;
         }
 
-        /* Intro Video Popup */
+        .toast.warning {
+            background: #f0ad4e;
+        }
+
+        /* Intro overlay styles */
         .intro-overlay {
             position: fixed;
             top: 0;
@@ -540,11 +560,10 @@
                 <div class="logos-container">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/68683d5605845e9bfcb97564ea8e4d929f9fff0b/NMCP.png" alt="NMCP Logo" class="logo">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/WHO.png" alt="WHO Logo" class="logo">
-                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/eba25cc13329f9d1fd973b9767e07aa8b8758b80/CHAI2.png" alt="Sierra Leone Flag" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/eba25cc13329f9d1fd973b9767e07aa8b8758b80/CHAI2.png" alt="CHAI Logo" class="logo">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/NU%20logo.png" alt="NU Logo" class="logo">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/SORA.png" alt="SORA Logo" class="logo">
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/ICF-SL.jpg" alt="ICF-SL Logo" class="logo">
-                   
                 </div>
                 <div class="repo-info">
                     <h1 class="repo-title">MPR Data Repository</h1>
@@ -658,49 +677,57 @@
                 name: 'Pharmacy',
                 description: 'Pharmaceutical inventory, drug distribution records, and medication management data for malaria treatment programs.',
                 url: 'https://docs.google.com/spreadsheets/d/1qaEcbXoRc6uJ9LCfxWSv4lo1fpyoi0WPNTVYnfpMvu4/edit?gid=920290793#gid=920290793',
-                type: 'Google Sheets'
+                type: 'Google Sheets',
+                csvUrl: 'https://docs.google.com/spreadsheets/d/1qaEcbXoRc6uJ9LCfxWSv4lo1fpyoi0WPNTVYnfpMvu4/export?format=csv&gid=920290793'
             },
             {
                 name: 'Hospital/PHU OPD',
                 description: 'Outpatient department data including patient visits, diagnoses, treatments, and referral patterns.',
                 url: 'https://docs.google.com/spreadsheets/d/1fHBEAD0BPpvuqb1qXKoarAQCGPp5rYWEkPgPlBI123U/edit?usp=sharing',
-                type: 'Google Sheets'
+                type: 'Google Sheets',
+                csvUrl: 'https://docs.google.com/spreadsheets/d/1fHBEAD0BPpvuqb1qXKoarAQCGPp5rYWEkPgPlBI123U/export?format=csv'
             },
             {
                 name: 'In-patient Ward',
                 description: 'Inpatient admission records, length of stay, treatment outcomes, and discharge summaries for malaria patients.',
                 url: 'https://docs.google.com/spreadsheets/d/1S3zm19rUYkC91WUxpC5PTDFffAy8i97N9QRmTMF6dWk/edit?usp=sharing',
-                type: 'Google Sheets'
+                type: 'Google Sheets',
+                csvUrl: 'https://docs.google.com/spreadsheets/d/1S3zm19rUYkC91WUxpC5PTDFffAy8i97N9QRmTMF6dWk/export?format=csv'
             },
             {
                 name: 'Hospital Laboratory',
                 description: 'Laboratory test results, diagnostic procedures, quality control data, and testing capacity metrics.',
                 url: 'https://docs.google.com/spreadsheets/d/117zeGpso8ItwfmSKBgEuCLmVK5ec8e-ZRFzLXhSYbbI/edit?usp=sharing',
-                type: 'Google Sheets'
+                type: 'Google Sheets',
+                csvUrl: 'https://docs.google.com/spreadsheets/d/117zeGpso8ItwfmSKBgEuCLmVK5ec8e-ZRFzLXhSYbbI/export?format=csv'
             },
             {
                 name: 'DHMT',
                 description: 'District Health Management Team reports, surveillance data, program monitoring, and administrative records.',
                 url: 'https://docs.google.com/spreadsheets/d/1ozMR5tqbdjD2B6Aru77ZrAFbNDS4cyupSCqJeU93yTQ/edit?usp=sharing',
-                type: 'Google Sheets'
+                type: 'Google Sheets',
+                csvUrl: 'https://docs.google.com/spreadsheets/d/1ozMR5tqbdjD2B6Aru77ZrAFbNDS4cyupSCqJeU93yTQ/export?format=csv'
             },
             {
                 name: 'CHW',
                 description: 'Community Health Worker activities, case management, community outreach, and training documentation.',
                 url: 'https://docs.google.com/spreadsheets/d/1SsRXX7UJ9UFobeMaI8Zx072DSvf_nqnWdiG9yYCkwr4/edit?usp=sharing',
-                type: 'Google Sheets'
+                type: 'Google Sheets',
+                csvUrl: 'https://docs.google.com/spreadsheets/d/1SsRXX7UJ9UFobeMaI8Zx072DSvf_nqnWdiG9yYCkwr4/export?format=csv'
             },
             {
                 name: 'ANC',
                 description: 'Antenatal Care data including IPTp coverage, pregnant women counseling, and prevention services.',
                 url: 'https://docs.google.com/spreadsheets/d/1673MvkN7bXMP2uZDFVuMmi_Fv2K1UIcGoHQUvkXRGj4/edit?usp=sharing',
-                type: 'Google Sheets'
+                type: 'Google Sheets',
+                csvUrl: 'https://docs.google.com/spreadsheets/d/1673MvkN7bXMP2uZDFVuMmi_Fv2K1UIcGoHQUvkXRGj4/export?format=csv'
             },
             {
                 name: 'Community Focus Group',
                 description: 'Community feedback, focus group discussions, behavioral insights, and community engagement metrics.',
                 url: 'https://docs.google.com/spreadsheets/d/1y3jFlQyUM0_lmBiTWcxk3VPbYZm4PBgueTTPW0Li6fQ/edit?usp=sharing',
-                type: 'Google Sheets'
+                type: 'Google Sheets',
+                csvUrl: 'https://docs.google.com/spreadsheets/d/1y3jFlQyUM0_lmBiTWcxk3VPbYZm4PBgueTTPW0Li6fQ/export?format=csv'
             }
         ];
 
@@ -780,8 +807,95 @@
                 isLoggedIn = false;
                 document.getElementById('userInfo').style.display = 'none';
                 document.getElementById('filesGrid').innerHTML = '';
+                document.getElementById('mainContent').classList.remove('main-content-visible');
+                document.getElementById('mainContent').classList.add('main-content-hidden');
                 showLoginModal();
                 showToast('Logged out successfully.');
+            }
+        };
+
+        // Function to extract sheet ID from Google Sheets URL
+        const extractSheetId = (url) => {
+            const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+            return match ? match[1] : null;
+        };
+
+        // Function to extract GID from Google Sheets URL
+        const extractGid = (url) => {
+            const match = url.match(/[#&]gid=([0-9]+)/);
+            return match ? match[1] : '0';
+        };
+
+        // Download CSV function with proper Google Sheets export URL
+        const downloadFile = async (fileName) => {
+            const file = mprFiles.find(f => f.name === fileName);
+            if (!file) {
+                showToast('File not found', 'error');
+                return;
+            }
+
+            // Find the button and show loading state
+            const downloadBtn = document.querySelector(`[onclick="downloadFile('${fileName}')"]`);
+            const originalText = downloadBtn.innerHTML;
+            
+            downloadBtn.disabled = true;
+            downloadBtn.classList.add('btn-loading');
+            downloadBtn.innerHTML = 'Downloading...';
+
+            try {
+                // Use the pre-configured CSV URL if available
+                let csvUrl = file.csvUrl;
+                
+                // If no CSV URL is configured, construct it from the Google Sheets URL
+                if (!csvUrl) {
+                    const sheetId = extractSheetId(file.url);
+                    const gid = extractGid(file.url);
+                    
+                    if (sheetId) {
+                        csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+                    } else {
+                        throw new Error('Invalid Google Sheets URL');
+                    }
+                }
+
+                // Try to fetch the CSV data to validate the URL
+                const response = await fetch(csvUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                // Create download link
+                const link = document.createElement('a');
+                link.href = csvUrl;
+                link.download = `${fileName.replace(/[^a-zA-Z0-9]/g, '_')}_MPR_Data.csv`;
+                link.target = '_blank';
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast(`${fileName} CSV download started successfully!`);
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                
+                // Fallback: open the CSV URL in a new tab
+                const sheetId = extractSheetId(file.url);
+                if (sheetId) {
+                    const fallbackUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${extractGid(file.url)}`;
+                    window.open(fallbackUrl, '_blank');
+                    showToast(`Opening ${fileName} CSV in new tab...`, 'warning');
+                } else {
+                    showToast(`Download failed. Please try opening the sheet directly.`, 'error');
+                }
+                
+            } finally {
+                // Reset button state
+                downloadBtn.disabled = false;
+                downloadBtn.classList.remove('btn-loading');
+                downloadBtn.innerHTML = originalText;
             }
         };
 
@@ -833,15 +947,6 @@
             });
         };
 
-        // Download file function
-        const downloadFile = (fileName) => {
-            showToast(`Preparing ${fileName} for download...`);
-            
-            setTimeout(() => {
-                showToast(`${fileName} CSV download initiated!`);
-            }, 1000);
-        };
-
         // Show toast notification
         const showToast = (message, type = 'success') => {
             if (currentToast) {
@@ -850,7 +955,7 @@
 
             const toast = document.getElementById('toast');
             toast.textContent = message;
-            toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+            toast.className = `toast ${type === 'error' ? 'error' : type === 'warning' ? 'warning' : ''}`;
             toast.classList.add('show');
             
             currentToast = setTimeout(() => {
