@@ -872,68 +872,10 @@
             
             downloadBtn.disabled = true;
             downloadBtn.classList.add('btn-loading');
-            downloadBtn.innerHTML = 'Preparing Excel...';
+            downloadBtn.innerHTML = 'Loading libraries...';
 
             try {
-                // Try to fetch data from Google Sheets using CORS proxy
-                const sheetId = extractSheetId(file.url);
-                const gid = extractGid(file.url);
-                
-                if (!sheetId) {
-                    throw new Error('Invalid Google Sheets URL');
-                }
-
-                // Use Google Sheets public CSV export (works for publicly shared sheets)
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
-                
-                // Try multiple CORS proxy services
-                const proxies = [
-                    `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`,
-                    `https://cors-anywhere.herokuapp.com/${csvUrl}`,
-                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(csvUrl)}`
-                ];
-                
-                let csvContent = '';
-                let fetchSuccessful = false;
-
-                for (let i = 0; i < proxies.length && !fetchSuccessful; i++) {
-                    try {
-                        downloadBtn.innerHTML = `Fetching data (${i + 1}/${proxies.length})...`;
-                        
-                        const response = await fetch(proxies[i], {
-                            method: 'GET',
-                            headers: {
-                                'Accept': 'text/csv,text/plain,*/*',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        });
-
-                        if (response.ok) {
-                            const content = await response.text();
-                            
-                            // Check if we got actual CSV data (not an error page)
-                            if (content && 
-                                !content.toLowerCase().includes('<!doctype html') && 
-                                !content.toLowerCase().includes('<html') && 
-                                !content.toLowerCase().includes('<script') &&
-                                content.includes(',')) {
-                                csvContent = content;
-                                fetchSuccessful = true;
-                            }
-                        }
-                    } catch (proxyError) {
-                        console.log(`Proxy ${i + 1} failed:`, proxyError.message);
-                        continue;
-                    }
-                }
-
-                if (!fetchSuccessful) {
-                    throw new Error('Unable to fetch data from Google Sheets. The sheet may not be publicly accessible or sharing settings may be restricted.');
-                }
-
-                downloadBtn.innerHTML = 'Converting to Excel...';
-                
-                // Load SheetJS library dynamically
+                // Load SheetJS library first
                 if (typeof XLSX === 'undefined') {
                     const script = document.createElement('script');
                     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
@@ -941,24 +883,159 @@
                     
                     await new Promise((resolve, reject) => {
                         script.onload = resolve;
-                        script.onerror = reject;
+                        script.onerror = () => reject(new Error('Failed to load Excel library'));
+                        setTimeout(() => reject(new Error('Library load timeout')), 10000);
                     });
                 }
 
-                // Convert CSV to worksheet data
-                const data = csvToXlsx(csvContent);
+                // Try to fetch data from Google Sheets
+                const sheetId = extractSheetId(file.url);
+                const gid = extractGid(file.url);
+                
+                if (!sheetId) {
+                    throw new Error('Invalid Google Sheets URL');
+                }
+
+                downloadBtn.innerHTML = 'Fetching data...';
+
+                // Direct Google Sheets CSV export URL
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+                
+                // Try direct fetch first (works if CORS is allowed)
+                let csvContent = '';
+                let fetchSuccessful = false;
+
+                try {
+                    const directResponse = await fetch(csvUrl);
+                    if (directResponse.ok) {
+                        const content = await directResponse.text();
+                        if (content && content.trim() && !content.includes('<html')) {
+                            csvContent = content;
+                            fetchSuccessful = true;
+                        }
+                    }
+                } catch (directError) {
+                    console.log('Direct fetch failed:', directError.message);
+                }
+
+                // If direct fetch failed, try CORS proxies
+                if (!fetchSuccessful) {
+                    const proxies = [
+                        `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`,
+                        `https://cors.sh/${csvUrl}`,
+                        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(csvUrl)}`
+                    ];
+                    
+                    for (let i = 0; i < proxies.length && !fetchSuccessful; i++) {
+                        try {
+                            downloadBtn.innerHTML = `Trying proxy ${i + 1}...`;
+                            
+                            const response = await fetch(proxies[i], {
+                                method: 'GET',
+                                headers: {
+                                    'Accept': 'text/csv,text/plain,*/*'
+                                }
+                            });
+
+                            if (response.ok) {
+                                const content = await response.text();
+                                
+                                // Validate CSV content
+                                if (content && 
+                                    content.trim() &&
+                                    !content.toLowerCase().includes('<!doctype html') && 
+                                    !content.toLowerCase().includes('<html') && 
+                                    !content.toLowerCase().includes('<script') &&
+                                    (content.includes(',') || content.includes('\n'))) {
+                                    csvContent = content;
+                                    fetchSuccessful = true;
+                                }
+                            }
+                        } catch (proxyError) {
+                            console.log(`Proxy ${i + 1} failed:`, proxyError.message);
+                        }
+                    }
+                }
+
+                if (!fetchSuccessful || !csvContent.trim()) {
+                    throw new Error('Unable to fetch data from Google Sheets. Please ensure the sheet is publicly shared and try again.');
+                }
+
+                downloadBtn.innerHTML = 'Converting to Excel...';
+                
+                // Parse CSV manually (more reliable than complex regex)
+                const lines = csvContent.trim().split('\n');
+                const data = lines.map(line => {
+                    const result = [];
+                    let current = '';
+                    let inQuotes = false;
+                    
+                    for (let i = 0; i < line.length; i++) {
+                        const char = line[i];
+                        const nextChar = line[i + 1];
+                        
+                        if (char === '"') {
+                            if (inQuotes && nextChar === '"') {
+                                current += '"';
+                                i++; // Skip next quote
+                            } else {
+                                inQuotes = !inQuotes;
+                            }
+                        } else if (char === ',' && !inQuotes) {
+                            result.push(current);
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    
+                    result.push(current);
+                    return result;
+                });
+                
+                // Filter out empty rows
+                const filteredData = data.filter(row => 
+                    row.some(cell => cell && cell.toString().trim() !== '')
+                );
+                
+                if (filteredData.length === 0) {
+                    throw new Error('No valid data found in the sheet');
+                }
                 
                 // Create workbook and worksheet
                 const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(data);
+                const ws = XLSX.utils.aoa_to_sheet(filteredData);
                 
-                // Add worksheet to workbook
-                XLSX.utils.book_append_sheet(wb, ws, fileName.substring(0, 31)); // Excel sheet name limit
+                // Add some basic formatting
+                const range = XLSX.utils.decode_range(ws['!ref']);
+                for (let row = range.s.r; row <= range.e.r; row++) {
+                    for (let col = range.s.c; col <= range.e.c; col++) {
+                        const cellRef = XLSX.utils.encode_cell({r: row, c: col});
+                        if (!ws[cellRef]) continue;
+                        
+                        // Format header row
+                        if (row === 0) {
+                            ws[cellRef].s = {
+                                font: { bold: true },
+                                fill: { fgColor: { rgb: "EEEEEE" } }
+                            };
+                        }
+                    }
+                }
+                
+                // Add worksheet to workbook with proper name
+                const sheetName = fileName.substring(0, 31).replace(/[\\\/\?\*\[\]]/g, '_');
+                XLSX.utils.book_append_sheet(wb, ws, sheetName);
                 
                 downloadBtn.innerHTML = 'Creating download...';
                 
                 // Generate Excel file and download
-                const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                const excelBuffer = XLSX.write(wb, { 
+                    bookType: 'xlsx', 
+                    type: 'array',
+                    cellStyles: true
+                });
+                
                 const blob = new Blob([excelBuffer], { 
                     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
                 });
@@ -975,7 +1052,7 @@
                 // Clean up
                 URL.revokeObjectURL(downloadUrl);
                 
-                showToast(`${fileName} Excel file downloaded successfully!`, 'success');
+                showToast(`${fileName} Excel file downloaded successfully! (${filteredData.length} rows)`, 'success');
                 
             } catch (error) {
                 console.error('Download error:', error);
@@ -984,8 +1061,8 @@
                 // Fallback: Open the original Google Sheet
                 setTimeout(() => {
                     window.open(file.url, '_blank');
-                    showToast('Opening Google Sheet - you can download directly from there', 'warning');
-                }, 1000);
+                    showToast('Opening Google Sheet - please download manually from File > Download > Excel', 'warning');
+                }, 1500);
                 
             } finally {
                 // Reset button state
