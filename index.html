@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPR Weekly Reports 2025 - Malaria Program Review</title>
+    <link rel="stylesheet" href="styles.css">
+</head>   
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="repo-header">
+                <div class="logos-container">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/68683d5605845e9bfcb97564ea8e4d929f9fff0b/NMCP.png" alt="NMCP Logo" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/WHO.png" alt="WHO Logo" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/eba25cc13329f9d1fd973b9767e07aa8b8758b80/CHAI2.png" alt="CHAI Logo" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/NU%20logo.png" alt="NU Logo" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/SORA.png" alt="SORA Logo" class="logo">
+                    <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/ICF-SL.jpg" alt="ICF-SL Logo" class="logo">
+                </div>
+                <div class="repo-info">
+                    <h1 class="repo-title">MPR Weekly Reports</h1>
+                    <div class="year-badge">2025</div>
+                    <p class="repo-description">Malaria Program Review - Weekly Report Management System</p>
+                </div>
+                <div class="admin-info" id="adminInfo">
+                    Logged in as Admin: <span id="currentUser"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    📋 <span class="stat-number" id="totalReports">0</span> reports submitted
+                </div>
+                <div class="stat-item">
+                    👥 <span class="stat-number">8</span> team members
+                </div>
+                <div class="stat-item">
+                    ⏰ Current: <span class="stat-number" id="currentMonth">January 2025</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container main-content-hidden" id="mainContent">
+        <h2 class="section-title">2025 Weekly Report Management</h2>
+        <div class="months-grid" id="monthsGrid">
+            <!-- Month cards will be populated by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Intro Video Popup -->
+    <div id="introOverlay" class="intro-overlay">
+        <div class="intro-content">
+            <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/ICF-SL.jpg" alt="ICF-SL Logo" class="intro-logo">
+            <div class="intro-title">ICF-SL</div>
+            <div class="intro-subtitle">System Developer</div>
+            <div class="intro-tagline">"A local firm with international standards"</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="modal small-modal" role="dialog" aria-labelledby="adminLoginTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">🔐 Admin Access</div>
+                <div class="modal-subtitle">Please enter admin credentials to manage the weekly reports</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="adminUsername">Admin Username</label>
+                    <input type="text" id="adminUsername" name="adminUsername" placeholder="Enter admin username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" name="adminPassword" placeholder="Enter password" required>
+                </div>
+                
+                <button type="button" class="modal-btn" onclick="adminLogin()">Login as Admin</button>
+                
+                <div class="error-message" id="adminErrorMessage">
+                    Invalid credentials. Please try again.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weeks Modal -->
+    <div id="weeksModal" class="modal" role="dialog" aria-labelledby="weeksModalTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="weeksModalTitle">January 2025 - Weekly Reports</div>
+                <div class="modal-subtitle" id="weeksModalSubtitle">Select a week to manage team reports</div>
+                <button class="close-btn" onclick="closeWeeksModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="weeks-grid" id="weeksGrid">
+                    <!-- Week cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Modal -->
+    <div id="usersModal" class="modal" role="dialog" aria-labelledby="usersModalTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="usersModalTitle">January 2025 - Week 1 - Team Reports</div>
+                <div class="modal-subtitle" id="usersModalSubtitle">Click on a team member to submit their weekly report</div>
+                <button class="close-btn" onclick="closeUsersModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="users-grid" id="usersGrid">
+                    <!-- User cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN Modal -->
+    <div id="pinModal" class="modal small-modal" role="dialog" aria-labelledby="pinTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">🔑 Enter Your PIN</div>
+                <div class="modal-subtitle" id="pinUserName">Please enter your 4-digit PIN to submit your report</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="userPin">4-Digit PIN</label>
+                    <input type="password" id="userPin" name="userPin" placeholder="Enter your PIN" maxlength="4" required>
+                </div>
+                
+                <button type="button" class="modal-btn" onclick="verifyPin()">Verify PIN</button>
+                <button type="button" class="modal-btn secondary" onclick="closePinModal()">Cancel</button>
+                
+                <div class="error-message" id="pinErrorMessage">
+                    Invalid PIN. Please try again.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Form Modal -->
+    <div id="reportModal" class="modal" role="dialog" aria-labelledby="reportTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📝 Weekly Report Form</div>
+                <div class="modal-subtitle" id="reportUserName">Fill out your weekly report</div>
+                <button class="close-btn" onclick="closeReportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="activitiesCompleted">
+                        <span style="color: #2ea043; font-weight: bold;">Activities Completed This Week</span>
+                    </label>
+                    <textarea id="activitiesCompleted" name="activitiesCompleted" placeholder="List all the activities you completed this week..." rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="keyAchievements">
+                        <span style="color: #2ea043; font-weight: bold;">Key Achievements & Milestones</span>
+                    </label>
+                    <textarea id="keyAchievements" name="keyAchievements" placeholder="Highlight your major achievements and milestones..." rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="challengesFaced">
+                        <span style="color: #2ea043; font-weight: bold;">Challenges Faced</span>
+                    </label>
+                    <textarea id="challengesFaced" name="challengesFaced" placeholder="Describe any challenges or obstacles you encountered..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="lessonsLearned">
+                        <span style="color: #2ea043; font-weight: bold;">Lessons Learned</span>
+                    </label>
+                    <textarea id="lessonsLearned" name="lessonsLearned" placeholder="What did you learn this week that could help in future work..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="nextWeekPlans">
+                        <span style="color: #2ea043; font-weight: bold;">Plans for Next Week</span>
+                    </label>
+                    <textarea id="nextWeekPlans" name="nextWeekPlans" placeholder="Outline your goals and planned activities for next week..." rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="supportNeeded">
+                        <span style="color: #2ea043; font-weight: bold;">Support Needed</span>
+                    </label>
+                    <textarea id="supportNeeded" name="supportNeeded" placeholder="What support or resources do you need to achieve your goals..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="additionalComments">
+                        <span style="color: #2ea043; font-weight: bold;">Additional Comments</span>
+                    </label>
+                    <textarea id="additionalComments" name="additionalComments" placeholder="Any other comments or feedback you'd like to share..." rows="3"></textarea>
+                </div>
+                
+                <button type="button" class="modal-btn" onclick="submitReport()">Submit Weekly Report</button>
+                <button type="button" class="modal-btn secondary" onclick="closeReportModal()">Cancel</button>
+                
+                <div class="error-message" id="reportErrorMessage">
+                    Please fill in all required fields (Activities, Achievements, and Next Week Plans).
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Summary Modal -->
+    <div id="summaryModal" class="modal" role="dialog" aria-labelledby="summaryTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📊 User Report Summary</div>
+                <div class="modal-subtitle" id="summaryUserName">Complete report history</div>
+                <button class="close-btn" onclick="closeSummaryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="summaryContent">
+                    <!-- Summary content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
