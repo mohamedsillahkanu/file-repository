@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MPR Data Repository - Malaria Program Review</title>
+    <title>MPR User Management - Malaria Program Review</title>
     <style>
         * {
             margin: 0;
@@ -79,7 +79,7 @@
             font-size: 16px;
         }
 
-        .user-info {
+        .admin-info {
             color: #58a6ff;
             font-size: 14px;
             display: none;
@@ -125,6 +125,17 @@
             font-weight: 600;
         }
 
+        .due-date-notice {
+            background: linear-gradient(90deg, #f0ad4e, #d58512);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(240, 173, 78, 0.3);
+        }
+
         .section-title {
             font-size: 24px;
             font-weight: 600;
@@ -133,14 +144,14 @@
             margin-bottom: 30px;
         }
 
-        .files-grid {
+        .users-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
         }
 
-        .file-card {
+        .user-card {
             background: #161b22;
             border: 1px solid #30363d;
             border-radius: 12px;
@@ -150,13 +161,13 @@
             overflow: hidden;
         }
 
-        .file-card:hover {
+        .user-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(88, 166, 255, 0.15);
             border-color: #58a6ff;
         }
 
-        .file-card::before {
+        .user-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -166,40 +177,101 @@
             background: linear-gradient(90deg, #238636, #2ea043, #58a6ff);
         }
 
-        .file-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 15px;
+        .user-card.submitted::before {
+            background: linear-gradient(90deg, #238636, #2ea043);
         }
 
-        .file-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #e6edf3;
+        .user-card.overdue::before {
+            background: linear-gradient(90deg, #f85149, #da3633);
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #30363d;
+            transition: border-color 0.3s ease;
+        }
+
+        .user-card:hover .user-avatar {
+            border-color: #58a6ff;
+        }
+
+        .user-info {
             flex: 1;
         }
 
-        .file-type {
-            background: #238636;
-            color: white;
+        .user-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e6edf3;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .user-status {
+            font-size: 12px;
             padding: 4px 8px;
             border-radius: 4px;
-            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
         }
 
-        .file-description {
+        .status-pending {
+            background: #f0ad4e;
+            color: #000;
+        }
+
+        .status-submitted {
+            background: #238636;
+            color: white;
+        }
+
+        .status-overdue {
+            background: #f85149;
+            color: white;
+        }
+
+        .report-section {
+            margin-bottom: 20px;
+        }
+
+        .report-summary {
             color: #8b949e;
             font-size: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             line-height: 1.5;
         }
 
-        .file-actions {
+        .report-details {
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            margin-bottom: 15px;
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 13px;
+            color: #e6edf3;
+        }
+
+        .user-actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -245,38 +317,13 @@
             border-color: #58a6ff;
         }
 
-        .btn-external {
-            background: #8250df;
-            color: white;
+        .btn-warning {
+            background: #f0ad4e;
+            color: #000;
         }
 
-        .btn-external:hover:not(:disabled) {
-            background: #9565e7;
-            transform: translateY(-1px);
-        }
-
-        .btn-loading {
-            position: relative;
-            color: transparent !important;
-        }
-
-        .btn-loading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 16px;
-            height: 16px;
-            margin: -8px 0 0 -8px;
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .btn-warning:hover:not(:disabled) {
+            background: #eea236;
         }
 
         /* Modal styles */
@@ -299,8 +346,9 @@
             border-radius: 8px;
             border: 1px solid #30363d;
             width: 90%;
-            max-width: 400px;
-            text-align: center;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal h2 {
@@ -325,7 +373,7 @@
             font-size: 14px;
         }
 
-        .form-group input {
+        .form-group input, .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #30363d;
@@ -333,14 +381,20 @@
             background: #0d1117;
             color: #e6edf3;
             font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
         }
 
-        .form-group input:focus {
+        .form-group textarea {
+            min-height: 120px;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
             outline: none;
             border-color: #58a6ff;
         }
 
-        .login-btn {
+        .modal-btn {
             width: 100%;
             background: #238636;
             color: white;
@@ -350,10 +404,19 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
+            margin-bottom: 10px;
         }
 
-        .login-btn:hover {
+        .modal-btn:hover {
             background: #2ea043;
+        }
+
+        .modal-btn.secondary {
+            background: #6e7681;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #8b949e;
         }
 
         .error-message {
@@ -388,6 +451,7 @@
 
         .toast.warning {
             background: #f0ad4e;
+            color: #000;
         }
 
         /* Intro overlay styles */
@@ -499,7 +563,7 @@
         }
 
         @media (max-width: 768px) {
-            .files-grid {
+            .users-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -519,12 +583,17 @@
                 min-width: 60px;
             }
 
-            .file-actions {
+            .user-actions {
                 flex-direction: column;
             }
 
             .btn {
                 justify-content: center;
+            }
+
+            .user-avatar {
+                width: 50px;
+                height: 50px;
             }
         }
 
@@ -543,11 +612,11 @@
                 font-size: 24px;
             }
 
-            .file-card {
+            .user-card {
                 padding: 20px;
             }
 
-            .file-title {
+            .user-name {
                 font-size: 16px;
             }
         }
@@ -566,33 +635,37 @@
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/ICF-SL.jpg" alt="ICF-SL Logo" class="logo">
                 </div>
                 <div class="repo-info">
-                    <h1 class="repo-title">MPR Data Repository</h1>
-                    <p class="repo-description">Malaria Program Review - Comprehensive Data Collection</p>
+                    <h1 class="repo-title">MPR User Management</h1>
+                    <p class="repo-description">Malaria Program Review - Weekly Report System</p>
                 </div>
-                <div class="user-info" id="userInfo">
-                    Logged in as: <span id="currentUser"></span>
+                <div class="admin-info" id="adminInfo">
+                    Logged in as Admin: <span id="currentUser"></span>
                     <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
             </div>
             
             <div class="stats-bar">
                 <div class="stat-item">
-                    <span class="stat-number">8</span> data files
+                    <span class="stat-number" id="totalUsers">8</span> team members
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number">External Links</span> Google Sheets
+                    <span class="stat-number" id="submittedReports">0</span> reports submitted
                 </div>
                 <div class="stat-item">
-                    Updated <span class="stat-number" id="lastUpdated">just now</span>
+                    Due date: <span class="stat-number" id="dueDate">Jan 31, 2025</span>
                 </div>
+            </div>
+
+            <div class="due-date-notice" id="dueDateNotice">
+                📅 Weekly reports are due by January 31, 2025 at 11:59 PM
             </div>
         </div>
     </header>
 
     <main class="container main-content-hidden" id="mainContent">
-        <h2 class="section-title">MPR Data Collection Files</h2>
-        <div class="files-grid" id="filesGrid">
-            <!-- Files will be populated by JavaScript -->
+        <h2 class="section-title">Team Members & Weekly Reports</h2>
+        <div class="users-grid" id="usersGrid">
+            <!-- User cards will be populated by JavaScript -->
         </div>
     </main>
 
@@ -609,28 +682,82 @@
         </div>
     </div>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal" role="dialog" aria-labelledby="loginTitle" aria-modal="true">
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="modal" role="dialog" aria-labelledby="adminLoginTitle" aria-modal="true">
         <div class="modal-content">
-            <h2 id="loginTitle">🔒 MPR Repository Access</h2>
+            <h2 id="adminLoginTitle">🔐 Admin Access</h2>
             <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;">
-                Please enter your credentials to access the MPR data files
+                Please enter admin credentials to manage the system
             </p>
             
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter username" required>
+                <label for="adminUsername">Admin Username</label>
+                <input type="text" id="adminUsername" name="adminUsername" placeholder="Enter admin username" required>
             </div>
             
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter password" required>
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" name="adminPassword" placeholder="Enter password" required>
             </div>
             
-            <button type="button" class="login-btn" id="loginButton">Login</button>
+            <button type="button" class="modal-btn" id="adminLoginButton">Login as Admin</button>
             
-            <div class="error-message" id="errorMessage">
+            <div class="error-message" id="adminErrorMessage">
                 Invalid credentials. Please try again.
+            </div>
+        </div>
+    </div>
+
+    <!-- User PIN Modal -->
+    <div id="pinModal" class="modal" role="dialog" aria-labelledby="pinTitle" aria-modal="true">
+        <div class="modal-content">
+            <h2 id="pinTitle">🔑 Enter Your PIN</h2>
+            <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;" id="pinUserName">
+                Please enter your 4-digit PIN to update your weekly report
+            </p>
+            
+            <div class="form-group">
+                <label for="userPin">4-Digit PIN</label>
+                <input type="password" id="userPin" name="userPin" placeholder="Enter your PIN" maxlength="4" required>
+            </div>
+            
+            <button type="button" class="modal-btn" id="pinSubmitButton">Verify PIN</button>
+            <button type="button" class="modal-btn secondary" onclick="closePinModal()">Cancel</button>
+            
+            <div class="error-message" id="pinErrorMessage">
+                Invalid PIN. Please try again.
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Update Modal -->
+    <div id="reportModal" class="modal" role="dialog" aria-labelledby="reportTitle" aria-modal="true">
+        <div class="modal-content">
+            <h2 id="reportTitle">📝 Update Weekly Report</h2>
+            <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;" id="reportUserName">
+                Update your weekly progress and activities
+            </p>
+            
+            <div class="form-group">
+                <label for="weeklyActivities">Activities Completed This Week</label>
+                <textarea id="weeklyActivities" name="weeklyActivities" placeholder="Describe your key activities and accomplishments this week..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="challengesFaced">Challenges Faced</label>
+                <textarea id="challengesFaced" name="challengesFaced" placeholder="Any obstacles or challenges you encountered..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="nextWeekPlans">Plans for Next Week</label>
+                <textarea id="nextWeekPlans" name="nextWeekPlans" placeholder="Your planned activities and goals for the upcoming week..."></textarea>
+            </div>
+            
+            <button type="button" class="modal-btn" id="reportSubmitButton">Submit Report</button>
+            <button type="button" class="modal-btn secondary" onclick="closeReportModal()">Cancel</button>
+            
+            <div class="error-message" id="reportErrorMessage">
+                Please fill in all required fields.
             </div>
         </div>
     </div>
@@ -639,121 +766,169 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        let isLoggedIn = false;
+        let isAdminLoggedIn = false;
+        let currentUser = null;
         let currentToast = null;
         let pageLoadTime = Date.now();
 
-        // Function to update the "last updated" time
-        const updateLastUpdatedTime = () => {
-            const now = Date.now();
-            const elapsed = now - pageLoadTime;
-            const minutes = Math.floor(elapsed / 60000);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
+        // Due date for reports (January 31, 2025, 11:59 PM)
+        const DUE_DATE = new Date('2025-01-31T23:59:59');
 
-            let timeText = '';
-            if (days > 0) {
-                timeText = `${days} day${days > 1 ? 's' : ''} ago`;
-            } else if (hours > 0) {
-                timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
-            } else if (minutes > 0) {
-                timeText = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-            } else {
-                timeText = 'just now';
-            }
-
-            const element = document.getElementById('lastUpdated');
-            if (element) {
-                element.textContent = timeText;
-            }
+        // Admin credentials
+        const adminCredentials = {
+            'admin': 'mpr2025'
         };
 
-        // Update time every minute
-        setInterval(updateLastUpdatedTime, 60000);
-
-        // MPR Data files with the specified categories
-        const mprFiles = [
+        // Team members with their information and PINs
+        const teamMembers = [
             {
-                name: 'Pharmacy',
-                description: 'Pharmaceutical inventory, drug distribution records, and medication management data for malaria treatment programs.',
-                url: 'https://docs.google.com/spreadsheets/d/1qaEcbXoRc6uJ9LCfxWSv4lo1fpyoi0WPNTVYnfpMvu4/edit?gid=920290793#gid=920290793',
-                type: 'Google Sheets',
-                csvUrl: 'https://docs.google.com/spreadsheets/d/1qaEcbXoRc6uJ9LCfxWSv4lo1fpyoi0WPNTVYnfpMvu4/export?format=csv&gid=920290793'
+                id: 1,
+                name: 'Dr. Sarah Johnson',
+                role: 'Pharmacy Lead',
+                avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
+                pin: '1234',
+                report: {
+                    submitted: false,
+                    submittedDate: null,
+                    activities: '',
+                    challenges: '',
+                    nextWeekPlans: ''
+                }
             },
             {
-                name: 'Hospital/PHU OPD',
-                description: 'Outpatient department data including patient visits, diagnoses, treatments, and referral patterns.',
-                url: 'https://docs.google.com/spreadsheets/d/1fHBEAD0BPpvuqb1qXKoarAQCGPp5rYWEkPgPlBI123U/edit?usp=sharing',
-                type: 'Google Sheets',
-                csvUrl: 'https://docs.google.com/spreadsheets/d/1fHBEAD0BPpvuqb1qXKoarAQCGPp5rYWEkPgPlBI123U/export?format=csv'
+                id: 2,
+                name: 'Dr. Michael Chen',
+                role: 'Hospital/PHU OPD Coordinator',
+                avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face',
+                pin: '5678',
+                report: {
+                    submitted: false,
+                    submittedDate: null,
+                    activities: '',
+                    challenges: '',
+                    nextWeekPlans: ''
+                }
             },
             {
-                name: 'In-patient Ward',
-                description: 'Inpatient admission records, length of stay, treatment outcomes, and discharge summaries for malaria patients.',
-                url: 'https://docs.google.com/spreadsheets/d/1S3zm19rUYkC91WUxpC5PTDFffAy8i97N9QRmTMF6dWk/edit?usp=sharing',
-                type: 'Google Sheets',
-                csvUrl: 'https://docs.google.com/spreadsheets/d/1S3zm19rUYkC91WUxpC5PTDFffAy8i97N9QRmTMF6dWk/export?format=csv'
+                id: 3,
+                name: 'Nurse Jane Smith',
+                role: 'In-patient Ward Supervisor',
+                avatar: 'https://images.unsplash.com/photo-1594824501085-4b1d66fc31fa?w=150&h=150&fit=crop&crop=face',
+                pin: '9012',
+                report: {
+                    submitted: false,
+                    submittedDate: null,
+                    activities: '',
+                    challenges: '',
+                    nextWeekPlans: ''
+                }
             },
             {
-                name: 'Hospital Laboratory',
-                description: 'Laboratory test results, diagnostic procedures, quality control data, and testing capacity metrics.',
-                url: 'https://docs.google.com/spreadsheets/d/117zeGpso8ItwfmSKBgEuCLmVK5ec8e-ZRFzLXhSYbbI/edit?usp=sharing',
-                type: 'Google Sheets',
-                csvUrl: 'https://docs.google.com/spreadsheets/d/117zeGpso8ItwfmSKBgEuCLmVK5ec8e-ZRFzLXhSYbbI/export?format=csv'
+                id: 4,
+                name: 'Dr. Robert Williams',
+                role: 'Hospital Laboratory Manager',
+                avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop&crop=face',
+                pin: '3456',
+                report: {
+                    submitted: false,
+                    submittedDate: null,
+                    activities: '',
+                    challenges: '',
+                    nextWeekPlans: ''
+                }
             },
             {
-                name: 'DHMT',
-                description: 'District Health Management Team reports, surveillance data, program monitoring, and administrative records.',
-                url: 'https://docs.google.com/spreadsheets/d/1ozMR5tqbdjD2B6Aru77ZrAFbNDS4cyupSCqJeU93yTQ/edit?usp=sharing',
-                type: 'Google Sheets',
-                csvUrl: 'https://docs.google.com/spreadsheets/d/1ozMR5tqbdjD2B6Aru77ZrAFbNDS4cyupSCqJeU93yTQ/export?format=csv'
+                id: 5,
+                name: 'Dr. Emily Davis',
+                role: 'DHMT Coordinator',
+                avatar: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=150&h=150&fit=crop&crop=face',
+                pin: '7890',
+                report: {
+                    submitted: false,
+                    submittedDate: null,
+                    activities: '',
+                    challenges: '',
+                    nextWeekPlans: ''
+                }
             },
             {
-                name: 'CHW',
-                description: 'Community Health Worker activities, case management, community outreach, and training documentation.',
-                url: 'https://docs.google.com/spreadsheets/d/1SsRXX7UJ9UFobeMaI8Zx072DSvf_nqnWdiG9yYCkwr4/edit?usp=sharing',
-                type: 'Google Sheets',
-                csvUrl: 'https://docs.google.com/spreadsheets/d/1SsRXX7UJ9UFobeMaI8Zx072DSvf_nqnWdiG9yYCkwr4/export?format=csv'
+                id: 6,
+                name: 'James Rodriguez',
+                role: 'CHW Program Manager',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+                pin: '2468',
+                report: {
+                    submitted: false,
+                    submittedDate: null,
+                    activities: '',
+                    challenges: '',
+                    nextWeekPlans: ''
+                }
             },
             {
-                name: 'ANC',
-                description: 'Antenatal Care data including IPTp coverage, pregnant women counseling, and prevention services.',
-                url: 'https://docs.google.com/spreadsheets/d/1673MvkN7bXMP2uZDFVuMmi_Fv2K1UIcGoHQUvkXRGj4/edit?usp=sharing',
-                type: 'Google Sheets',
-                csvUrl: 'https://docs.google.com/spreadsheets/d/1673MvkN7bXMP2uZDFVuMmi_Fv2K1UIcGoHQUvkXRGj4/export?format=csv'
+                id: 7,
+                name: 'Dr. Maria Garcia',
+                role: 'ANC Specialist',
+                avatar: 'https://images.unsplash.com/photo-1594824501084-9be42d1b2ae8?w=150&h=150&fit=crop&crop=face',
+                pin: '1357',
+                report: {
+                    submitted: false,
+                    submittedDate: null,
+                    activities: '',
+                    challenges: '',
+                    nextWeekPlans: ''
+                }
             },
             {
-                name: 'Community Focus Group',
-                description: 'Community feedback, focus group discussions, behavioral insights, and community engagement metrics.',
-                url: 'https://docs.google.com/spreadsheets/d/1y3jFlQyUM0_lmBiTWcxk3VPbYZm4PBgueTTPW0Li6fQ/edit?usp=sharing',
-                type: 'Google Sheets',
-                csvUrl: 'https://docs.google.com/spreadsheets/d/1y3jFlQyUM0_lmBiTWcxk3VPbYZm4PBgueTTPW0Li6fQ/export?format=csv'
+                id: 8,
+                name: 'David Thompson',
+                role: 'Community Engagement Lead',
+                avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+                pin: '9753',
+                report: {
+                    submitted: false,
+                    submittedDate: null,
+                    activities: '',
+                    challenges: '',
+                    nextWeekPlans: ''
+                }
             }
         ];
 
-        // Valid credentials
-        const validCredentials = {
-            'icf': 'mpr2025'
+        // Check if current date is past due date
+        const isPastDue = () => {
+            return new Date() > DUE_DATE;
         };
 
-        // Show login modal
-        const showLoginModal = () => {
-            document.getElementById('loginModal').style.display = 'flex';
+        // Get user status
+        const getUserStatus = (user) => {
+            if (user.report.submitted) {
+                return 'submitted';
+            } else if (isPastDue()) {
+                return 'overdue';
+            } else {
+                return 'pending';
+            }
+        };
+
+        // Show admin login modal
+        const showAdminLoginModal = () => {
+            document.getElementById('adminLoginModal').style.display = 'flex';
             setTimeout(() => {
-                document.getElementById('username').focus();
+                document.getElementById('adminUsername').focus();
             }, 100);
         };
 
-        // Hide login modal
-        const hideLoginModal = () => {
-            document.getElementById('loginModal').style.display = 'none';
+        // Hide admin login modal
+        const hideAdminLoginModal = () => {
+            document.getElementById('adminLoginModal').style.display = 'none';
         };
 
-        // Login function
-        const login = () => {
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
+        // Admin login function
+        const adminLogin = () => {
+            const user = document.getElementById('adminUsername').value.trim();
+            const pass = document.getElementById('adminPassword').value;
+            const errorMessage = document.getElementById('adminErrorMessage');
             
             errorMessage.style.display = 'none';
 
@@ -763,23 +938,22 @@
                 return;
             }
 
-            if (validCredentials[user] && validCredentials[user] === pass) {
-                isLoggedIn = true;
-                hideLoginModal();
+            if (adminCredentials[user] && adminCredentials[user] === pass) {
+                isAdminLoggedIn = true;
+                hideAdminLoginModal();
                 
-                // Show intro video popup
                 showIntroVideo();
                 
                 document.getElementById('currentUser').textContent = user;
-                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('adminInfo').style.display = 'block';
                 
                 // Clear form
-                document.getElementById('username').value = '';
-                document.getElementById('password').value = '';
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminPassword').value = '';
             } else {
                 errorMessage.style.display = 'block';
-                document.getElementById('password').value = '';
-                document.getElementById('username').focus();
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminUsername').focus();
             }
         };
 
@@ -790,84 +964,232 @@
             
             overlay.style.display = 'flex';
             
-            // Hide intro and show main content after 5 seconds
             setTimeout(() => {
                 overlay.style.display = 'none';
                 mainContent.classList.remove('main-content-hidden');
                 mainContent.classList.add('main-content-visible');
                 
-                renderFiles();
-                showToast('Welcome to MPR Data Repository - Powered by ICF-SL');
+                renderUsers();
+                updateStats();
+                showToast('Welcome to MPR User Management - Powered by ICF-SL');
             }, 5000);
         };
 
-        // Logout function
-        const logout = () => {
-            if (confirm('Are you sure you want to logout?')) {
-                isLoggedIn = false;
-                document.getElementById('userInfo').style.display = 'none';
-                document.getElementById('filesGrid').innerHTML = '';
-                document.getElementById('mainContent').classList.remove('main-content-visible');
-                document.getElementById('mainContent').classList.add('main-content-hidden');
-                showLoginModal();
-                showToast('Logged out successfully.');
+        // Show PIN modal
+        const showPinModal = (userId) => {
+            const user = teamMembers.find(u => u.id === userId);
+            if (!user) return;
+
+            if (isPastDue() && !user.report.submitted) {
+                showToast('The deadline has passed. You can no longer update your report.', 'error');
+                return;
+            }
+
+            currentUser = user;
+            document.getElementById('pinUserName').textContent = `Hello ${user.name}, please enter your 4-digit PIN to update your weekly report`;
+            document.getElementById('pinModal').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('userPin').focus();
+            }, 100);
+        };
+
+        // Close PIN modal
+        const closePinModal = () => {
+            document.getElementById('pinModal').style.display = 'none';
+            document.getElementById('userPin').value = '';
+            document.getElementById('pinErrorMessage').style.display = 'none';
+            currentUser = null;
+        };
+
+        // Verify PIN
+        const verifyPin = () => {
+            const pin = document.getElementById('userPin').value;
+            const errorMessage = document.getElementById('pinErrorMessage');
+            
+            errorMessage.style.display = 'none';
+
+            if (!pin || pin.length !== 4) {
+                errorMessage.textContent = 'Please enter a 4-digit PIN.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (currentUser && currentUser.pin === pin) {
+                closePinModal();
+                showReportModal();
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('userPin').value = '';
+                document.getElementById('userPin').focus();
             }
         };
 
-        // Function to extract sheet ID from Google Sheets URL
-        const extractSheetId = (url) => {
-            const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-            return match ? match[1] : null;
+        // Show report modal
+        const showReportModal = () => {
+            if (!currentUser) return;
+
+            document.getElementById('reportUserName').textContent = `Update weekly report for ${currentUser.name}`;
+            document.getElementById('weeklyActivities').value = currentUser.report.activities || '';
+            document.getElementById('challengesFaced').value = currentUser.report.challenges || '';
+            document.getElementById('nextWeekPlans').value = currentUser.report.nextWeekPlans || '';
+            
+            document.getElementById('reportModal').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('weeklyActivities').focus();
+            }, 100);
         };
 
-        // Function to extract GID from Google Sheets URL
-        const extractGid = (url) => {
-            const match = url.match(/[#&]gid=([0-9]+)/);
-            return match ? match[1] : '0';
+        // Close report modal
+        const closeReportModal = () => {
+            document.getElementById('reportModal').style.display = 'none';
+            document.getElementById('reportErrorMessage').style.display = 'none';
+            
+            // Clear form
+            document.getElementById('weeklyActivities').value = '';
+            document.getElementById('challengesFaced').value = '';
+            document.getElementById('nextWeekPlans').value = '';
         };
 
+        // Submit report
+        const submitReport = () => {
+            const activities = document.getElementById('weeklyActivities').value.trim();
+            const challenges = document.getElementById('challengesFaced').value.trim();
+            const nextWeekPlans = document.getElementById('nextWeekPlans').value.trim();
+            const errorMessage = document.getElementById('reportErrorMessage');
+            
+            errorMessage.style.display = 'none';
 
+            if (!activities) {
+                errorMessage.textContent = 'Please fill in your weekly activities.';
+                errorMessage.style.display = 'block';
+                return;
+            }
 
-        // Render files as cards
-        const renderFiles = () => {
-            const grid = document.getElementById('filesGrid');
+            if (currentUser) {
+                currentUser.report = {
+                    submitted: true,
+                    submittedDate: new Date(),
+                    activities: activities,
+                    challenges: challenges,
+                    nextWeekPlans: nextWeekPlans
+                };
+
+                closeReportModal();
+                renderUsers();
+                updateStats();
+                showToast(`Report submitted successfully for ${currentUser.name}!`);
+                currentUser = null;
+            }
+        };
+
+        // View report details
+        const viewReport = (userId) => {
+            const user = teamMembers.find(u => u.id === userId);
+            if (!user || !user.report.submitted) return;
+
+            const reportDetails = `
+Name: ${user.name}
+Role: ${user.role}
+Submitted: ${user.report.submittedDate.toLocaleString()}
+
+ACTIVITIES COMPLETED:
+${user.report.activities}
+
+CHALLENGES FACED:
+${user.report.challenges || 'None reported'}
+
+NEXT WEEK PLANS:
+${user.report.nextWeekPlans || 'None specified'}
+            `.trim();
+
+            alert(reportDetails);
+        };
+
+        // Update statistics
+        const updateStats = () => {
+            const submittedCount = teamMembers.filter(u => u.report.submitted).length;
+            document.getElementById('totalUsers').textContent = teamMembers.length;
+            document.getElementById('submittedReports').textContent = submittedCount;
+        };
+
+        // Render user cards
+        const renderUsers = () => {
+            const grid = document.getElementById('usersGrid');
             grid.innerHTML = '';
 
-            mprFiles.forEach((file, index) => {
+            teamMembers.forEach(user => {
+                const status = getUserStatus(user);
                 const card = document.createElement('div');
-                card.className = 'file-card';
+                card.className = `user-card ${status}`;
                 
-                // Create action buttons
+                let statusBadge = '';
                 let actionButtons = '';
-                if (file.url !== '#') {
-                    actionButtons = `
-                        <a href="${file.url}" target="_blank" class="btn btn-external" rel="noopener noreferrer">
-                            📊 Open in Sheets
-                        </a>
-                    `;
-                } else {
-                    actionButtons = `
-                        <button class="btn btn-secondary" onclick="showToast('Coming soon!', 'info')">
-                            📊 View Data
-                        </button>
-                    `;
+                let reportContent = '';
+
+                switch (status) {
+                    case 'submitted':
+                        statusBadge = '<span class="user-status status-submitted">✅ Submitted</span>';
+                        actionButtons = `
+                            <button class="btn btn-secondary" onclick="viewReport(${user.id})">
+                                👁️ View Report
+                            </button>
+                        `;
+                        reportContent = `
+                            <div class="report-section">
+                                <div class="report-summary">Report submitted on ${user.report.submittedDate.toLocaleDateString()}</div>
+                                <div class="report-details">${user.report.activities.substring(0, 100)}${user.report.activities.length > 100 ? '...' : ''}</div>
+                            </div>
+                        `;
+                        break;
+                    case 'overdue':
+                        statusBadge = '<span class="user-status status-overdue">⚠️ Overdue</span>';
+                        actionButtons = `
+                            <button class="btn btn-warning" disabled>
+                                🔒 Deadline Passed
+                            </button>
+                        `;
+                        reportContent = '<div class="report-summary">Deadline has passed. Report submission is no longer available.</div>';
+                        break;
+                    default:
+                        statusBadge = '<span class="user-status status-pending">⏳ Pending</span>';
+                        actionButtons = `
+                            <button class="btn btn-primary" onclick="showPinModal(${user.id})">
+                                📝 Update Report
+                            </button>
+                        `;
+                        reportContent = '<div class="report-summary">No report submitted yet. Click "Update Report" to submit your weekly activities.</div>';
                 }
 
                 card.innerHTML = `
-                    <div class="file-header">
-                        <div style="display: flex; align-items: center; flex: 1;">
-                            <div class="file-title">${file.name}</div>
+                    <div class="user-header">
+                        <img src="${user.avatar}" alt="${user.name}" class="user-avatar">
+                        <div class="user-info">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-role">${user.role}</div>
+                            ${statusBadge}
                         </div>
-                        <div class="file-type">${file.type}</div>
                     </div>
-                    <div class="file-description">${file.description}</div>
-                    <div class="file-actions">
+                    ${reportContent}
+                    <div class="user-actions">
                         ${actionButtons}
                     </div>
                 `;
 
                 grid.appendChild(card);
             });
+        };
+
+        // Logout function
+        const logout = () => {
+            if (confirm('Are you sure you want to logout?')) {
+                isAdminLoggedIn = false;
+                document.getElementById('adminInfo').style.display = 'none';
+                document.getElementById('usersGrid').innerHTML = '';
+                document.getElementById('mainContent').classList.remove('main-content-visible');
+                document.getElementById('mainContent').classList.add('main-content-hidden');
+                showAdminLoginModal();
+                showToast('Logged out successfully.');
+            }
         };
 
         // Show toast notification
@@ -889,39 +1211,71 @@
 
         // Initialize application
         document.addEventListener('DOMContentLoaded', () => {
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            const loginBtn = document.getElementById('loginButton');
+            const adminUsernameInput = document.getElementById('adminUsername');
+            const adminPasswordInput = document.getElementById('adminPassword');
+            const adminLoginBtn = document.getElementById('adminLoginButton');
+            const pinInput = document.getElementById('userPin');
+            const pinSubmitBtn = document.getElementById('pinSubmitButton');
+            const reportSubmitBtn = document.getElementById('reportSubmitButton');
             
             // Set up event listeners
-            loginBtn.onclick = login;
+            adminLoginBtn.onclick = adminLogin;
+            pinSubmitBtn.onclick = verifyPin;
+            reportSubmitBtn.onclick = submitReport;
             
-            usernameInput.addEventListener('keypress', (e) => {
+            // Admin login form events
+            adminUsernameInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    login();
+                    adminLogin();
                 }
             });
             
-            passwordInput.addEventListener('keypress', (e) => {
+            adminPasswordInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    login();
+                    adminLogin();
                 }
             });
 
-            // Escape key to close modal
+            // PIN form events
+            pinInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyPin();
+                }
+            });
+
+            // Only allow numbers in PIN input
+            pinInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            });
+
+            // Escape key to close modals
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && document.getElementById('loginModal').style.display === 'flex') {
-                    if (isLoggedIn) {
-                        hideLoginModal();
+                if (e.key === 'Escape') {
+                    if (document.getElementById('pinModal').style.display === 'flex') {
+                        closePinModal();
+                    } else if (document.getElementById('reportModal').style.display === 'flex') {
+                        closeReportModal();
                     }
                 }
             });
 
-            // Show login modal initially
-            if (!isLoggedIn) {
-                showLoginModal();
+            // Show admin login modal initially
+            if (!isAdminLoggedIn) {
+                showAdminLoginModal();
+            }
+
+            // Update due date notice
+            const dueDateElement = document.getElementById('dueDate');
+            dueDateElement.textContent = DUE_DATE.toLocaleDateString();
+
+            // Check if past due and update notice
+            if (isPastDue()) {
+                const notice = document.getElementById('dueDateNotice');
+                notice.style.background = 'linear-gradient(90deg, #f85149, #da3633)';
+                notice.innerHTML = '⚠️ DEADLINE HAS PASSED - No more report submissions allowed';
             }
         });
     </script>
