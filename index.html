@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MPR User Management - Malaria Program Review</title>
+    <title>MPR Monthly Reports 2025 - Malaria Program Review</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 20px;
         }
@@ -68,15 +68,28 @@
         }
 
         .repo-title {
-            font-size: 28px;
-            font-weight: 600;
+            font-size: 32px;
+            font-weight: 700;
             color: #58a6ff;
+            margin-bottom: 8px;
         }
 
         .repo-description {
             color: #8b949e;
             margin-top: 8px;
-            font-size: 16px;
+            font-size: 18px;
+        }
+
+        .year-badge {
+            background: linear-gradient(45deg, #238636, #2ea043);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 24px;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(35, 134, 54, 0.3);
         }
 
         .admin-info {
@@ -102,56 +115,103 @@
 
         .stats-bar {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             align-items: center;
-            padding: 15px;
+            padding: 20px;
             background: rgba(13, 17, 23, 0.4);
             border-radius: 6px;
             border: 1px solid #30363d;
             margin-bottom: 30px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             color: #8b949e;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .stat-number {
             color: #e6edf3;
             font-weight: 600;
+            font-size: 18px;
         }
 
-        .due-date-notice {
-            background: linear-gradient(90deg, #f0ad4e, #d58512);
-            color: white;
-            padding: 12px 20px;
+        .github-config {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid #30363d;
             border-radius: 8px;
-            text-align: center;
+            padding: 20px;
             margin-bottom: 30px;
+        }
+
+        .github-config h3 {
+            color: #58a6ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .github-input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .github-input-group input {
+            flex: 1;
+            min-width: 300px;
+            padding: 10px 15px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background: #0d1117;
+            color: #e6edf3;
+            font-size: 14px;
+        }
+
+        .github-input-group input:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .github-status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
             font-weight: 600;
-            box-shadow: 0 4px 15px rgba(240, 173, 78, 0.3);
+        }
+
+        .github-status.connected {
+            background: #238636;
+            color: white;
+        }
+
+        .github-status.disconnected {
+            background: #f85149;
+            color: white;
         }
 
         .section-title {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 600;
             color: #e6edf3;
             text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .users-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
             margin-bottom: 40px;
         }
 
-        .user-card {
+        .months-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .month-card {
             background: #161b22;
             border: 1px solid #30363d;
             border-radius: 12px;
@@ -161,82 +221,94 @@
             overflow: hidden;
         }
 
-        .user-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(88, 166, 255, 0.15);
+        .month-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(88, 166, 255, 0.15);
             border-color: #58a6ff;
         }
 
-        .user-card::before {
+        .month-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
+            height: 4px;
             background: linear-gradient(90deg, #238636, #2ea043, #58a6ff);
         }
 
-        .user-card.submitted::before {
-            background: linear-gradient(90deg, #238636, #2ea043);
-        }
-
-        .user-card.overdue::before {
+        .month-card.past-due::before {
             background: linear-gradient(90deg, #f85149, #da3633);
         }
 
-        .user-header {
+        .month-card.current-month::before {
+            background: linear-gradient(90deg, #f0ad4e, #d58512);
+            height: 6px;
+        }
+
+        .month-header {
             display: flex;
-            align-items: center;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 20px;
         }
 
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #30363d;
-            transition: border-color 0.3s ease;
-        }
-
-        .user-card:hover .user-avatar {
-            border-color: #58a6ff;
-        }
-
-        .user-info {
+        .month-info {
             flex: 1;
         }
 
-        .user-name {
-            font-size: 18px;
-            font-weight: 600;
+        .month-name {
+            font-size: 24px;
+            font-weight: 700;
             color: #e6edf3;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
 
-        .user-role {
+        .month-year {
+            color: #58a6ff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .due-date-info {
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .due-date-label {
             color: #8b949e;
-            font-size: 14px;
-            margin-bottom: 4px;
+            display: block;
+            margin-bottom: 3px;
         }
 
-        .user-status {
+        .due-date {
+            color: #e6edf3;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .month-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
             font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
             font-weight: 600;
             text-transform: uppercase;
         }
 
-        .status-pending {
-            background: #f0ad4e;
-            color: #000;
+        .status-active {
+            background: #238636;
+            color: white;
         }
 
-        .status-submitted {
-            background: #238636;
+        .status-upcoming {
+            background: #6e7681;
             color: white;
         }
 
@@ -245,85 +317,161 @@
             color: white;
         }
 
-        .report-section {
-            margin-bottom: 20px;
-        }
-
-        .report-summary {
-            color: #8b949e;
-            font-size: 14px;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .report-details {
-            background: #0d1117;
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #30363d;
-            margin-bottom: 15px;
-            max-height: 100px;
-            overflow-y: auto;
-            font-size: 13px;
-            color: #e6edf3;
-        }
-
-        .user-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .btn-primary {
-            background: #238636;
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: #2ea043;
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: #58a6ff;
-            border: 1px solid #30363d;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: #30363d;
-            border-color: #58a6ff;
-        }
-
-        .btn-warning {
+        .status-current {
             background: #f0ad4e;
             color: #000;
         }
 
-        .btn-warning:hover:not(:disabled) {
-            background: #eea236;
+        .reports-summary {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .summary-number {
+            display: block;
+            font-size: 20px;
+            font-weight: 700;
+            color: #58a6ff;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: #8b949e;
+            text-transform: uppercase;
+        }
+
+        .upload-section {
+            background: #0d1117;
+            border: 2px dashed #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: #58a6ff;
+            background: rgba(88, 166, 255, 0.05);
+        }
+
+        .upload-section.dragover {
+            border-color: #238636;
+            background: rgba(35, 134, 54, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            color: #6e7681;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .upload-btn:hover {
+            background: #2ea043;
+            transform: translateY(-1px);
+        }
+
+        .upload-btn:disabled {
+            background: #6e7681;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .uploaded-files {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .file-name {
+            color: #e6edf3;
+            font-size: 13px;
+        }
+
+        .file-size {
+            color: #8b949e;
+            font-size: 11px;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .file-action-btn {
+            background: none;
+            border: none;
+            color: #8b949e;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .file-action-btn:hover {
+            color: #e6edf3;
+            background: rgba(139, 148, 158, 0.1);
+        }
+
+        .view-reports-btn {
+            width: 100%;
+            background: #58a6ff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .view-reports-btn:hover {
+            background: #4493e0;
+            transform: translateY(-1px);
         }
 
         /* Modal styles */
@@ -373,7 +521,7 @@
             font-size: 14px;
         }
 
-        .form-group input, .form-group textarea {
+        .form-group input {
             width: 100%;
             padding: 12px;
             border: 1px solid #30363d;
@@ -382,14 +530,9 @@
             color: #e6edf3;
             font-size: 14px;
             font-family: inherit;
-            resize: vertical;
         }
 
-        .form-group textarea {
-            min-height: 120px;
-        }
-
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus {
             outline: none;
             border-color: #58a6ff;
         }
@@ -411,14 +554,6 @@
             background: #2ea043;
         }
 
-        .modal-btn.secondary {
-            background: #6e7681;
-        }
-
-        .modal-btn.secondary:hover {
-            background: #8b949e;
-        }
-
         .error-message {
             color: #f85149;
             font-size: 12px;
@@ -437,7 +572,7 @@
             z-index: 1001;
             transform: translateX(400px);
             transition: transform 0.3s ease;
-            max-width: 300px;
+            max-width: 350px;
             word-wrap: break-word;
         }
 
@@ -519,7 +654,7 @@
             height: 100%;
             background: linear-gradient(90deg, #238636, #58a6ff);
             border-radius: 2px;
-            animation: progressFill 5s linear;
+            animation: progressFill 3s linear;
         }
 
         @keyframes fadeInScale {
@@ -563,14 +698,14 @@
         }
 
         @media (max-width: 768px) {
-            .users-grid {
+            .months-grid {
                 grid-template-columns: 1fr;
             }
             
             .stats-bar {
                 flex-direction: column;
                 align-items: center;
-                gap: 10px;
+                gap: 15px;
             }
 
             .logos-container {
@@ -583,17 +718,21 @@
                 min-width: 60px;
             }
 
-            .user-actions {
+            .month-card {
+                padding: 20px;
+            }
+
+            .repo-title {
+                font-size: 28px;
+            }
+
+            .github-input-group {
                 flex-direction: column;
+                align-items: stretch;
             }
 
-            .btn {
-                justify-content: center;
-            }
-
-            .user-avatar {
-                width: 50px;
-                height: 50px;
+            .github-input-group input {
+                min-width: auto;
             }
         }
 
@@ -612,12 +751,12 @@
                 font-size: 24px;
             }
 
-            .user-card {
-                padding: 20px;
+            .month-card {
+                padding: 15px;
             }
 
-            .user-name {
-                font-size: 16px;
+            .month-name {
+                font-size: 20px;
             }
         }
     </style>
@@ -635,8 +774,9 @@
                     <img src="https://github.com/mohamedsillahkanu/file-repository/raw/98d6a776c09d4c21b1e4fb54d640e152ba14c253/ICF-SL.jpg" alt="ICF-SL Logo" class="logo">
                 </div>
                 <div class="repo-info">
-                    <h1 class="repo-title">MPR User Management</h1>
-                    <p class="repo-description">Malaria Program Review - Weekly Report System</p>
+                    <h1 class="repo-title">MPR Monthly Reports</h1>
+                    <div class="year-badge">2025</div>
+                    <p class="repo-description">Malaria Program Review - Monthly Report Management System</p>
                 </div>
                 <div class="admin-info" id="adminInfo">
                     Logged in as Admin: <span id="currentUser"></span>
@@ -646,26 +786,37 @@
             
             <div class="stats-bar">
                 <div class="stat-item">
-                    <span class="stat-number" id="totalUsers">8</span> team members
+                    📋 <span class="stat-number" id="totalReports">0</span> reports uploaded
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" id="submittedReports">0</span> reports submitted
+                    📅 <span class="stat-number" id="activeMonths">12</span> months available
                 </div>
                 <div class="stat-item">
-                    Due date: <span class="stat-number" id="dueDate">Jan 31, 2025</span>
+                    ⏰ Current: <span class="stat-number" id="currentMonth">January 2025</span>
+                </div>
+                <div class="stat-item">
+                    📂 <span class="stat-number" id="githubStatus">Disconnected</span> GitHub
                 </div>
             </div>
 
-            <div class="due-date-notice" id="dueDateNotice">
-                📅 Weekly reports are due in 5 minutes (for testing purposes)
+            <!-- GitHub Configuration -->
+            <div class="github-config">
+                <h3>🔗 GitHub Repository Configuration</h3>
+                <div class="github-input-group">
+                    <input type="text" id="githubRepoUrl" placeholder="Enter GitHub repository URL (e.g., https://github.com/username/repo-name)" value="">
+                    <span class="github-status disconnected" id="repoStatus">Not Connected</span>
+                </div>
+                <p style="color: #8b949e; font-size: 12px; margin-top: 10px;">
+                    💡 Reports will be organized in folders by month (e.g., /reports/2025/01-January/, /reports/2025/02-February/, etc.)
+                </p>
             </div>
         </div>
     </header>
 
     <main class="container main-content-hidden" id="mainContent">
-        <h2 class="section-title">Team Members & Weekly Reports</h2>
-        <div class="users-grid" id="usersGrid">
-            <!-- User cards will be populated by JavaScript -->
+        <h2 class="section-title">2025 Monthly Report Management</h2>
+        <div class="months-grid" id="monthsGrid">
+            <!-- Month cards will be populated by JavaScript -->
         </div>
     </main>
 
@@ -687,7 +838,7 @@
         <div class="modal-content">
             <h2 id="adminLoginTitle">🔐 Admin Access</h2>
             <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;">
-                Please enter admin credentials to manage the system
+                Please enter admin credentials to manage the monthly reports
             </p>
             
             <div class="form-group">
@@ -708,231 +859,346 @@
         </div>
     </div>
 
-    <!-- User PIN Modal -->
-    <div id="pinModal" class="modal" role="dialog" aria-labelledby="pinTitle" aria-modal="true">
-        <div class="modal-content">
-            <h2 id="pinTitle">🔑 Enter Your PIN</h2>
-            <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;" id="pinUserName">
-                Please enter your 4-digit PIN to update your weekly report
-            </p>
-            
-            <div class="form-group">
-                <label for="userPin">4-Digit PIN</label>
-                <input type="password" id="userPin" name="userPin" placeholder="Enter your PIN" maxlength="4" required>
-            </div>
-            
-            <button type="button" class="modal-btn" id="pinSubmitButton">Verify PIN</button>
-            <button type="button" class="modal-btn secondary" onclick="closePinModal()">Cancel</button>
-            
-            <div class="error-message" id="pinErrorMessage">
-                Invalid PIN. Please try again.
-            </div>
-        </div>
-    </div>
-
-    <!-- Report Update Modal -->
-    <div id="reportModal" class="modal" role="dialog" aria-labelledby="reportTitle" aria-modal="true">
-        <div class="modal-content">
-            <h2 id="reportTitle">📝 Update Weekly Report</h2>
-            <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;" id="reportUserName">
-                Update your weekly progress and activities
-            </p>
-            
-            <div class="form-group">
-                <label for="weeklyActivities">Activities Completed This Week</label>
-                <textarea id="weeklyActivities" name="weeklyActivities" placeholder="Describe your key activities and accomplishments this week..." required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="challengesFaced">Challenges Faced</label>
-                <textarea id="challengesFaced" name="challengesFaced" placeholder="Any obstacles or challenges you encountered..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="nextWeekPlans">Plans for Next Week</label>
-                <textarea id="nextWeekPlans" name="nextWeekPlans" placeholder="Your planned activities and goals for the upcoming week..."></textarea>
-            </div>
-            
-            <button type="button" class="modal-btn" id="reportSubmitButton">Submit Report</button>
-            <button type="button" class="modal-btn secondary" onclick="closeReportModal()">Cancel</button>
-            
-            <div class="error-message" id="reportErrorMessage">
-                Please fill in all required fields.
-            </div>
-        </div>
-    </div>
-
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
     <script>
         let isAdminLoggedIn = false;
-        let currentUser = null;
         let currentToast = null;
-        let pageLoadTime = Date.now();
-
-        // Due date for reports (5 minutes from page load for testing)
-        const DUE_DATE = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+        let githubRepoUrl = '';
+        let monthlyReports = {}; // Store reports by month
 
         // Admin credentials
         const adminCredentials = {
             'admin': 'mpr2025'
         };
 
-        // Team members with their information and PINs
-        const teamMembers = [
-            {
-                id: 1,
-                name: 'Dr. Sarah Johnson',
-                role: 'Pharmacy Lead',
-                avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
-                pin: '1234',
-                report: {
-                    submitted: false,
-                    submittedDate: null,
-                    activities: '',
-                    challenges: '',
-                    nextWeekPlans: ''
-                }
-            },
-            {
-                id: 2,
-                name: 'Dr. Michael Chen',
-                role: 'Hospital/PHU OPD Coordinator',
-                avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face',
-                pin: '5678',
-                report: {
-                    submitted: false,
-                    submittedDate: null,
-                    activities: '',
-                    challenges: '',
-                    nextWeekPlans: ''
-                }
-            },
-            {
-                id: 3,
-                name: 'Nurse Jane Smith',
-                role: 'In-patient Ward Supervisor',
-                avatar: 'https://images.unsplash.com/photo-1594824501085-4b1d66fc31fa?w=150&h=150&fit=crop&crop=face',
-                pin: '9012',
-                report: {
-                    submitted: false,
-                    submittedDate: null,
-                    activities: '',
-                    challenges: '',
-                    nextWeekPlans: ''
-                }
-            },
-            {
-                id: 4,
-                name: 'Dr. Robert Williams',
-                role: 'Hospital Laboratory Manager',
-                avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop&crop=face',
-                pin: '3456',
-                report: {
-                    submitted: false,
-                    submittedDate: null,
-                    activities: '',
-                    challenges: '',
-                    nextWeekPlans: ''
-                }
-            },
-            {
-                id: 5,
-                name: 'Dr. Emily Davis',
-                role: 'DHMT Coordinator',
-                avatar: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=150&h=150&fit=crop&crop=face',
-                pin: '7890',
-                report: {
-                    submitted: false,
-                    submittedDate: null,
-                    activities: '',
-                    challenges: '',
-                    nextWeekPlans: ''
-                }
-            },
-            {
-                id: 6,
-                name: 'James Rodriguez',
-                role: 'CHW Program Manager',
-                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-                pin: '2468',
-                report: {
-                    submitted: false,
-                    submittedDate: null,
-                    activities: '',
-                    challenges: '',
-                    nextWeekPlans: ''
-                }
-            },
-            {
-                id: 7,
-                name: 'Dr. Maria Garcia',
-                role: 'ANC Specialist',
-                avatar: 'https://images.unsplash.com/photo-1594824501084-9be42d1b2ae8?w=150&h=150&fit=crop&crop=face',
-                pin: '1357',
-                report: {
-                    submitted: false,
-                    submittedDate: null,
-                    activities: '',
-                    challenges: '',
-                    nextWeekPlans: ''
-                }
-            },
-            {
-                id: 8,
-                name: 'David Thompson',
-                role: 'Community Engagement Lead',
-                avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-                pin: '9753',
-                report: {
-                    submitted: false,
-                    submittedDate: null,
-                    activities: '',
-                    challenges: '',
-                    nextWeekPlans: ''
-                }
-            }
+        // Month data for 2025
+        const MONTHS_2025 = [
+            { number: 1, name: 'January', dueDate: '2025-01-31T23:59:59', days: 31 },
+            { number: 2, name: 'February', dueDate: '2025-02-28T23:59:59', days: 28 },
+            { number: 3, name: 'March', dueDate: '2025-03-31T23:59:59', days: 31 },
+            { number: 4, name: 'April', dueDate: '2025-04-30T23:59:59', days: 30 },
+            { number: 5, name: 'May', dueDate: '2025-05-31T23:59:59', days: 31 },
+            { number: 6, name: 'June', dueDate: '2025-06-30T23:59:59', days: 30 },
+            { number: 7, name: 'July', dueDate: '2025-07-31T23:59:59', days: 31 },
+            { number: 8, name: 'August', dueDate: '2025-08-31T23:59:59', days: 31 },
+            { number: 9, name: 'September', dueDate: '2025-09-30T23:59:59', days: 30 },
+            { number: 10, name: 'October', dueDate: '2025-10-31T23:59:59', days: 31 },
+            { number: 11, name: 'November', dueDate: '2025-11-30T23:59:59', days: 30 },
+            { number: 12, name: 'December', dueDate: '2025-12-31T23:59:59', days: 31 }
         ];
 
-        // Check if current date is past due date
-        const isPastDue = () => {
-            return new Date() > DUE_DATE;
+        // Get current month info
+        const getCurrentMonth = () => {
+            const now = new Date();
+            return now.getMonth() + 1; // JavaScript months are 0-indexed
         };
 
-        // Update due date display and check status every 30 seconds
-        const updateDueDateDisplay = () => {
+        // Get month status
+        const getMonthStatus = (month) => {
             const now = new Date();
-            const timeLeft = DUE_DATE - now;
-            const dueDateElement = document.getElementById('dueDate');
-            const dueDateNotice = document.getElementById('dueDateNotice');
+            const dueDate = new Date(month.dueDate);
+            const currentMonth = getCurrentMonth();
             
-            if (timeLeft > 0) {
-                const minutes = Math.floor(timeLeft / 60000);
-                const seconds = Math.floor((timeLeft % 60000) / 1000);
-                dueDateElement.textContent = `${minutes}m ${seconds}s remaining`;
-                dueDateNotice.innerHTML = `⏰ Testing Mode: Reports due in ${minutes} minutes and ${seconds} seconds`;
+            if (month.number === currentMonth) {
+                return 'current';
+            } else if (now > dueDate) {
+                return 'overdue';
+            } else if (month.number < currentMonth) {
+                return 'overdue';
             } else {
-                dueDateElement.textContent = 'EXPIRED';
-                dueDateNotice.style.background = 'linear-gradient(90deg, #f85149, #da3633)';
-                dueDateNotice.innerHTML = '⚠️ DEADLINE HAS PASSED - No more report submissions allowed';
-                
-                // Re-render users to show overdue status
-                if (isAdminLoggedIn) {
-                    renderUsers();
-                    updateStats();
-                }
+                return 'upcoming';
             }
         };
 
-        // Get user status
-        const getUserStatus = (user) => {
-            if (user.report.submitted) {
-                return 'submitted';
-            } else if (isPastDue()) {
-                return 'overdue';
+        // Format file size
+        const formatFileSize = (bytes) => {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        };
+
+        // Handle file upload
+        const handleFileUpload = (monthNumber, files) => {
+            const month = MONTHS_2025.find(m => m.number === monthNumber);
+            if (!month) return;
+
+            if (!monthlyReports[monthNumber]) {
+                monthlyReports[monthNumber] = [];
+            }
+
+            Array.from(files).forEach(file => {
+                // Check file type (allow common document types)
+                const allowedTypes = [
+                    'application/pdf',
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'application/vnd.ms-excel',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'text/plain',
+                    'text/csv'
+                ];
+
+                if (!allowedTypes.includes(file.type)) {
+                    showToast(`File type not supported: ${file.name}`, 'error');
+                    return;
+                }
+
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast(`File too large: ${file.name} (max 10MB)`, 'error');
+                    return;
+                }
+
+                const fileInfo = {
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    uploadDate: new Date(),
+                    file: file
+                };
+
+                monthlyReports[monthNumber].push(fileInfo);
+                
+                // Simulate upload to GitHub (in real implementation, this would use GitHub API)
+                simulateGitHubUpload(monthNumber, fileInfo);
+            });
+
+            renderMonths();
+            updateStats();
+            showToast(`${files.length} file(s) uploaded for ${month.name} 2025`);
+        };
+
+        // Simulate GitHub upload
+        const simulateGitHubUpload = (monthNumber, fileInfo) => {
+            const month = MONTHS_2025.find(m => m.number === monthNumber);
+            const monthFolder = `${monthNumber.toString().padStart(2, '0')}-${month.name}`;
+            const githubPath = `reports/2025/${monthFolder}/${fileInfo.name}`;
+            
+            console.log(`Simulating upload to: ${githubRepoUrl}/${githubPath}`);
+            
+            // In a real implementation, you would use the GitHub API here
+            // This would require authentication and proper API calls
+        };
+
+        // Remove file
+        const removeFile = (monthNumber, fileId) => {
+            if (monthlyReports[monthNumber]) {
+                monthlyReports[monthNumber] = monthlyReports[monthNumber].filter(f => f.id !== fileId);
+                renderMonths();
+                updateStats();
+                showToast('File removed successfully');
+            }
+        };
+
+        // View reports for a month
+        const viewMonthReports = (monthNumber) => {
+            const month = MONTHS_2025.find(m => m.number === monthNumber);
+            const reports = monthlyReports[monthNumber] || [];
+            
+            if (reports.length === 0) {
+                showToast(`No reports uploaded for ${month.name} 2025`, 'warning');
+                return;
+            }
+
+            let reportsList = `${month.name} 2025 Reports:\n\n`;
+            reports.forEach((report, index) => {
+                reportsList += `${index + 1}. ${report.name} (${formatFileSize(report.size)})\n`;
+                reportsList += `   Uploaded: ${report.uploadDate.toLocaleString()}\n\n`;
+            });
+
+            alert(reportsList);
+        };
+
+        // Update GitHub repo URL
+        const updateGitHubRepo = () => {
+            const input = document.getElementById('githubRepoUrl');
+            const url = input.value.trim();
+            
+            if (url && isValidGitHubUrl(url)) {
+                githubRepoUrl = url;
+                document.getElementById('repoStatus').textContent = 'Connected';
+                document.getElementById('repoStatus').className = 'github-status connected';
+                document.getElementById('githubStatus').textContent = 'Connected';
+                showToast('GitHub repository connected successfully');
+            } else if (url) {
+                showToast('Please enter a valid GitHub repository URL', 'error');
             } else {
-                return 'pending';
+                githubRepoUrl = '';
+                document.getElementById('repoStatus').textContent = 'Not Connected';
+                document.getElementById('repoStatus').className = 'github-status disconnected';
+                document.getElementById('githubStatus').textContent = 'Disconnected';
+            }
+        };
+
+        // Validate GitHub URL
+        const isValidGitHubUrl = (url) => {
+            const githubRegex = /^https:\/\/github\.com\/[\w\-\.]+\/[\w\-\.]+\/?$/;
+            return githubRegex.test(url);
+        };
+
+        // Update statistics
+        const updateStats = () => {
+            const totalReports = Object.values(monthlyReports).reduce((sum, reports) => sum + reports.length, 0);
+            const currentMonth = getCurrentMonth();
+            const currentMonthName = MONTHS_2025.find(m => m.number === currentMonth)?.name || 'Unknown';
+            
+            document.getElementById('totalReports').textContent = totalReports;
+            document.getElementById('currentMonth').textContent = `${currentMonthName} 2025`;
+        };
+
+        // Render month cards
+        const renderMonths = () => {
+            const grid = document.getElementById('monthsGrid');
+            grid.innerHTML = '';
+
+            MONTHS_2025.forEach(month => {
+                const status = getMonthStatus(month);
+                const reports = monthlyReports[month.number] || [];
+                const dueDate = new Date(month.dueDate);
+                const isUploadAllowed = status !== 'overdue';
+                
+                const card = document.createElement('div');
+                card.className = `month-card ${status === 'current' ? 'current-month' : ''} ${status === 'overdue' ? 'past-due' : ''}`;
+                
+                let statusBadge = '';
+                let statusColor = '';
+                switch (status) {
+                    case 'current':
+                        statusBadge = '📅 Current Month';
+                        statusColor = 'status-current';
+                        break;
+                    case 'overdue':
+                        statusBadge = '⚠️ Past Due';
+                        statusColor = 'status-overdue';
+                        break;
+                    case 'upcoming':
+                        statusBadge = '⏰ Upcoming';
+                        statusColor = 'status-upcoming';
+                        break;
+                    default:
+                        statusBadge = '✅ Active';
+                        statusColor = 'status-active';
+                }
+
+                // Create file upload section
+                let uploadSection = '';
+                if (isUploadAllowed) {
+                    uploadSection = `
+                        <div class="upload-section" ondrop="handleDrop(event, ${month.number})" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-text">Drag & drop files here or click to upload</div>
+                            <input type="file" id="file-input-${month.number}" class="file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" onchange="handleFileSelect(event, ${month.number})">
+                            <button class="upload-btn" onclick="document.getElementById('file-input-${month.number}').click()">
+                                Choose Files
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    uploadSection = `
+                        <div class="upload-section" style="border-color: #f85149; background: rgba(248, 81, 73, 0.1);">
+                            <div class="upload-icon" style="color: #f85149;">🔒</div>
+                            <div class="upload-text" style="color: #f85149;">Upload deadline has passed</div>
+                            <button class="upload-btn" disabled>Upload Closed</button>
+                        </div>
+                    `;
+                }
+
+                // Create uploaded files list
+                let filesHtml = '';
+                if (reports.length > 0) {
+                    filesHtml = '<div class="uploaded-files">';
+                    reports.forEach(file => {
+                        filesHtml += `
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <span class="file-name">📄 ${file.name}</span>
+                                    <span class="file-size">(${formatFileSize(file.size)})</span>
+                                </div>
+                                <div class="file-actions">
+                                    <button class="file-action-btn" onclick="removeFile(${month.number}, ${file.id})" title="Remove file">🗑️</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    filesHtml += '</div>';
+                }
+
+                card.innerHTML = `
+                    <div class="month-header">
+                        <div class="month-info">
+                            <div class="month-name">${month.name}</div>
+                            <div class="month-year">2025</div>
+                        </div>
+                        <div class="due-date-info">
+                            <span class="due-date-label">Due Date</span>
+                            <div class="due-date">${dueDate.toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="month-status">
+                        <span class="status-badge ${statusColor}">${statusBadge}</span>
+                    </div>
+
+                    <div class="reports-summary">
+                        <div class="summary-item">
+                            <span class="summary-number">${reports.length}</span>
+                            <span class="summary-label">Reports</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">${month.days}</span>
+                            <span class="summary-label">Days</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">${reports.reduce((sum, r) => sum + r.size, 0) > 0 ? formatFileSize(reports.reduce((sum, r) => sum + r.size, 0)) : '0 KB'}</span>
+                            <span class="summary-label">Total Size</span>
+                        </div>
+                    </div>
+
+                    ${uploadSection}
+                    ${filesHtml}
+
+                    <button class="view-reports-btn" onclick="viewMonthReports(${month.number})" ${reports.length === 0 ? 'disabled' : ''}>
+                        📋 View Reports (${reports.length})
+                    </button>
+                `;
+
+                grid.appendChild(card);
+            });
+        };
+
+        // File drag and drop handlers
+        const handleDragOver = (e) => {
+            e.preventDefault();
+        };
+
+        const handleDragEnter = (e) => {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        };
+
+        const handleDragLeave = (e) => {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+        };
+
+        const handleDrop = (e, monthNumber) => {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(monthNumber, files);
+            }
+        };
+
+        const handleFileSelect = (e, monthNumber) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                handleFileUpload(monthNumber, files);
             }
         };
 
@@ -994,214 +1260,10 @@
                 mainContent.classList.remove('main-content-hidden');
                 mainContent.classList.add('main-content-visible');
                 
-                renderUsers();
+                renderMonths();
                 updateStats();
-                showToast('Welcome to MPR User Management - Powered by ICF-SL');
-            }, 5000);
-        };
-
-        // Show PIN modal
-        const showPinModal = (userId) => {
-            const user = teamMembers.find(u => u.id === userId);
-            if (!user) return;
-
-            if (isPastDue() && !user.report.submitted) {
-                showToast('The deadline has passed. You can no longer update your report.', 'error');
-                return;
-            }
-
-            currentUser = user;
-            document.getElementById('pinUserName').textContent = `Hello ${user.name}, please enter your 4-digit PIN to update your weekly report`;
-            document.getElementById('pinModal').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('userPin').focus();
-            }, 100);
-        };
-
-        // Close PIN modal
-        const closePinModal = () => {
-            document.getElementById('pinModal').style.display = 'none';
-            document.getElementById('userPin').value = '';
-            document.getElementById('pinErrorMessage').style.display = 'none';
-            currentUser = null;
-        };
-
-        // Verify PIN
-        const verifyPin = () => {
-            const pin = document.getElementById('userPin').value;
-            const errorMessage = document.getElementById('pinErrorMessage');
-            
-            errorMessage.style.display = 'none';
-
-            if (!pin || pin.length !== 4) {
-                errorMessage.textContent = 'Please enter a 4-digit PIN.';
-                errorMessage.style.display = 'block';
-                return;
-            }
-
-            if (currentUser && currentUser.pin === pin) {
-                closePinModal();
-                showReportModal();
-            } else {
-                errorMessage.style.display = 'block';
-                document.getElementById('userPin').value = '';
-                document.getElementById('userPin').focus();
-            }
-        };
-
-        // Show report modal
-        const showReportModal = () => {
-            if (!currentUser) return;
-
-            document.getElementById('reportUserName').textContent = `Update weekly report for ${currentUser.name}`;
-            document.getElementById('weeklyActivities').value = currentUser.report.activities || '';
-            document.getElementById('challengesFaced').value = currentUser.report.challenges || '';
-            document.getElementById('nextWeekPlans').value = currentUser.report.nextWeekPlans || '';
-            
-            document.getElementById('reportModal').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('weeklyActivities').focus();
-            }, 100);
-        };
-
-        // Close report modal
-        const closeReportModal = () => {
-            document.getElementById('reportModal').style.display = 'none';
-            document.getElementById('reportErrorMessage').style.display = 'none';
-            
-            // Clear form
-            document.getElementById('weeklyActivities').value = '';
-            document.getElementById('challengesFaced').value = '';
-            document.getElementById('nextWeekPlans').value = '';
-        };
-
-        // Submit report
-        const submitReport = () => {
-            const activities = document.getElementById('weeklyActivities').value.trim();
-            const challenges = document.getElementById('challengesFaced').value.trim();
-            const nextWeekPlans = document.getElementById('nextWeekPlans').value.trim();
-            const errorMessage = document.getElementById('reportErrorMessage');
-            
-            errorMessage.style.display = 'none';
-
-            if (!activities) {
-                errorMessage.textContent = 'Please fill in your weekly activities.';
-                errorMessage.style.display = 'block';
-                return;
-            }
-
-            if (currentUser) {
-                currentUser.report = {
-                    submitted: true,
-                    submittedDate: new Date(),
-                    activities: activities,
-                    challenges: challenges,
-                    nextWeekPlans: nextWeekPlans
-                };
-
-                closeReportModal();
-                renderUsers();
-                updateStats();
-                showToast(`Report submitted successfully for ${currentUser.name}!`);
-                currentUser = null;
-            }
-        };
-
-        // View report details
-        const viewReport = (userId) => {
-            const user = teamMembers.find(u => u.id === userId);
-            if (!user || !user.report.submitted) return;
-
-            const reportDetails = `
-Name: ${user.name}
-Role: ${user.role}
-Submitted: ${user.report.submittedDate.toLocaleString()}
-
-ACTIVITIES COMPLETED:
-${user.report.activities}
-
-CHALLENGES FACED:
-${user.report.challenges || 'None reported'}
-
-NEXT WEEK PLANS:
-${user.report.nextWeekPlans || 'None specified'}
-            `.trim();
-
-            alert(reportDetails);
-        };
-
-        // Update statistics
-        const updateStats = () => {
-            const submittedCount = teamMembers.filter(u => u.report.submitted).length;
-            document.getElementById('totalUsers').textContent = teamMembers.length;
-            document.getElementById('submittedReports').textContent = submittedCount;
-        };
-
-        // Render user cards
-        const renderUsers = () => {
-            const grid = document.getElementById('usersGrid');
-            grid.innerHTML = '';
-
-            teamMembers.forEach(user => {
-                const status = getUserStatus(user);
-                const card = document.createElement('div');
-                card.className = `user-card ${status}`;
-                
-                let statusBadge = '';
-                let actionButtons = '';
-                let reportContent = '';
-
-                switch (status) {
-                    case 'submitted':
-                        statusBadge = '<span class="user-status status-submitted">✅ Submitted</span>';
-                        actionButtons = `
-                            <button class="btn btn-secondary" onclick="viewReport(${user.id})">
-                                👁️ View Report
-                            </button>
-                        `;
-                        reportContent = `
-                            <div class="report-section">
-                                <div class="report-summary">Report submitted on ${user.report.submittedDate.toLocaleDateString()}</div>
-                                <div class="report-details">${user.report.activities.substring(0, 100)}${user.report.activities.length > 100 ? '...' : ''}</div>
-                            </div>
-                        `;
-                        break;
-                    case 'overdue':
-                        statusBadge = '<span class="user-status status-overdue">⚠️ Overdue</span>';
-                        actionButtons = `
-                            <button class="btn btn-warning" disabled>
-                                🔒 Deadline Passed
-                            </button>
-                        `;
-                        reportContent = '<div class="report-summary">Deadline has passed. Report submission is no longer available.</div>';
-                        break;
-                    default:
-                        statusBadge = '<span class="user-status status-pending">⏳ Pending</span>';
-                        actionButtons = `
-                            <button class="btn btn-primary" onclick="showPinModal(${user.id})">
-                                📝 Update Report
-                            </button>
-                        `;
-                        reportContent = '<div class="report-summary">No report submitted yet. Click "Update Report" to submit your weekly activities.</div>';
-                }
-
-                card.innerHTML = `
-                    <div class="user-header">
-                        <img src="${user.avatar}" alt="${user.name}" class="user-avatar">
-                        <div class="user-info">
-                            <div class="user-name">${user.name}</div>
-                            <div class="user-role">${user.role}</div>
-                            ${statusBadge}
-                        </div>
-                    </div>
-                    ${reportContent}
-                    <div class="user-actions">
-                        ${actionButtons}
-                    </div>
-                `;
-
-                grid.appendChild(card);
-            });
+                showToast('Welcome to MPR 2025 Monthly Reports - Powered by ICF-SL');
+            }, 3000);
         };
 
         // Logout function
@@ -1209,7 +1271,7 @@ ${user.report.nextWeekPlans || 'None specified'}
             if (confirm('Are you sure you want to logout?')) {
                 isAdminLoggedIn = false;
                 document.getElementById('adminInfo').style.display = 'none';
-                document.getElementById('usersGrid').innerHTML = '';
+                document.getElementById('monthsGrid').innerHTML = '';
                 document.getElementById('mainContent').classList.remove('main-content-visible');
                 document.getElementById('mainContent').classList.add('main-content-hidden');
                 showAdminLoginModal();
@@ -1239,14 +1301,18 @@ ${user.report.nextWeekPlans || 'None specified'}
             const adminUsernameInput = document.getElementById('adminUsername');
             const adminPasswordInput = document.getElementById('adminPassword');
             const adminLoginBtn = document.getElementById('adminLoginButton');
-            const pinInput = document.getElementById('userPin');
-            const pinSubmitBtn = document.getElementById('pinSubmitButton');
-            const reportSubmitBtn = document.getElementById('reportSubmitButton');
+            const githubInput = document.getElementById('githubRepoUrl');
             
             // Set up event listeners
             adminLoginBtn.onclick = adminLogin;
-            pinSubmitBtn.onclick = verifyPin;
-            reportSubmitBtn.onclick = submitReport;
+            
+            // GitHub input
+            githubInput.addEventListener('blur', updateGitHubRepo);
+            githubInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    updateGitHubRepo();
+                }
+            });
             
             // Admin login form events
             adminUsernameInput.addEventListener('keypress', (e) => {
@@ -1263,45 +1329,10 @@ ${user.report.nextWeekPlans || 'None specified'}
                 }
             });
 
-            // PIN form events
-            pinInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    verifyPin();
-                }
-            });
-
-            // Only allow numbers in PIN input
-            pinInput.addEventListener('input', (e) => {
-                e.target.value = e.target.value.replace(/[^0-9]/g, '');
-            });
-
-            // Escape key to close modals
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    if (document.getElementById('pinModal').style.display === 'flex') {
-                        closePinModal();
-                    } else if (document.getElementById('reportModal').style.display === 'flex') {
-                        closeReportModal();
-                    }
-                }
-            });
-
             // Show admin login modal initially
             if (!isAdminLoggedIn) {
                 showAdminLoginModal();
             }
-
-            // Start the countdown timer
-            updateDueDateDisplay();
-            setInterval(updateDueDateDisplay, 1000); // Update every second for testing
-
-            // Initial due date display
-            const dueDateElement = document.getElementById('dueDate');
-            const timeLeft = DUE_DATE - new Date();
-            const minutes = Math.floor(timeLeft / 60000);
-            const seconds = Math.floor((timeLeft % 60000) / 1000);
-            dueDateElement.textContent = `${minutes}m ${seconds}s remaining`;
         });
     </script>
 </body>
