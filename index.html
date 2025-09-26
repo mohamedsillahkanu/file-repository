@@ -146,6 +146,7 @@
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 30px;
+            display: none; /* Hidden */
         }
 
         .github-config h3 {
@@ -554,7 +555,7 @@
             color: #000;
         }
 
-        /* PIN and Upload Modal Styles */
+        /* PIN and Report Modal Styles */
         .small-modal .modal-content {
             max-width: 500px;
         }
@@ -598,7 +599,7 @@
 
         .report-month-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
             padding-bottom: 10px;
@@ -959,14 +960,14 @@
             </div>
 
             <!-- GitHub Configuration - Hidden -->
-            <div class="github-config" style="display: none;">
+            <div class="github-config">
                 <h3>🔗 GitHub Repository Configuration</h3>
                 <div class="github-input-group">
-                    <input type="text" id="githubRepoUrl" placeholder="Enter GitHub repository URL (e.g., https://github.com/username/repo-name)" value="https://mohamedsillahkanu.github.io/file-repository/">
+                    <input type="text" id="githubRepoUrl" placeholder="Enter GitHub repository URL" value="https://mohamedsillahkanu.github.io/file-repository/">
                     <span class="github-status connected" id="repoStatus">Connected</span>
                 </div>
                 <p style="color: #8b949e; font-size: 12px; margin-top: 10px;">
-                    💡 Reports will be organized in folders by month and user in the <strong>file-repository</strong> repository
+                    💡 Reports will be organized in folders by month and user
                 </p>
             </div>
         </div>
@@ -1024,7 +1025,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title" id="usersModalTitle">January 2025 - Team Reports</div>
-                <div class="modal-subtitle" id="usersModalSubtitle">Click on a team member to upload their monthly report</div>
+                <div class="modal-subtitle" id="usersModalSubtitle">Click on a team member to submit their monthly report</div>
                 <button class="close-btn" onclick="closeUsersModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -1040,7 +1041,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">🔑 Enter Your PIN</div>
-                <div class="modal-subtitle" id="pinUserName">Please enter your 4-digit PIN to upload your report</div>
+                <div class="modal-subtitle" id="pinUserName">Please enter your 4-digit PIN to submit your report</div>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -1291,15 +1292,6 @@
             }
         };
 
-        // Format file size
-        const formatFileSize = (bytes) => {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        };
-
         // Show report form modal
         const showReportModal = () => {
             if (!currentUser || !currentMonth) return;
@@ -1510,7 +1502,7 @@
             if (status === 'overdue') {
                 document.getElementById('usersModalSubtitle').textContent = 'Deadline has passed - View submitted reports only';
             } else {
-                document.getElementById('usersModalSubtitle').textContent = `Due: ${new Date(month.dueDate).toLocaleDateString()} - Click on a team member to upload their monthly report`;
+                document.getElementById('usersModalSubtitle').textContent = `Due: ${new Date(month.dueDate).toLocaleDateString()} - Click on a team member to submit their monthly report`;
             }
 
             renderUsersGrid();
@@ -1531,12 +1523,12 @@
 
             const status = getUserStatus(userId, currentMonth);
             if (status === 'overdue' && !getUserReport(userId, currentMonth)) {
-                showToast('The deadline has passed. You can no longer upload reports.', 'error');
+                showToast('The deadline has passed. You can no longer submit reports.', 'error');
                 return;
             }
 
             currentUser = user;
-            document.getElementById('pinUserName').textContent = `Hello ${user.name}, please enter your 4-digit PIN to upload your ${month.name} 2025 report`;
+            document.getElementById('pinUserName').textContent = `Hello ${user.name}, please enter your 4-digit PIN to submit your ${month.name} 2025 report`;
             document.getElementById('pinModal').style.display = 'flex';
             setTimeout(() => {
                 document.getElementById('userPin').focus();
@@ -1571,18 +1563,6 @@
                 document.getElementById('userPin').value = '';
                 document.getElementById('userPin').focus();
             }
-        };
-
-        // Show upload modal
-        const showUploadModal = () => {
-            // This function is no longer needed, but keeping for compatibility
-            showReportModal();
-        };
-
-        // Close upload modal
-        const closeUploadModal = () => {
-            // This function is no longer needed, but keeping for compatibility
-            closeReportModal();
         };
 
         // View user report
@@ -1630,7 +1610,6 @@
             teamMembers.forEach(user => {
                 const status = getUserStatus(user.id, currentMonth);
                 const report = getUserReport(user.id, currentMonth);
-                const month = MONTHS_2025.find(m => m.number === currentMonth);
                 
                 const card = document.createElement('div');
                 card.className = `user-card ${status}`;
@@ -1655,6 +1634,9 @@
                         actionButtons = `
                             <button class="btn btn-warning" disabled>
                                 🔒 Deadline Passed
+                            </button>
+                            <button class="btn btn-secondary" onclick="showUserSummary(${user.id})">
+                                📊 View Summary
                             </button>
                         `;
                         break;
@@ -1698,7 +1680,6 @@
                 const repoName = extractRepoName(url);
                 document.getElementById('repoStatus').textContent = 'Connected';
                 document.getElementById('repoStatus').className = 'github-status connected';
-                document.getElementById('githubStatus').textContent = `Connected`;
                 showToast(`GitHub repository ${repoName} connected successfully`);
             } else if (url) {
                 showToast('Please enter a valid GitHub repository URL', 'error');
@@ -1706,7 +1687,6 @@
                 githubRepoUrl = '';
                 document.getElementById('repoStatus').textContent = 'Not Connected';
                 document.getElementById('repoStatus').className = 'github-status disconnected';
-                document.getElementById('githubStatus').textContent = 'Disconnected';
             }
         };
 
@@ -1973,7 +1953,7 @@
                 if (e.key === 'Escape') {
                     if (document.getElementById('usersModal').style.display === 'flex') {
                         closeUsersModal();
-                    } else                     if (document.getElementById('pinModal').style.display === 'flex') {
+                    } else if (document.getElementById('pinModal').style.display === 'flex') {
                         closePinModal();
                     } else if (document.getElementById('reportModal').style.display === 'flex') {
                         closeReportModal();
@@ -1995,3 +1975,6 @@
                 showAdminLoginModal();
             }
         });
+    </script>
+</body>
+</html>
