@@ -206,7 +206,7 @@
 
         .months-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
             margin-bottom: 40px;
         }
@@ -219,6 +219,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .month-card:hover {
@@ -346,135 +347,15 @@
             text-transform: uppercase;
         }
 
-        .upload-section {
-            background: #0d1117;
-            border: 2px dashed #30363d;
-            border-radius: 8px;
-            padding: 20px;
+        .click-hint {
             text-align: center;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .upload-section:hover {
-            border-color: #58a6ff;
-            background: rgba(88, 166, 255, 0.05);
-        }
-
-        .upload-section.dragover {
-            border-color: #238636;
-            background: rgba(35, 134, 54, 0.1);
-        }
-
-        .upload-icon {
-            font-size: 32px;
-            color: #6e7681;
-            margin-bottom: 10px;
-        }
-
-        .upload-text {
             color: #8b949e;
             font-size: 14px;
-            margin-bottom: 15px;
+            font-style: italic;
+            margin-top: 10px;
         }
 
-        .file-input {
-            display: none;
-        }
-
-        .upload-btn {
-            background: #238636;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .upload-btn:hover {
-            background: #2ea043;
-            transform: translateY(-1px);
-        }
-
-        .upload-btn:disabled {
-            background: #6e7681;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .uploaded-files {
-            margin-top: 15px;
-        }
-
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            background: rgba(88, 166, 255, 0.1);
-            border-radius: 6px;
-            margin-bottom: 8px;
-        }
-
-        .file-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-        }
-
-        .file-name {
-            color: #e6edf3;
-            font-size: 13px;
-        }
-
-        .file-size {
-            color: #8b949e;
-            font-size: 11px;
-        }
-
-        .file-actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .file-action-btn {
-            background: none;
-            border: none;
-            color: #8b949e;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 3px;
-            font-size: 12px;
-        }
-
-        .file-action-btn:hover {
-            color: #e6edf3;
-            background: rgba(139, 148, 158, 0.1);
-        }
-
-        .view-reports-btn {
-            width: 100%;
-            background: #58a6ff;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .view-reports-btn:hover {
-            background: #4493e0;
-            transform: translateY(-1px);
-        }
-
-        /* Modal styles */
+        /* User Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -482,7 +363,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(1, 4, 9, 0.9);
+            background: rgba(1, 4, 9, 0.95);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -490,23 +371,192 @@
 
         .modal-content {
             background: #161b22;
-            padding: 40px;
-            border-radius: 8px;
+            border-radius: 12px;
             border: 1px solid #30363d;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
+            width: 95%;
+            max-width: 1000px;
+            max-height: 90vh;
             overflow-y: auto;
+            position: relative;
         }
 
-        .modal h2 {
+        .modal-header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            padding: 20px 30px;
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .modal-title {
             color: #58a6ff;
-            margin-bottom: 20px;
             font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .modal-subtitle {
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: rgba(248, 81, 73, 0.1);
+            color: #f85149;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .user-card {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            border-color: #58a6ff;
+            box-shadow: 0 4px 15px rgba(88, 166, 255, 0.1);
+        }
+
+        .user-card.submitted {
+            border-color: #238636;
+            background: rgba(35, 134, 54, 0.05);
+        }
+
+        .user-card.overdue {
+            border-color: #f85149;
+            background: rgba(248, 81, 73, 0.05);
+        }
+
+        .user-header {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #30363d;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e6edf3;
+            margin-bottom: 2px;
+        }
+
+        .user-role {
+            color: #8b949e;
+            font-size: 13px;
+        }
+
+        .user-status {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: #f0ad4e;
+            color: #000;
+        }
+
+        .status-submitted {
+            background: #238636;
+            color: white;
+        }
+
+        .status-overdue {
+            background: #f85149;
+            color: white;
+        }
+
+        .user-actions {
+            display: flex;
             gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: #238636;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2ea043;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+
+        .btn-warning {
+            background: #f0ad4e;
+            color: #000;
+        }
+
+        /* PIN and Upload Modal Styles */
+        .small-modal .modal-content {
+            max-width: 500px;
         }
 
         .form-group {
@@ -521,7 +571,7 @@
             font-size: 14px;
         }
 
-        .form-group input {
+        .form-group input, .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #30363d;
@@ -530,11 +580,99 @@
             color: #e6edf3;
             font-size: 14px;
             font-family: inherit;
+            resize: vertical;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group textarea:focus {
             outline: none;
             border-color: #58a6ff;
+        }
+
+        .report-summary-card {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .report-month-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .report-month-title {
+            color: #58a6ff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .report-date {
+            color: #8b949e;
+            font-size: 12px;
+        }
+
+        .report-section {
+            margin-bottom: 15px;
+        }
+
+        .report-section-title {
+            color: #2ea043;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .report-section-content {
+            color: #e6edf3;
+            font-size: 13px;
+            line-height: 1.5;
+            background: rgba(88, 166, 255, 0.05);
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #58a6ff;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(13, 17, 23, 0.6);
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+
+        .summary-stat {
+            text-align: center;
+        }
+
+        .summary-stat-number {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            color: #58a6ff;
+        }
+
+        .summary-stat-label {
+            font-size: 11px;
+            color: #8b949e;
+            text-transform: uppercase;
+        }
+
+        .no-reports-message {
+            text-align: center;
+            color: #8b949e;
+            font-style: italic;
+            padding: 40px;
+            background: rgba(13, 17, 23, 0.4);
+            border-radius: 8px;
+            border: 1px dashed #30363d;
         }
 
         .modal-btn {
@@ -552,6 +690,14 @@
 
         .modal-btn:hover {
             background: #2ea043;
+        }
+
+        .modal-btn.secondary {
+            background: #6e7681;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #8b949e;
         }
 
         .error-message {
@@ -701,6 +847,10 @@
             .months-grid {
                 grid-template-columns: 1fr;
             }
+
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
             
             .stats-bar {
                 flex-direction: column;
@@ -734,6 +884,10 @@
             .github-input-group input {
                 min-width: auto;
             }
+
+            .modal-body {
+                padding: 20px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -757,6 +911,14 @@
 
             .month-name {
                 font-size: 20px;
+            }
+
+            .modal-header {
+                padding: 15px 20px;
+            }
+
+            .modal-body {
+                padding: 15px;
             }
         }
     </style>
@@ -786,28 +948,25 @@
             
             <div class="stats-bar">
                 <div class="stat-item">
-                    📋 <span class="stat-number" id="totalReports">0</span> reports uploaded
+                    📋 <span class="stat-number" id="totalReports">0</span> reports submitted
                 </div>
                 <div class="stat-item">
-                    📅 <span class="stat-number" id="activeMonths">12</span> months available
+                    👥 <span class="stat-number">8</span> team members
                 </div>
                 <div class="stat-item">
                     ⏰ Current: <span class="stat-number" id="currentMonth">January 2025</span>
                 </div>
-                <div class="stat-item">
-                    📂 <span class="stat-number" id="githubStatus">Disconnected</span> GitHub
-                </div>
             </div>
 
-            <!-- GitHub Configuration -->
-            <div class="github-config">
+            <!-- GitHub Configuration - Hidden -->
+            <div class="github-config" style="display: none;">
                 <h3>🔗 GitHub Repository Configuration</h3>
                 <div class="github-input-group">
-                    <input type="text" id="githubRepoUrl" placeholder="Enter GitHub repository URL (e.g., https://github.com/username/repo-name)" value="">
-                    <span class="github-status disconnected" id="repoStatus">Not Connected</span>
+                    <input type="text" id="githubRepoUrl" placeholder="Enter GitHub repository URL (e.g., https://github.com/username/repo-name)" value="https://mohamedsillahkanu.github.io/file-repository/">
+                    <span class="github-status connected" id="repoStatus">Connected</span>
                 </div>
                 <p style="color: #8b949e; font-size: 12px; margin-top: 10px;">
-                    💡 Reports will be organized in folders by month (e.g., /reports/2025/01-January/, /reports/2025/02-February/, etc.)
+                    💡 Reports will be organized in folders by month and user in the <strong>file-repository</strong> repository
                 </p>
             </div>
         </div>
@@ -834,27 +993,151 @@
     </div>
 
     <!-- Admin Login Modal -->
-    <div id="adminLoginModal" class="modal" role="dialog" aria-labelledby="adminLoginTitle" aria-modal="true">
+    <div id="adminLoginModal" class="modal small-modal" role="dialog" aria-labelledby="adminLoginTitle" aria-modal="true">
         <div class="modal-content">
-            <h2 id="adminLoginTitle">🔐 Admin Access</h2>
-            <p style="color: #8b949e; margin-bottom: 30px; font-size: 14px;">
-                Please enter admin credentials to manage the monthly reports
-            </p>
-            
-            <div class="form-group">
-                <label for="adminUsername">Admin Username</label>
-                <input type="text" id="adminUsername" name="adminUsername" placeholder="Enter admin username" required>
+            <div class="modal-header">
+                <div class="modal-title">🔐 Admin Access</div>
+                <div class="modal-subtitle">Please enter admin credentials to manage the monthly reports</div>
             </div>
-            
-            <div class="form-group">
-                <label for="adminPassword">Password</label>
-                <input type="password" id="adminPassword" name="adminPassword" placeholder="Enter password" required>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="adminUsername">Admin Username</label>
+                    <input type="text" id="adminUsername" name="adminUsername" placeholder="Enter admin username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" name="adminPassword" placeholder="Enter password" required>
+                </div>
+                
+                <button type="button" class="modal-btn" id="adminLoginButton">Login as Admin</button>
+                
+                <div class="error-message" id="adminErrorMessage">
+                    Invalid credentials. Please try again.
+                </div>
             </div>
-            
-            <button type="button" class="modal-btn" id="adminLoginButton">Login as Admin</button>
-            
-            <div class="error-message" id="adminErrorMessage">
-                Invalid credentials. Please try again.
+        </div>
+    </div>
+
+    <!-- Users Modal -->
+    <div id="usersModal" class="modal" role="dialog" aria-labelledby="usersModalTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="usersModalTitle">January 2025 - Team Reports</div>
+                <div class="modal-subtitle" id="usersModalSubtitle">Click on a team member to upload their monthly report</div>
+                <button class="close-btn" onclick="closeUsersModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="users-grid" id="usersGrid">
+                    <!-- User cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN Modal -->
+    <div id="pinModal" class="modal small-modal" role="dialog" aria-labelledby="pinTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">🔑 Enter Your PIN</div>
+                <div class="modal-subtitle" id="pinUserName">Please enter your 4-digit PIN to upload your report</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="userPin">4-Digit PIN</label>
+                    <input type="password" id="userPin" name="userPin" placeholder="Enter your PIN" maxlength="4" required>
+                </div>
+                
+                <button type="button" class="modal-btn" id="pinSubmitButton">Verify PIN</button>
+                <button type="button" class="modal-btn secondary" onclick="closePinModal()">Cancel</button>
+                
+                <div class="error-message" id="pinErrorMessage">
+                    Invalid PIN. Please try again.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Form Modal -->
+    <div id="reportModal" class="modal" role="dialog" aria-labelledby="reportTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📝 Monthly Report Form</div>
+                <div class="modal-subtitle" id="reportUserName">Fill out your monthly report</div>
+                <button class="close-btn" onclick="closeReportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="activitiesCompleted">
+                        <span style="color: #2ea043; font-weight: bold;">Activities Completed This Month</span>
+                    </label>
+                    <textarea id="activitiesCompleted" name="activitiesCompleted" placeholder="List all the activities you completed this month..." rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="keyAchievements">
+                        <span style="color: #2ea043; font-weight: bold;">Key Achievements & Milestones</span>
+                    </label>
+                    <textarea id="keyAchievements" name="keyAchievements" placeholder="Highlight your major achievements and milestones..." rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="challengesFaced">
+                        <span style="color: #2ea043; font-weight: bold;">Challenges Faced</span>
+                    </label>
+                    <textarea id="challengesFaced" name="challengesFaced" placeholder="Describe any challenges or obstacles you encountered..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="lessonsLearned">
+                        <span style="color: #2ea043; font-weight: bold;">Lessons Learned</span>
+                    </label>
+                    <textarea id="lessonsLearned" name="lessonsLearned" placeholder="What did you learn this month that could help in future work..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="nextMonthPlans">
+                        <span style="color: #2ea043; font-weight: bold;">Plans for Next Month</span>
+                    </label>
+                    <textarea id="nextMonthPlans" name="nextMonthPlans" placeholder="Outline your goals and planned activities for next month..." rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="supportNeeded">
+                        <span style="color: #2ea043; font-weight: bold;">Support Needed</span>
+                    </label>
+                    <textarea id="supportNeeded" name="supportNeeded" placeholder="What support or resources do you need to achieve your goals..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="additionalComments">
+                        <span style="color: #2ea043; font-weight: bold;">Additional Comments</span>
+                    </label>
+                    <textarea id="additionalComments" name="additionalComments" placeholder="Any other comments or feedback you'd like to share..." rows="3"></textarea>
+                </div>
+                
+                <button type="button" class="modal-btn" id="submitReportButton">Submit Monthly Report</button>
+                <button type="button" class="modal-btn secondary" onclick="closeReportModal()">Cancel</button>
+                
+                <div class="error-message" id="reportErrorMessage">
+                    Please fill in all required fields.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Summary Modal -->
+    <div id="summaryModal" class="modal" role="dialog" aria-labelledby="summaryTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📊 User Report Summary</div>
+                <div class="modal-subtitle" id="summaryUserName">Complete report history</div>
+                <button class="close-btn" onclick="closeSummaryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="summaryContent">
+                    <!-- Summary content will be populated by JavaScript -->
+                </div>
             </div>
         </div>
     </div>
@@ -864,14 +1147,78 @@
 
     <script>
         let isAdminLoggedIn = false;
+        let currentUser = null;
+        let currentMonth = null;
         let currentToast = null;
-        let githubRepoUrl = '';
-        let monthlyReports = {}; // Store reports by month
+        let githubRepoUrl = 'https://mohamedsillahkanu.github.io/file-repository/';
+        
+        // Store reports by month and user
+        let monthlyReports = {};
 
         // Admin credentials
         const adminCredentials = {
             'admin': 'mpr2025'
         };
+
+        // Team members with their information and PINs
+        const teamMembers = [
+            {
+                id: 1,
+                name: 'Dr. Sarah Johnson',
+                role: 'Pharmacy Lead',
+                avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
+                pin: '1234'
+            },
+            {
+                id: 2,
+                name: 'Dr. Michael Chen',
+                role: 'Hospital/PHU OPD Coordinator',
+                avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face',
+                pin: '5678'
+            },
+            {
+                id: 3,
+                name: 'Nurse Jane Smith',
+                role: 'In-patient Ward Supervisor',
+                avatar: 'https://images.unsplash.com/photo-1594824501085-4b1d66fc31fa?w=150&h=150&fit=crop&crop=face',
+                pin: '9012'
+            },
+            {
+                id: 4,
+                name: 'Dr. Robert Williams',
+                role: 'Hospital Laboratory Manager',
+                avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop&crop=face',
+                pin: '3456'
+            },
+            {
+                id: 5,
+                name: 'Dr. Emily Davis',
+                role: 'DHMT Coordinator',
+                avatar: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=150&h=150&fit=crop&crop=face',
+                pin: '7890'
+            },
+            {
+                id: 6,
+                name: 'James Rodriguez',
+                role: 'CHW Program Manager',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+                pin: '2468'
+            },
+            {
+                id: 7,
+                name: 'Dr. Maria Garcia',
+                role: 'ANC Specialist',
+                avatar: 'https://images.unsplash.com/photo-1594824501084-9be42d1b2ae8?w=150&h=150&fit=crop&crop=face',
+                pin: '1357'
+            },
+            {
+                id: 8,
+                name: 'David Thompson',
+                role: 'Community Engagement Lead',
+                avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+                pin: '9753'
+            }
+        ];
 
         // Month data for 2025
         const MONTHS_2025 = [
@@ -912,6 +1259,38 @@
             }
         };
 
+        // Get user report for specific month
+        const getUserReport = (userId, monthNumber) => {
+            if (!monthlyReports[monthNumber]) {
+                monthlyReports[monthNumber] = {};
+            }
+            return monthlyReports[monthNumber][userId];
+        };
+
+        // Set user report for specific month
+        const setUserReport = (userId, monthNumber, report) => {
+            if (!monthlyReports[monthNumber]) {
+                monthlyReports[monthNumber] = {};
+            }
+            monthlyReports[monthNumber][userId] = report;
+        };
+
+        // Get user status for specific month
+        const getUserStatus = (userId, monthNumber) => {
+            const report = getUserReport(userId, monthNumber);
+            const month = MONTHS_2025.find(m => m.number === monthNumber);
+            const now = new Date();
+            const dueDate = new Date(month.dueDate);
+            
+            if (report && report.submitted) {
+                return 'submitted';
+            } else if (now > dueDate) {
+                return 'overdue';
+            } else {
+                return 'pending';
+            }
+        };
+
         // Format file size
         const formatFileSize = (bytes) => {
             if (bytes === 0) return '0 Bytes';
@@ -921,97 +1300,392 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         };
 
-        // Handle file upload
-        const handleFileUpload = (monthNumber, files) => {
-            const month = MONTHS_2025.find(m => m.number === monthNumber);
-            if (!month) return;
+        // Show report form modal
+        const showReportModal = () => {
+            if (!currentUser || !currentMonth) return;
 
-            if (!monthlyReports[monthNumber]) {
-                monthlyReports[monthNumber] = [];
+            const month = MONTHS_2025.find(m => m.number === currentMonth);
+            const existingReport = getUserReport(currentUser.id, currentMonth);
+
+            document.getElementById('reportUserName').textContent = `${currentUser.name} - ${month.name} 2025 Monthly Report`;
+            
+            // Pre-fill existing data if available
+            if (existingReport) {
+                document.getElementById('activitiesCompleted').value = existingReport.activitiesCompleted || '';
+                document.getElementById('keyAchievements').value = existingReport.keyAchievements || '';
+                document.getElementById('challengesFaced').value = existingReport.challengesFaced || '';
+                document.getElementById('lessonsLearned').value = existingReport.lessonsLearned || '';
+                document.getElementById('nextMonthPlans').value = existingReport.nextMonthPlans || '';
+                document.getElementById('supportNeeded').value = existingReport.supportNeeded || '';
+                document.getElementById('additionalComments').value = existingReport.additionalComments || '';
+            } else {
+                // Clear form
+                document.getElementById('activitiesCompleted').value = '';
+                document.getElementById('keyAchievements').value = '';
+                document.getElementById('challengesFaced').value = '';
+                document.getElementById('lessonsLearned').value = '';
+                document.getElementById('nextMonthPlans').value = '';
+                document.getElementById('supportNeeded').value = '';
+                document.getElementById('additionalComments').value = '';
             }
-
-            Array.from(files).forEach(file => {
-                // Check file type (allow common document types)
-                const allowedTypes = [
-                    'application/pdf',
-                    'application/msword',
-                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    'application/vnd.ms-excel',
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    'text/plain',
-                    'text/csv'
-                ];
-
-                if (!allowedTypes.includes(file.type)) {
-                    showToast(`File type not supported: ${file.name}`, 'error');
-                    return;
-                }
-
-                // Check file size (max 10MB)
-                if (file.size > 10 * 1024 * 1024) {
-                    showToast(`File too large: ${file.name} (max 10MB)`, 'error');
-                    return;
-                }
-
-                const fileInfo = {
-                    id: Date.now() + Math.random(),
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    uploadDate: new Date(),
-                    file: file
-                };
-
-                monthlyReports[monthNumber].push(fileInfo);
-                
-                // Simulate upload to GitHub (in real implementation, this would use GitHub API)
-                simulateGitHubUpload(monthNumber, fileInfo);
-            });
-
-            renderMonths();
-            updateStats();
-            showToast(`${files.length} file(s) uploaded for ${month.name} 2025`);
+            
+            document.getElementById('reportModal').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('activitiesCompleted').focus();
+            }, 100);
         };
 
-        // Simulate GitHub upload
-        const simulateGitHubUpload = (monthNumber, fileInfo) => {
-            const month = MONTHS_2025.find(m => m.number === monthNumber);
-            const monthFolder = `${monthNumber.toString().padStart(2, '0')}-${month.name}`;
-            const githubPath = `reports/2025/${monthFolder}/${fileInfo.name}`;
-            
-            console.log(`Simulating upload to: ${githubRepoUrl}/${githubPath}`);
-            
-            // In a real implementation, you would use the GitHub API here
-            // This would require authentication and proper API calls
+        // Close report modal
+        const closeReportModal = () => {
+            document.getElementById('reportModal').style.display = 'none';
+            document.getElementById('reportErrorMessage').style.display = 'none';
         };
 
-        // Remove file
-        const removeFile = (monthNumber, fileId) => {
-            if (monthlyReports[monthNumber]) {
-                monthlyReports[monthNumber] = monthlyReports[monthNumber].filter(f => f.id !== fileId);
-                renderMonths();
-                updateStats();
-                showToast('File removed successfully');
-            }
-        };
-
-        // View reports for a month
-        const viewMonthReports = (monthNumber) => {
-            const month = MONTHS_2025.find(m => m.number === monthNumber);
-            const reports = monthlyReports[monthNumber] || [];
+        // Submit report
+        const submitReport = () => {
+            const activitiesCompleted = document.getElementById('activitiesCompleted').value.trim();
+            const keyAchievements = document.getElementById('keyAchievements').value.trim();
+            const challengesFaced = document.getElementById('challengesFaced').value.trim();
+            const lessonsLearned = document.getElementById('lessonsLearned').value.trim();
+            const nextMonthPlans = document.getElementById('nextMonthPlans').value.trim();
+            const supportNeeded = document.getElementById('supportNeeded').value.trim();
+            const additionalComments = document.getElementById('additionalComments').value.trim();
+            const errorMessage = document.getElementById('reportErrorMessage');
             
-            if (reports.length === 0) {
-                showToast(`No reports uploaded for ${month.name} 2025`, 'warning');
+            errorMessage.style.display = 'none';
+
+            if (!activitiesCompleted || !keyAchievements || !nextMonthPlans) {
+                errorMessage.textContent = 'Please fill in all required fields (Activities, Achievements, and Next Month Plans).';
+                errorMessage.style.display = 'block';
                 return;
             }
 
-            let reportsList = `${month.name} 2025 Reports:\n\n`;
-            reports.forEach((report, index) => {
-                reportsList += `${index + 1}. ${report.name} (${formatFileSize(report.size)})\n`;
-                reportsList += `   Uploaded: ${report.uploadDate.toLocaleString()}\n\n`;
+            if (currentUser && currentMonth) {
+                const month = MONTHS_2025.find(m => m.number === currentMonth);
+                
+                const report = {
+                    submitted: true,
+                    submittedDate: new Date(),
+                    activitiesCompleted: activitiesCompleted,
+                    keyAchievements: keyAchievements,
+                    challengesFaced: challengesFaced,
+                    lessonsLearned: lessonsLearned,
+                    nextMonthPlans: nextMonthPlans,
+                    supportNeeded: supportNeeded,
+                    additionalComments: additionalComments
+                };
+
+                setUserReport(currentUser.id, currentMonth, report);
+
+                closeReportModal();
+                renderUsersGrid();
+                renderMonths();
+                updateStats();
+                showToast(`${month.name} 2025 report submitted successfully for ${currentUser.name}!`);
+            }
+        };
+
+        // Show user summary modal
+        const showUserSummary = (userId) => {
+            const user = teamMembers.find(u => u.id === userId);
+            if (!user) return;
+
+            document.getElementById('summaryUserName').textContent = `${user.name} - Complete Report History`;
+            
+            // Collect all reports for this user
+            const userReports = [];
+            MONTHS_2025.forEach(month => {
+                const report = getUserReport(userId, month.number);
+                if (report && report.submitted) {
+                    userReports.push({
+                        month: month,
+                        report: report
+                    });
+                }
             });
 
-            alert(reportsList);
+            // Generate summary content
+            let summaryHtml = '';
+
+            if (userReports.length === 0) {
+                summaryHtml = `
+                    <div class="no-reports-message">
+                        <h3>No Reports Submitted Yet</h3>
+                        <p>${user.name} hasn't submitted any monthly reports yet.</p>
+                    </div>
+                `;
+            } else {
+                // Add statistics
+                summaryHtml += `
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-stat-number">${userReports.length}</span>
+                            <span class="summary-stat-label">Reports Submitted</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-number">${12 - userReports.length}</span>
+                            <span class="summary-stat-label">Pending</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-number">${Math.round((userReports.length / 12) * 100)}%</span>
+                            <span class="summary-stat-label">Completion Rate</span>
+                        </div>
+                    </div>
+                `;
+
+                // Add individual reports
+                userReports.forEach(({ month, report }) => {
+                    summaryHtml += `
+                        <div class="report-summary-card">
+                            <div class="report-month-header">
+                                <div class="report-month-title">${month.name} 2025</div>
+                                <div class="report-date">Submitted: ${report.submittedDate.toLocaleDateString()}</div>
+                            </div>
+                            
+                            <div class="report-section">
+                                <div class="report-section-title">Activities Completed</div>
+                                <div class="report-section-content">${report.activitiesCompleted}</div>
+                            </div>
+                            
+                            <div class="report-section">
+                                <div class="report-section-title">Key Achievements</div>
+                                <div class="report-section-content">${report.keyAchievements}</div>
+                            </div>
+                            
+                            ${report.challengesFaced ? `
+                                <div class="report-section">
+                                    <div class="report-section-title">Challenges Faced</div>
+                                    <div class="report-section-content">${report.challengesFaced}</div>
+                                </div>
+                            ` : ''}
+                            
+                            ${report.lessonsLearned ? `
+                                <div class="report-section">
+                                    <div class="report-section-title">Lessons Learned</div>
+                                    <div class="report-section-content">${report.lessonsLearned}</div>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="report-section">
+                                <div class="report-section-title">Next Month Plans</div>
+                                <div class="report-section-content">${report.nextMonthPlans}</div>
+                            </div>
+                            
+                            ${report.supportNeeded ? `
+                                <div class="report-section">
+                                    <div class="report-section-title">Support Needed</div>
+                                    <div class="report-section-content">${report.supportNeeded}</div>
+                                </div>
+                            ` : ''}
+                            
+                            ${report.additionalComments ? `
+                                <div class="report-section">
+                                    <div class="report-section-title">Additional Comments</div>
+                                    <div class="report-section-content">${report.additionalComments}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('summaryContent').innerHTML = summaryHtml;
+            document.getElementById('summaryModal').style.display = 'flex';
+        };
+
+        // Close summary modal
+        const closeSummaryModal = () => {
+            document.getElementById('summaryModal').style.display = 'none';
+        };
+
+        // Open month users modal
+        const openMonthModal = (monthNumber) => {
+            const month = MONTHS_2025.find(m => m.number === monthNumber);
+            if (!month) return;
+
+            currentMonth = monthNumber;
+            document.getElementById('usersModalTitle').textContent = `${month.name} 2025 - Team Reports`;
+            
+            const status = getMonthStatus(month);
+            if (status === 'overdue') {
+                document.getElementById('usersModalSubtitle').textContent = 'Deadline has passed - View submitted reports only';
+            } else {
+                document.getElementById('usersModalSubtitle').textContent = `Due: ${new Date(month.dueDate).toLocaleDateString()} - Click on a team member to upload their monthly report`;
+            }
+
+            renderUsersGrid();
+            document.getElementById('usersModal').style.display = 'flex';
+        };
+
+        // Close users modal
+        const closeUsersModal = () => {
+            document.getElementById('usersModal').style.display = 'none';
+            currentMonth = null;
+        };
+
+        // Show PIN modal
+        const showPinModal = (userId) => {
+            const user = teamMembers.find(u => u.id === userId);
+            const month = MONTHS_2025.find(m => m.number === currentMonth);
+            if (!user || !month) return;
+
+            const status = getUserStatus(userId, currentMonth);
+            if (status === 'overdue' && !getUserReport(userId, currentMonth)) {
+                showToast('The deadline has passed. You can no longer upload reports.', 'error');
+                return;
+            }
+
+            currentUser = user;
+            document.getElementById('pinUserName').textContent = `Hello ${user.name}, please enter your 4-digit PIN to upload your ${month.name} 2025 report`;
+            document.getElementById('pinModal').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('userPin').focus();
+            }, 100);
+        };
+
+        // Close PIN modal
+        const closePinModal = () => {
+            document.getElementById('pinModal').style.display = 'none';
+            document.getElementById('userPin').value = '';
+            document.getElementById('pinErrorMessage').style.display = 'none';
+        };
+
+        // Verify PIN
+        const verifyPin = () => {
+            const pin = document.getElementById('userPin').value;
+            const errorMessage = document.getElementById('pinErrorMessage');
+            
+            errorMessage.style.display = 'none';
+
+            if (!pin || pin.length !== 4) {
+                errorMessage.textContent = 'Please enter a 4-digit PIN.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (currentUser && currentUser.pin === pin) {
+                closePinModal();
+                showReportModal();
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('userPin').value = '';
+                document.getElementById('userPin').focus();
+            }
+        };
+
+        // Show upload modal
+        const showUploadModal = () => {
+            // This function is no longer needed, but keeping for compatibility
+            showReportModal();
+        };
+
+        // Close upload modal
+        const closeUploadModal = () => {
+            // This function is no longer needed, but keeping for compatibility
+            closeReportModal();
+        };
+
+        // View user report
+        const viewUserReport = (userId) => {
+            const user = teamMembers.find(u => u.id === userId);
+            const report = getUserReport(userId, currentMonth);
+            const month = MONTHS_2025.find(m => m.number === currentMonth);
+            
+            if (!user || !report || !report.submitted) return;
+
+            let reportDetails = `${month.name} 2025 Report\n\n`;
+            reportDetails += `Name: ${user.name}\n`;
+            reportDetails += `Role: ${user.role}\n`;
+            reportDetails += `Submitted: ${report.submittedDate.toLocaleString()}\n\n`;
+            
+            reportDetails += `ACTIVITIES COMPLETED:\n${report.activitiesCompleted}\n\n`;
+            reportDetails += `KEY ACHIEVEMENTS:\n${report.keyAchievements}\n\n`;
+            
+            if (report.challengesFaced) {
+                reportDetails += `CHALLENGES FACED:\n${report.challengesFaced}\n\n`;
+            }
+            
+            if (report.lessonsLearned) {
+                reportDetails += `LESSONS LEARNED:\n${report.lessonsLearned}\n\n`;
+            }
+            
+            reportDetails += `NEXT MONTH PLANS:\n${report.nextMonthPlans}\n\n`;
+            
+            if (report.supportNeeded) {
+                reportDetails += `SUPPORT NEEDED:\n${report.supportNeeded}\n\n`;
+            }
+            
+            if (report.additionalComments) {
+                reportDetails += `ADDITIONAL COMMENTS:\n${report.additionalComments}\n`;
+            }
+
+            alert(reportDetails);
+        };
+
+        // Render users grid
+        const renderUsersGrid = () => {
+            const grid = document.getElementById('usersGrid');
+            grid.innerHTML = '';
+
+            teamMembers.forEach(user => {
+                const status = getUserStatus(user.id, currentMonth);
+                const report = getUserReport(user.id, currentMonth);
+                const month = MONTHS_2025.find(m => m.number === currentMonth);
+                
+                const card = document.createElement('div');
+                card.className = `user-card ${status}`;
+                
+                let statusBadge = '';
+                let actionButtons = '';
+
+                switch (status) {
+                    case 'submitted':
+                        statusBadge = '<span class="user-status status-submitted">✅ Submitted</span>';
+                        actionButtons = `
+                            <button class="btn btn-secondary" onclick="viewUserReport(${user.id})">
+                                👁️ View Report
+                            </button>
+                            <button class="btn btn-secondary" onclick="showUserSummary(${user.id})">
+                                📊 View Summary
+                            </button>
+                        `;
+                        break;
+                    case 'overdue':
+                        statusBadge = '<span class="user-status status-overdue">⚠️ Overdue</span>';
+                        actionButtons = `
+                            <button class="btn btn-warning" disabled>
+                                🔒 Deadline Passed
+                            </button>
+                        `;
+                        break;
+                    default:
+                        statusBadge = '<span class="user-status status-pending">⏳ Pending</span>';
+                        actionButtons = `
+                            <button class="btn btn-primary" onclick="showPinModal(${user.id})">
+                                📝 Fill Report
+                            </button>
+                            <button class="btn btn-secondary" onclick="showUserSummary(${user.id})">
+                                📊 View Summary
+                            </button>
+                        `;
+                }
+
+                card.innerHTML = `
+                    <div class="user-header">
+                        <img src="${user.avatar}" alt="${user.name}" class="user-avatar">
+                        <div class="user-info">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-role">${user.role}</div>
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        ${actionButtons}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
         };
 
         // Update GitHub repo URL
@@ -1021,10 +1695,11 @@
             
             if (url && isValidGitHubUrl(url)) {
                 githubRepoUrl = url;
+                const repoName = extractRepoName(url);
                 document.getElementById('repoStatus').textContent = 'Connected';
                 document.getElementById('repoStatus').className = 'github-status connected';
-                document.getElementById('githubStatus').textContent = 'Connected';
-                showToast('GitHub repository connected successfully');
+                document.getElementById('githubStatus').textContent = `Connected`;
+                showToast(`GitHub repository ${repoName} connected successfully`);
             } else if (url) {
                 showToast('Please enter a valid GitHub repository URL', 'error');
             } else {
@@ -1035,17 +1710,35 @@
             }
         };
 
+        // Extract repository name from URL
+        const extractRepoName = (url) => {
+            if (url.includes('mohamedsillahkanu.github.io/file-repository')) {
+                return 'file-repository';
+            }
+            const match = url.match(/github\.com\/[\w\-\.]+\/([\w\-\.]+)/);
+            return match ? match[1] : 'repository';
+        };
+
         // Validate GitHub URL
         const isValidGitHubUrl = (url) => {
             const githubRegex = /^https:\/\/github\.com\/[\w\-\.]+\/[\w\-\.]+\/?$/;
-            return githubRegex.test(url);
+            const githubPagesRegex = /^https:\/\/[\w\-\.]+\.github\.io\/[\w\-\.]+\/?$/;
+            return githubRegex.test(url) || githubPagesRegex.test(url);
         };
 
         // Update statistics
         const updateStats = () => {
-            const totalReports = Object.values(monthlyReports).reduce((sum, reports) => sum + reports.length, 0);
-            const currentMonth = getCurrentMonth();
-            const currentMonthName = MONTHS_2025.find(m => m.number === currentMonth)?.name || 'Unknown';
+            let totalReports = 0;
+            Object.values(monthlyReports).forEach(monthData => {
+                Object.values(monthData).forEach(report => {
+                    if (report && report.submitted) {
+                        totalReports++;
+                    }
+                });
+            });
+
+            const currentMonthNum = getCurrentMonth();
+            const currentMonthName = MONTHS_2025.find(m => m.number === currentMonthNum)?.name || 'Unknown';
             
             document.getElementById('totalReports').textContent = totalReports;
             document.getElementById('currentMonth').textContent = `${currentMonthName} 2025`;
@@ -1058,12 +1751,15 @@
 
             MONTHS_2025.forEach(month => {
                 const status = getMonthStatus(month);
-                const reports = monthlyReports[month.number] || [];
                 const dueDate = new Date(month.dueDate);
-                const isUploadAllowed = status !== 'overdue';
+                
+                // Count reports for this month
+                const monthReports = monthlyReports[month.number] || {};
+                const submittedCount = Object.values(monthReports).filter(report => report && report.submitted).length;
                 
                 const card = document.createElement('div');
                 card.className = `month-card ${status === 'current' ? 'current-month' : ''} ${status === 'overdue' ? 'past-due' : ''}`;
+                card.onclick = () => openMonthModal(month.number);
                 
                 let statusBadge = '';
                 let statusColor = '';
@@ -1085,49 +1781,6 @@
                         statusColor = 'status-active';
                 }
 
-                // Create file upload section
-                let uploadSection = '';
-                if (isUploadAllowed) {
-                    uploadSection = `
-                        <div class="upload-section" ondrop="handleDrop(event, ${month.number})" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
-                            <div class="upload-icon">📄</div>
-                            <div class="upload-text">Drag & drop files here or click to upload</div>
-                            <input type="file" id="file-input-${month.number}" class="file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" onchange="handleFileSelect(event, ${month.number})">
-                            <button class="upload-btn" onclick="document.getElementById('file-input-${month.number}').click()">
-                                Choose Files
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    uploadSection = `
-                        <div class="upload-section" style="border-color: #f85149; background: rgba(248, 81, 73, 0.1);">
-                            <div class="upload-icon" style="color: #f85149;">🔒</div>
-                            <div class="upload-text" style="color: #f85149;">Upload deadline has passed</div>
-                            <button class="upload-btn" disabled>Upload Closed</button>
-                        </div>
-                    `;
-                }
-
-                // Create uploaded files list
-                let filesHtml = '';
-                if (reports.length > 0) {
-                    filesHtml = '<div class="uploaded-files">';
-                    reports.forEach(file => {
-                        filesHtml += `
-                            <div class="file-item">
-                                <div class="file-info">
-                                    <span class="file-name">📄 ${file.name}</span>
-                                    <span class="file-size">(${formatFileSize(file.size)})</span>
-                                </div>
-                                <div class="file-actions">
-                                    <button class="file-action-btn" onclick="removeFile(${month.number}, ${file.id})" title="Remove file">🗑️</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    filesHtml += '</div>';
-                }
-
                 card.innerHTML = `
                     <div class="month-header">
                         <div class="month-info">
@@ -1146,60 +1799,26 @@
 
                     <div class="reports-summary">
                         <div class="summary-item">
-                            <span class="summary-number">${reports.length}</span>
-                            <span class="summary-label">Reports</span>
+                            <span class="summary-number">${submittedCount}</span>
+                            <span class="summary-label">Submitted</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">${teamMembers.length}</span>
+                            <span class="summary-label">Total Users</span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-number">${month.days}</span>
                             <span class="summary-label">Days</span>
                         </div>
-                        <div class="summary-item">
-                            <span class="summary-number">${reports.reduce((sum, r) => sum + r.size, 0) > 0 ? formatFileSize(reports.reduce((sum, r) => sum + r.size, 0)) : '0 KB'}</span>
-                            <span class="summary-label">Total Size</span>
-                        </div>
                     </div>
 
-                    ${uploadSection}
-                    ${filesHtml}
-
-                    <button class="view-reports-btn" onclick="viewMonthReports(${month.number})" ${reports.length === 0 ? 'disabled' : ''}>
-                        📋 View Reports (${reports.length})
-                    </button>
+                    <div class="click-hint">
+                        👆 Click to manage reports
+                    </div>
                 `;
 
                 grid.appendChild(card);
             });
-        };
-
-        // File drag and drop handlers
-        const handleDragOver = (e) => {
-            e.preventDefault();
-        };
-
-        const handleDragEnter = (e) => {
-            e.preventDefault();
-            e.currentTarget.classList.add('dragover');
-        };
-
-        const handleDragLeave = (e) => {
-            e.preventDefault();
-            e.currentTarget.classList.remove('dragover');
-        };
-
-        const handleDrop = (e, monthNumber) => {
-            e.preventDefault();
-            e.currentTarget.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFileUpload(monthNumber, files);
-            }
-        };
-
-        const handleFileSelect = (e, monthNumber) => {
-            const files = e.target.files;
-            if (files.length > 0) {
-                handleFileUpload(monthNumber, files);
-            }
         };
 
         // Show admin login modal
@@ -1301,18 +1920,25 @@
             const adminUsernameInput = document.getElementById('adminUsername');
             const adminPasswordInput = document.getElementById('adminPassword');
             const adminLoginBtn = document.getElementById('adminLoginButton');
+            const pinInput = document.getElementById('userPin');
+            const pinSubmitBtn = document.getElementById('pinSubmitButton');
+            const submitReportBtn = document.getElementById('submitReportButton');
             const githubInput = document.getElementById('githubRepoUrl');
             
             // Set up event listeners
             adminLoginBtn.onclick = adminLogin;
+            pinSubmitBtn.onclick = verifyPin;
+            submitReportBtn.onclick = submitReport;
             
-            // GitHub input
-            githubInput.addEventListener('blur', updateGitHubRepo);
-            githubInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    updateGitHubRepo();
-                }
-            });
+            // GitHub input (hidden but functional)
+            if (githubInput) {
+                githubInput.addEventListener('blur', updateGitHubRepo);
+                githubInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        updateGitHubRepo();
+                    }
+                });
+            }
             
             // Admin login form events
             adminUsernameInput.addEventListener('keypress', (e) => {
@@ -1329,11 +1955,43 @@
                 }
             });
 
+            // PIN form events
+            pinInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyPin();
+                }
+            });
+
+            // Only allow numbers in PIN input
+            pinInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            });
+
+            // Escape key to close modals
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('usersModal').style.display === 'flex') {
+                        closeUsersModal();
+                    } else                     if (document.getElementById('pinModal').style.display === 'flex') {
+                        closePinModal();
+                    } else if (document.getElementById('reportModal').style.display === 'flex') {
+                        closeReportModal();
+                    } else if (document.getElementById('summaryModal').style.display === 'flex') {
+                        closeSummaryModal();
+                    }
+                }
+            });
+
+            // Initialize GitHub repository connection (embedded)
+            githubRepoUrl = 'https://mohamedsillahkanu.github.io/file-repository/';
+            const githubUrlInput = document.getElementById('githubRepoUrl');
+            if (githubUrlInput) {
+                githubUrlInput.value = githubRepoUrl;
+            }
+
             // Show admin login modal initially
             if (!isAdminLoggedIn) {
                 showAdminLoginModal();
             }
         });
-    </script>
-</body>
-</html>
