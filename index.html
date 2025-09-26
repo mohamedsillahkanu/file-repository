@@ -657,7 +657,7 @@
             </div>
 
             <div class="due-date-notice" id="dueDateNotice">
-                📅 Weekly reports are due by January 31, 2025 at 11:59 PM
+                📅 Weekly reports are due in 5 minutes (for testing purposes)
             </div>
         </div>
     </header>
@@ -771,8 +771,8 @@
         let currentToast = null;
         let pageLoadTime = Date.now();
 
-        // Due date for reports (January 31, 2025, 11:59 PM)
-        const DUE_DATE = new Date('2025-01-31T23:59:59');
+        // Due date for reports (5 minutes from page load for testing)
+        const DUE_DATE = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
 
         // Admin credentials
         const adminCredentials = {
@@ -898,6 +898,31 @@
         // Check if current date is past due date
         const isPastDue = () => {
             return new Date() > DUE_DATE;
+        };
+
+        // Update due date display and check status every 30 seconds
+        const updateDueDateDisplay = () => {
+            const now = new Date();
+            const timeLeft = DUE_DATE - now;
+            const dueDateElement = document.getElementById('dueDate');
+            const dueDateNotice = document.getElementById('dueDateNotice');
+            
+            if (timeLeft > 0) {
+                const minutes = Math.floor(timeLeft / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
+                dueDateElement.textContent = `${minutes}m ${seconds}s remaining`;
+                dueDateNotice.innerHTML = `⏰ Testing Mode: Reports due in ${minutes} minutes and ${seconds} seconds`;
+            } else {
+                dueDateElement.textContent = 'EXPIRED';
+                dueDateNotice.style.background = 'linear-gradient(90deg, #f85149, #da3633)';
+                dueDateNotice.innerHTML = '⚠️ DEADLINE HAS PASSED - No more report submissions allowed';
+                
+                // Re-render users to show overdue status
+                if (isAdminLoggedIn) {
+                    renderUsers();
+                    updateStats();
+                }
+            }
         };
 
         // Get user status
@@ -1267,16 +1292,16 @@ ${user.report.nextWeekPlans || 'None specified'}
                 showAdminLoginModal();
             }
 
-            // Update due date notice
-            const dueDateElement = document.getElementById('dueDate');
-            dueDateElement.textContent = DUE_DATE.toLocaleDateString();
+            // Start the countdown timer
+            updateDueDateDisplay();
+            setInterval(updateDueDateDisplay, 1000); // Update every second for testing
 
-            // Check if past due and update notice
-            if (isPastDue()) {
-                const notice = document.getElementById('dueDateNotice');
-                notice.style.background = 'linear-gradient(90deg, #f85149, #da3633)';
-                notice.innerHTML = '⚠️ DEADLINE HAS PASSED - No more report submissions allowed';
-            }
+            // Initial due date display
+            const dueDateElement = document.getElementById('dueDate');
+            const timeLeft = DUE_DATE - new Date();
+            const minutes = Math.floor(timeLeft / 60000);
+            const seconds = Math.floor((timeLeft % 60000) / 1000);
+            dueDateElement.textContent = `${minutes}m ${seconds}s remaining`;
         });
     </script>
 </body>
