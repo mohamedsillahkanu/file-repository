@@ -89,7 +89,7 @@ var appData = {
             id: 8,
             name: 'Philip Brewah',
             role: 'SME Officer',
-            avatar: '?w=150&h=150&fit=crop&crop=face',
+            avatar: 'https://github.com/mohamedsillahkanu/file-repository/raw/f2d8877a0880ab22d0437c99d708851bcc4e784c/NMCP.png?w=150&h=150&fit=crop&crop=face',
             pin: '9753'
         }
     ]
