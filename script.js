@@ -7,18 +7,18 @@ var currentToast = null;
 
 // Configuration for multiple backup methods
 const BACKUP_CONFIG = {
-    // Python Backend (Primary)
+    // Python Backend (Primary) - Disabled for universal access
     pythonBackend: {
         baseUrl: 'http://localhost:5000/api',  // Change to your deployed URL
-        enabled: true,
+        enabled: false,  // Disabled to prioritize Google Sheets for universal access
         timeout: 30000
     },
     
-    // Google Sheets (Secondary)
+    // Google Sheets (Primary) - Universal access
     googleSheets: {
         apiKey: 'AIzaSyBSxmmqw67fC349cpfVJ6ZltHo3wmdcGgE',
         spreadsheetId: '1jqf7JFYbtaQxWla3TdYqLnpcnPmAbDIYOvn8PruO13M',
-        webAppUrl: 'https://script.google.com/macros/s/YOUR_WEB_APP_URL_HERE/exec',
+        webAppUrl: 'https://script.google.com/macros/s/AKfycbzWWxWjp7gMy7D1NzAR_PJQ0yEm2P1CqapWfmxz8seMfRFXXKELTMOfWgD2SXxhvgYemw/exec',
         enabled: true
     },
     
