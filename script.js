@@ -1,285 +1,196 @@
-// Global variables
-var isAdminLoggedIn = false;
-var currentUser = null;
-var currentMonth = null;
-var currentWeek = null;
-var currentToast = null;
+// Replace these functions in your main JavaScript file
 
-// Google Sheets configuration
+// Google Sheets configuration - UPDATE THIS WEB APP URL
 const GOOGLE_SHEETS_CONFIG = {
     apiKey: 'AIzaSyBSxmmqw67fC349cpfVJ6ZltHo3wmdcGgE',
     spreadsheetId: '1jqf7JFYbtaQxWla3TdYqLnpcnPmAbDIYOvn8PruO13M',
-    range: 'MPRData!A1:B1'
+    range: 'MPRData!A1:B1',
+    // UPDATE THIS URL WITH YOUR NEW GOOGLE APPS SCRIPT WEB APP URL
+    webAppUrl: 'https://script.google.com/macros/s/YOUR_NEW_WEB_APP_URL_HERE/exec'
 };
 
-// Data will be loaded from Google Sheets
-var appData = {
-    weeklyReports: {},
-    adminCredentials: {
-        'admin': 'mpr2025'
-    },
-    teamMembers: [
-        {
-            id: 1,
-            name: 'Dr. Sarah Johnson',
-            role: 'Pharmacy Lead',
-            avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
-            pin: '1234'
-        },
-        {
-            id: 2,
-            name: 'Dr. Michael Chen',
-            role: 'Hospital/PHU OPD Coordinator',
-            avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face',
-            pin: '5678'
-        },
-        {
-            id: 3,
-            name: 'Nurse Jane Smith',
-            role: 'In-patient Ward Supervisor',
-            avatar: 'https://images.unsplash.com/photo-1594824501085-4b1d66fc31fa?w=150&h=150&fit=crop&crop=face',
-            pin: '9012'
-        },
-        {
-            id: 4,
-            name: 'Dr. Robert Williams',
-            role: 'Hospital Laboratory Manager',
-            avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop&crop=face',
-            pin: '3456'
-        },
-        {
-            id: 5,
-            name: 'Dr. Emily Davis',
-            role: 'DHMT Coordinator',
-            avatar: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=150&h=150&fit=crop&crop=face',
-            pin: '7890'
-        },
-        {
-            id: 6,
-            name: 'James Rodriguez',
-            role: 'CHW Program Manager',
-            avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-            pin: '2468'
-        },
-        {
-            id: 7,
-            name: 'Dr. Maria Garcia',
-            role: 'ANC Specialist',
-            avatar: 'https://images.unsplash.com/photo-1594824501084-9be42d1b2ae8?w=150&h=150&fit=crop&crop=face',
-            pin: '1357'
-        },
-        {
-            id: 8,
-            name: 'David Thompson',
-            role: 'Community Engagement Lead',
-            avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-            pin: '9753'
-        }
-    ]
-};
-
-// Month data for 2025 with weekly breakdown
-var MONTHS_2025 = [
-    { 
-        number: 1, 
-        name: 'January', 
-        dueDate: '2025-01-31T23:59:59', 
-        days: 31,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-01-01', endDate: '2025-01-07', dueDate: '2025-01-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-01-08', endDate: '2025-01-14', dueDate: '2025-01-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-01-15', endDate: '2025-01-21', dueDate: '2025-01-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-01-22', endDate: '2025-01-31', dueDate: '2025-02-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 2, 
-        name: 'February', 
-        dueDate: '2025-02-28T23:59:59', 
-        days: 28,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-02-01', endDate: '2025-02-07', dueDate: '2025-02-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-02-08', endDate: '2025-02-14', dueDate: '2025-02-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-02-15', endDate: '2025-02-21', dueDate: '2025-02-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-02-22', endDate: '2025-02-28', dueDate: '2025-03-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 3, 
-        name: 'March', 
-        dueDate: '2025-03-31T23:59:59', 
-        days: 31,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-03-01', endDate: '2025-03-07', dueDate: '2025-03-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-03-08', endDate: '2025-03-14', dueDate: '2025-03-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-03-15', endDate: '2025-03-21', dueDate: '2025-03-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-03-22', endDate: '2025-03-31', dueDate: '2025-04-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 4, 
-        name: 'April', 
-        dueDate: '2025-04-30T23:59:59', 
-        days: 30,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-04-01', endDate: '2025-04-07', dueDate: '2025-04-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-04-08', endDate: '2025-04-14', dueDate: '2025-04-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-04-15', endDate: '2025-04-21', dueDate: '2025-04-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-04-22', endDate: '2025-04-30', dueDate: '2025-05-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 5, 
-        name: 'May', 
-        dueDate: '2025-05-31T23:59:59', 
-        days: 31,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-05-01', endDate: '2025-05-07', dueDate: '2025-05-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-05-08', endDate: '2025-05-14', dueDate: '2025-05-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-05-15', endDate: '2025-05-21', dueDate: '2025-05-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-05-22', endDate: '2025-05-31', dueDate: '2025-06-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 6, 
-        name: 'June', 
-        dueDate: '2025-06-30T23:59:59', 
-        days: 30,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-06-01', endDate: '2025-06-07', dueDate: '2025-06-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-06-08', endDate: '2025-06-14', dueDate: '2025-06-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-06-15', endDate: '2025-06-21', dueDate: '2025-06-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-06-22', endDate: '2025-06-30', dueDate: '2025-07-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 7, 
-        name: 'July', 
-        dueDate: '2025-07-31T23:59:59', 
-        days: 31,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-07-01', endDate: '2025-07-07', dueDate: '2025-07-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-07-08', endDate: '2025-07-14', dueDate: '2025-07-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-07-15', endDate: '2025-07-21', dueDate: '2025-07-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-07-22', endDate: '2025-07-31', dueDate: '2025-08-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 8, 
-        name: 'August', 
-        dueDate: '2025-08-31T23:59:59', 
-        days: 31,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-08-01', endDate: '2025-08-07', dueDate: '2025-08-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-08-08', endDate: '2025-08-14', dueDate: '2025-08-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-08-15', endDate: '2025-08-21', dueDate: '2025-08-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-08-22', endDate: '2025-08-31', dueDate: '2025-09-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 9, 
-        name: 'September', 
-        dueDate: '2025-09-30T23:59:59', 
-        days: 30,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-09-01', endDate: '2025-09-07', dueDate: '2025-09-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-09-08', endDate: '2025-09-14', dueDate: '2025-09-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-09-15', endDate: '2025-09-21', dueDate: '2025-09-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-09-22', endDate: '2025-09-30', dueDate: '2025-10-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 10, 
-        name: 'October', 
-        dueDate: '2025-10-31T23:59:59', 
-        days: 31,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-10-01', endDate: '2025-10-07', dueDate: '2025-10-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-10-08', endDate: '2025-10-14', dueDate: '2025-10-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-10-15', endDate: '2025-10-21', dueDate: '2025-10-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-10-22', endDate: '2025-10-31', dueDate: '2025-11-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 11, 
-        name: 'November', 
-        dueDate: '2025-11-30T23:59:59', 
-        days: 30,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-11-01', endDate: '2025-11-07', dueDate: '2025-11-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-11-08', endDate: '2025-11-14', dueDate: '2025-11-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-11-15', endDate: '2025-11-21', dueDate: '2025-11-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-11-22', endDate: '2025-11-30', dueDate: '2025-12-01T23:59:59' }
-        ]
-    },
-    { 
-        number: 12, 
-        name: 'December', 
-        dueDate: '2025-12-31T23:59:59', 
-        days: 31,
-        weeks: [
-            { number: 1, name: 'Week 1', startDate: '2025-12-01', endDate: '2025-12-07', dueDate: '2025-12-08T23:59:59' },
-            { number: 2, name: 'Week 2', startDate: '2025-12-08', endDate: '2025-12-14', dueDate: '2025-12-15T23:59:59' },
-            { number: 3, name: 'Week 3', startDate: '2025-12-15', endDate: '2025-12-21', dueDate: '2025-12-22T23:59:59' },
-            { number: 4, name: 'Week 4', startDate: '2025-12-22', endDate: '2025-12-31', dueDate: '2026-01-01T23:59:59' }
-        ]
-    }
-];
-
-// Google Sheets API functions
+// Enhanced load function that handles both Google Sheets API and Apps Script
 async function loadDataFromSheets() {
     try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/MPRData!A1:C1?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+        console.log('Starting data load from Google Sheets...');
+        showToast('Loading saved data...', 'info');
         
-        const response = await fetch(url);
-        if (!response.ok) {
-            console.log('No existing data in Google Sheets, using defaults');
-            return;
-        }
-        
-        const data = await response.json();
-        if (data.values && data.values.length > 0 && data.values[0].length > 1) {
-            // The data is stored in column B (index 1)
-            const jsonData = JSON.parse(data.values[0][1]);
+        // Method 1: Try Google Apps Script first (more reliable)
+        try {
+            const gasResponse = await fetch(`${GOOGLE_SHEETS_CONFIG.webAppUrl}?spreadsheetId=${GOOGLE_SHEETS_CONFIG.spreadsheetId}&action=load`);
             
-            // Convert date strings back to Date objects
-            function convertDates(obj) {
-                if (obj && typeof obj === 'object') {
-                    for (let key in obj) {
-                        if (key === 'submittedDate' && typeof obj[key] === 'string') {
-                            obj[key] = new Date(obj[key]);
-                        } else if (typeof obj[key] === 'object') {
-                            convertDates(obj[key]);
-                        }
-                    }
+            if (gasResponse.ok) {
+                const gasResult = await gasResponse.json();
+                console.log('Google Apps Script response:', gasResult);
+                
+                if (gasResult.success && gasResult.data) {
+                    await processLoadedData(gasResult.data, 'Google Apps Script');
+                    return;
                 }
             }
-            
-            convertDates(jsonData);
-            
-            // Merge loaded data with default structure
-            if (jsonData.weeklyReports) {
-                appData.weeklyReports = jsonData.weeklyReports;
-            }
-            if (jsonData.teamMembers) {
-                appData.teamMembers = jsonData.teamMembers;
-            }
-            if (jsonData.adminCredentials) {
-                appData.adminCredentials = jsonData.adminCredentials;
-            }
-            
-            console.log('Data loaded from Google Sheets successfully:', appData);
-            showToast('Data loaded from Google Sheets successfully!');
+        } catch (gasError) {
+            console.log('Google Apps Script method failed:', gasError.message);
         }
+        
+        // Method 2: Fallback to Google Sheets API
+        console.log('Trying Google Sheets API as fallback...');
+        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/MPRData!A1:D10?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+        
+        const apiResponse = await fetch(apiUrl);
+        if (!apiResponse.ok) {
+            throw new Error(`Sheets API failed: ${apiResponse.status} ${apiResponse.statusText}`);
+        }
+        
+        const apiData = await apiResponse.json();
+        console.log('Google Sheets API response:', apiData);
+        
+        if (apiData.values && apiData.values.length > 1) {
+            // Look for data in row 2, column 2 (where the script saves it)
+            const dataCell = apiData.values[1] && apiData.values[1][1];
+            if (dataCell) {
+                await processLoadedData(dataCell, 'Google Sheets API');
+                return;
+            }
+        }
+        
+        // No data found
+        console.log('No data found in Google Sheets');
+        showToast('No existing data found - using defaults', 'warning');
+        
     } catch (error) {
-        console.log('Error loading from Google Sheets:', error);
-        showToast('Using default data - Google Sheets unavailable', 'warning');
+        console.error('Error loading from Google Sheets:', error);
+        showToast(`Failed to load data: ${error.message}`, 'error');
     }
 }
 
+// Helper function to process loaded data
+async function processLoadedData(rawData, source) {
+    try {
+        let jsonString = rawData;
+        
+        // Handle MPR_DATA prefix
+        if (typeof rawData === 'string' && rawData.startsWith('MPR_DATA{')) {
+            jsonString = rawData.substring(8); // Remove "MPR_DATA" prefix
+            console.log('Removed MPR_DATA prefix');
+        }
+        
+        // Parse JSON
+        const jsonData = JSON.parse(jsonString);
+        console.log('Parsed JSON data:', jsonData);
+        
+        // Convert date strings back to Date objects
+        convertDatesInObject(jsonData);
+        
+        // Merge data
+        let updatedCount = 0;
+        
+        if (jsonData.weeklyReports) {
+            appData.weeklyReports = mergeWeeklyReports(appData.weeklyReports, jsonData.weeklyReports);
+            updatedCount++;
+        }
+        
+        if (jsonData.teamMembers && Array.isArray(jsonData.teamMembers)) {
+            appData.teamMembers = mergeTeamMembers(appData.teamMembers, jsonData.teamMembers);
+            updatedCount++;
+        }
+        
+        if (jsonData.adminCredentials) {
+            appData.adminCredentials = { ...appData.adminCredentials, ...jsonData.adminCredentials };
+            updatedCount++;
+        }
+        
+        // Count reports for user feedback
+        const reportCount = countSubmittedReports(appData.weeklyReports);
+        
+        console.log('Data successfully loaded and merged');
+        showToast(`Data loaded via ${source}! Found ${reportCount} submitted reports.`, 'success');
+        
+        // Update UI if logged in
+        if (isAdminLoggedIn) {
+            renderMonths();
+            updateStats();
+        }
+        
+    } catch (parseError) {
+        console.error('Error processing loaded data:', parseError);
+        showToast('Data found but could not be parsed', 'error');
+    }
+}
+
+// Helper function to merge weekly reports
+function mergeWeeklyReports(existing, loaded) {
+    const merged = { ...existing };
+    
+    Object.keys(loaded).forEach(month => {
+        if (!merged[month]) merged[month] = {};
+        
+        Object.keys(loaded[month]).forEach(week => {
+            if (!merged[month][week]) merged[month][week] = {};
+            
+            Object.keys(loaded[month][week]).forEach(userId => {
+                merged[month][week][userId] = loaded[month][week][userId];
+            });
+        });
+    });
+    
+    return merged;
+}
+
+// Helper function to merge team members
+function mergeTeamMembers(existing, loaded) {
+    const merged = [...existing];
+    
+    loaded.forEach(loadedMember => {
+        const existingIndex = merged.findIndex(member => member.id === loadedMember.id);
+        if (existingIndex >= 0) {
+            merged[existingIndex] = { ...merged[existingIndex], ...loadedMember };
+        } else {
+            merged.push(loadedMember);
+        }
+    });
+    
+    return merged;
+}
+
+// Helper function to convert date strings
+function convertDatesInObject(obj) {
+    if (obj && typeof obj === 'object') {
+        for (let key in obj) {
+            if (key === 'submittedDate' && typeof obj[key] === 'string') {
+                try {
+                    obj[key] = new Date(obj[key]);
+                } catch (error) {
+                    console.warn('Failed to convert date:', obj[key]);
+                }
+            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                convertDatesInObject(obj[key]);
+            }
+        }
+    }
+}
+
+// Helper function to count submitted reports
+function countSubmittedReports(weeklyReports) {
+    let count = 0;
+    Object.keys(weeklyReports).forEach(month => {
+        Object.keys(weeklyReports[month]).forEach(week => {
+            Object.keys(weeklyReports[month][week]).forEach(userId => {
+                if (weeklyReports[month][week][userId]?.submitted) {
+                    count++;
+                }
+            });
+        });
+    });
+    return count;
+}
+
+// Enhanced save function
 async function saveDataToSheets() {
     try {
-        // Prepare data for Google Sheets
+        console.log('Starting save to Google Sheets...');
+        showToast('Saving data...', 'info');
+        
+        // Prepare data
         const dataToSave = JSON.stringify(appData, (key, value) => {
             if (value instanceof Date) {
                 return value.toISOString();
@@ -287,758 +198,56 @@ async function saveDataToSheets() {
             return value;
         });
         
-        // Use Google Apps Script Web App as proxy for writing data
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbzZ-dlOG7mNW3-ToxmByuJDajekGm5xsYJ_ISKNtK10ETi9vhtsPShCfz1siZN4AELJ6g/exec';
+        // Add MPR_DATA prefix for consistency
+        const prefixedData = 'MPR_DATA' + dataToSave;
         
+        console.log('Data size:', prefixedData.length, 'characters');
+        
+        // Prepare form data
         const formData = new FormData();
         formData.append('spreadsheetId', GOOGLE_SHEETS_CONFIG.spreadsheetId);
-        formData.append('data', dataToSave);
+        formData.append('data', prefixedData);
         formData.append('timestamp', new Date().toISOString());
+        formData.append('action', 'save');
         
-        const response = await fetch(webAppUrl, {
+        // Send to Google Apps Script
+        const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
             method: 'POST',
-            body: formData
+            body: formData,
+            mode: 'cors'
         });
         
-        showToast('Data saved to Google Sheets successfully!');
-        console.log('Data sent to Google Sheets');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.text();
+        console.log('Save response:', result);
+        
+        if (result.includes('SUCCESS')) {
+            showToast('Data saved successfully!', 'success');
+        } else if (result.includes('ERROR')) {
+            throw new Error(result.replace('ERROR: ', ''));
+        } else {
+            console.warn('Unexpected response:', result);
+            showToast('Save completed with unexpected response', 'warning');
+        }
+        
     } catch (error) {
         console.error('Error saving to Google Sheets:', error);
-        showToast('Error saving to Google Sheets: ' + error.message, 'error');
-    }
-}
-
-function downloadBackup() {
-    try {
-        const dataToSave = JSON.stringify(appData, (key, value) => {
-            if (value instanceof Date) {
-                return value.toISOString();
-            }
-            return value;
-        }, 2);
-
-        const blob = new Blob([dataToSave], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'mpr-backup-' + new Date().toISOString().split('T')[0] + '.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        showToast(`Save failed: ${error.message}`, 'error');
         
-        showToast('Backup downloaded as fallback');
-    } catch (error) {
-        console.error('Error creating backup:', error);
-        showToast('Error creating backup: ' + error.message, 'error');
+        // Create local backup as fallback
+        downloadBackup();
+        showToast('Local backup created as fallback', 'info');
     }
 }
 
-// Utility functions
-function getCurrentMonth() {
-    var now = new Date();
-    return now.getMonth() + 1;
-}
-
-function getCurrentWeek() {
-    var now = new Date();
-    var currentMonthNum = getCurrentMonth();
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonthNum) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    
-    if (!month) return 1;
-    
-    for (var j = 0; j < month.weeks.length; j++) {
-        var week = month.weeks[j];
-        var startDate = new Date(week.startDate);
-        var endDate = new Date(week.endDate);
-        if (now >= startDate && now <= endDate) {
-            return week.number;
-        }
-    }
-    return 1;
-}
-
-function getWeekStatus(week) {
-    var now = new Date();
-    var dueDate = new Date(week.dueDate);
-    var startDate = new Date(week.startDate);
-    var endDate = new Date(week.endDate);
-    
-    if (now >= startDate && now <= endDate) {
-        return 'current';
-    } else if (now > dueDate) {
-        return 'overdue';
-    } else if (now < startDate) {
-        return 'upcoming';
-    } else {
-        return 'active';
-    }
-}
-
-function getUserReport(userId, monthNumber, weekNumber) {
-    if (!appData.weeklyReports[monthNumber]) {
-        appData.weeklyReports[monthNumber] = {};
-    }
-    if (!appData.weeklyReports[monthNumber][weekNumber]) {
-        appData.weeklyReports[monthNumber][weekNumber] = {};
-    }
-    return appData.weeklyReports[monthNumber][weekNumber][userId];
-}
-
-function setUserReport(userId, monthNumber, weekNumber, report) {
-    if (!appData.weeklyReports[monthNumber]) {
-        appData.weeklyReports[monthNumber] = {};
-    }
-    if (!appData.weeklyReports[monthNumber][weekNumber]) {
-        appData.weeklyReports[monthNumber][weekNumber] = {};
-    }
-    appData.weeklyReports[monthNumber][weekNumber][userId] = report;
-}
-
-function getUserStatus(userId, monthNumber, weekNumber) {
-    var report = getUserReport(userId, monthNumber, weekNumber);
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === monthNumber) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    for (var j = 0; j < month.weeks.length; j++) {
-        if (month.weeks[j].number === weekNumber) {
-            week = month.weeks[j];
-            break;
-        }
-    }
-    var now = new Date();
-    var dueDate = new Date(week.dueDate);
-    
-    if (report && report.submitted) {
-        return 'submitted';
-    } else if (now > dueDate) {
-        return 'overdue';
-    } else {
-        return 'pending';
-    }
-}
-
-// Modal functions
-function showPinModal(userId) {
-    var user = null;
-    for (var i = 0; i < appData.teamMembers.length; i++) {
-        if (appData.teamMembers[i].id === userId) {
-            user = appData.teamMembers[i];
-            break;
-        }
-    }
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    if (month) {
-        for (var j = 0; j < month.weeks.length; j++) {
-            if (month.weeks[j].number === currentWeek) {
-                week = month.weeks[j];
-                break;
-            }
-        }
-    }
-    if (!user || !week) return;
-
-    var status = getUserStatus(userId, currentMonth, currentWeek);
-    if (status === 'overdue' && !getUserReport(userId, currentMonth, currentWeek)) {
-        showToast('The deadline has passed. You can no longer submit reports.', 'error');
-        return;
-    }
-
-    currentUser = user;
-    document.getElementById('pinUserName').textContent = 'Hello ' + user.name + ', please enter your 4-digit PIN to submit your ' + month.name + ' 2025 ' + week.name + ' report';
-    document.getElementById('pinModal').style.display = 'flex';
-    setTimeout(function() {
-        document.getElementById('userPin').focus();
-    }, 100);
-}
-
-function closePinModal() {
-    document.getElementById('pinModal').style.display = 'none';
-    document.getElementById('userPin').value = '';
-    document.getElementById('pinErrorMessage').style.display = 'none';
-}
-
-function verifyPin() {
-    var pin = document.getElementById('userPin').value;
-    var errorMessage = document.getElementById('pinErrorMessage');
-    
-    errorMessage.style.display = 'none';
-
-    if (!pin || pin.length !== 4) {
-        errorMessage.textContent = 'Please enter a 4-digit PIN.';
-        errorMessage.style.display = 'block';
-        return;
-    }
-
-    if (currentUser && currentUser.pin === pin) {
-        closePinModal();
-        showReportModal();
-    } else {
-        errorMessage.style.display = 'block';
-        document.getElementById('userPin').value = '';
-        document.getElementById('userPin').focus();
-    }
-}
-
-function showReportModal() {
-    if (!currentUser || !currentMonth || !currentWeek) return;
-
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    if (month) {
-        for (var j = 0; j < month.weeks.length; j++) {
-            if (month.weeks[j].number === currentWeek) {
-                week = month.weeks[j];
-                break;
-            }
-        }
-    }
-    var existingReport = getUserReport(currentUser.id, currentMonth, currentWeek);
-
-    document.getElementById('reportUserName').textContent = currentUser.name + ' - ' + month.name + ' 2025 ' + week.name + ' Report';
-    
-    // Pre-fill existing data if available
-    if (existingReport) {
-        document.getElementById('activitiesCompleted').value = existingReport.activitiesCompleted || '';
-        document.getElementById('keyAchievements').value = existingReport.keyAchievements || '';
-        document.getElementById('challengesFaced').value = existingReport.challengesFaced || '';
-        document.getElementById('lessonsLearned').value = existingReport.lessonsLearned || '';
-        document.getElementById('nextWeekPlans').value = existingReport.nextWeekPlans || '';
-        document.getElementById('supportNeeded').value = existingReport.supportNeeded || '';
-        document.getElementById('additionalComments').value = existingReport.additionalComments || '';
-    } else {
-        // Clear form
-        document.getElementById('activitiesCompleted').value = '';
-        document.getElementById('keyAchievements').value = '';
-        document.getElementById('challengesFaced').value = '';
-        document.getElementById('lessonsLearned').value = '';
-        document.getElementById('nextWeekPlans').value = '';
-        document.getElementById('supportNeeded').value = '';
-        document.getElementById('additionalComments').value = '';
-    }
-    
-    document.getElementById('reportModal').style.display = 'flex';
-    setTimeout(function() {
-        document.getElementById('activitiesCompleted').focus();
-    }, 100);
-}
-
-function closeReportModal() {
-    document.getElementById('reportModal').style.display = 'none';
-    document.getElementById('reportErrorMessage').style.display = 'none';
-}
-
-async function submitReport() {
-    var activitiesCompleted = document.getElementById('activitiesCompleted').value.trim();
-    var keyAchievements = document.getElementById('keyAchievements').value.trim();
-    var challengesFaced = document.getElementById('challengesFaced').value.trim();
-    var lessonsLearned = document.getElementById('lessonsLearned').value.trim();
-    var nextWeekPlans = document.getElementById('nextWeekPlans').value.trim();
-    var supportNeeded = document.getElementById('supportNeeded').value.trim();
-    var additionalComments = document.getElementById('additionalComments').value.trim();
-    var errorMessage = document.getElementById('reportErrorMessage');
-    
-    errorMessage.style.display = 'none';
-
-    if (!activitiesCompleted || !keyAchievements || !nextWeekPlans) {
-        errorMessage.textContent = 'Please fill in all required fields (Activities, Achievements, and Next Week Plans).';
-        errorMessage.style.display = 'block';
-        return;
-    }
-
-    if (currentUser && currentMonth && currentWeek) {
-        var month = null;
-        for (var i = 0; i < MONTHS_2025.length; i++) {
-            if (MONTHS_2025[i].number === currentMonth) {
-                month = MONTHS_2025[i];
-                break;
-            }
-        }
-        var week = null;
-        if (month) {
-            for (var j = 0; j < month.weeks.length; j++) {
-                if (month.weeks[j].number === currentWeek) {
-                    week = month.weeks[j];
-                    break;
-                }
-            }
-        }
-        
-        var report = {
-            submitted: true,
-            submittedDate: new Date(),
-            activitiesCompleted: activitiesCompleted,
-            keyAchievements: keyAchievements,
-            challengesFaced: challengesFaced,
-            lessonsLearned: lessonsLearned,
-            nextWeekPlans: nextWeekPlans,
-            supportNeeded: supportNeeded,
-            additionalComments: additionalComments
-        };
-
-        console.log('Saving report for user:', currentUser.name, 'Month:', currentMonth, 'Week:', currentWeek);
-        setUserReport(currentUser.id, currentMonth, currentWeek, report);
-        
-        console.log('Current appData after saving:', appData);
-
-        // Save data to Google Sheets automatically
-        try {
-            await saveDataToSheets();
-            console.log('Successfully saved to Google Sheets');
-        } catch (error) {
-            console.error('Failed to save to Google Sheets:', error);
-            showToast('Failed to save to Google Sheets: ' + error.message, 'error');
-        }
-
-        closeReportModal();
-        renderUsersGrid();
-        renderWeeksGrid();
-        renderMonths();
-        updateStats();
-        showToast(month.name + ' 2025 ' + week.name + ' report submitted successfully for ' + currentUser.name + '!');
-    }
-}
-
-function showUserSummary(userId) {
-    var user = null;
-    for (var i = 0; i < appData.teamMembers.length; i++) {
-        if (appData.teamMembers[i].id === userId) {
-            user = appData.teamMembers[i];
-            break;
-        }
-    }
-    if (!user) return;
-
-    document.getElementById('summaryUserName').textContent = user.name + ' - Complete Report History';
-    
-    // Collect all reports for this user across all months and weeks
-    var userReports = [];
-    for (var m = 0; m < MONTHS_2025.length; m++) {
-        var month = MONTHS_2025[m];
-        for (var w = 0; w < month.weeks.length; w++) {
-            var week = month.weeks[w];
-            var report = getUserReport(userId, month.number, week.number);
-            if (report && report.submitted) {
-                userReports.push({
-                    month: month,
-                    week: week,
-                    report: report
-                });
-            }
-        }
-    }
-
-    // Generate summary content
-    var summaryHtml = '';
-
-    if (userReports.length === 0) {
-        summaryHtml = '<div class="no-reports-message"><h3>No Reports Submitted Yet</h3><p>' + user.name + ' hasn\'t submitted any weekly reports yet.</p></div>';
-    } else {
-        var totalPossibleReports = 12 * 4; // 12 months × 4 weeks
-        
-        // Add statistics
-        summaryHtml += '<div class="summary-stats">';
-        summaryHtml += '<div class="summary-stat"><span class="summary-stat-number">' + userReports.length + '</span><span class="summary-stat-label">Reports Submitted</span></div>';
-        summaryHtml += '<div class="summary-stat"><span class="summary-stat-number">' + (totalPossibleReports - userReports.length) + '</span><span class="summary-stat-label">Pending</span></div>';
-        summaryHtml += '<div class="summary-stat"><span class="summary-stat-number">' + Math.round((userReports.length / totalPossibleReports) * 100) + '%</span><span class="summary-stat-label">Completion Rate</span></div>';
-        summaryHtml += '</div>';
-
-        // Add individual reports
-        for (var r = 0; r < userReports.length; r++) {
-            var reportData = userReports[r];
-            var startDate = new Date(reportData.week.startDate).toLocaleDateString();
-            var endDate = new Date(reportData.week.endDate).toLocaleDateString();
-            var submittedDate = reportData.report.submittedDate;
-            if (typeof submittedDate === 'string') {
-                submittedDate = new Date(submittedDate);
-            }
-            
-            summaryHtml += '<div class="report-summary-card">';
-            summaryHtml += '<div class="report-month-header">';
-            summaryHtml += '<div class="report-month-title">' + reportData.month.name + ' 2025 - ' + reportData.week.name + '</div>';
-            summaryHtml += '<div class="report-date">Period: ' + startDate + ' - ' + endDate + '<br>Submitted: ' + submittedDate.toLocaleDateString() + '</div>';
-            summaryHtml += '</div>';
-            
-            summaryHtml += '<div class="report-section"><div class="report-section-title">Activities Completed</div><div class="report-section-content">' + reportData.report.activitiesCompleted + '</div></div>';
-            summaryHtml += '<div class="report-section"><div class="report-section-title">Key Achievements</div><div class="report-section-content">' + reportData.report.keyAchievements + '</div></div>';
-            
-            if (reportData.report.challengesFaced) {
-                summaryHtml += '<div class="report-section"><div class="report-section-title">Challenges Faced</div><div class="report-section-content">' + reportData.report.challengesFaced + '</div></div>';
-            }
-            
-            if (reportData.report.lessonsLearned) {
-                summaryHtml += '<div class="report-section"><div class="report-section-title">Lessons Learned</div><div class="report-section-content">' + reportData.report.lessonsLearned + '</div></div>';
-            }
-            
-            summaryHtml += '<div class="report-section"><div class="report-section-title">Next Week Plans</div><div class="report-section-content">' + reportData.report.nextWeekPlans + '</div></div>';
-            
-            if (reportData.report.supportNeeded) {
-                summaryHtml += '<div class="report-section"><div class="report-section-title">Support Needed</div><div class="report-section-content">' + reportData.report.supportNeeded + '</div></div>';
-            }
-            
-            if (reportData.report.additionalComments) {
-                summaryHtml += '<div class="report-section"><div class="report-section-title">Additional Comments</div><div class="report-section-content">' + reportData.report.additionalComments + '</div></div>';
-            }
-            
-            summaryHtml += '</div>';
-        }
-    }
-
-    document.getElementById('summaryContent').innerHTML = summaryHtml;
-    document.getElementById('summaryModal').style.display = 'flex';
-}
-
-function closeSummaryModal() {
-    document.getElementById('summaryModal').style.display = 'none';
-}
-
-function viewUserReport(userId) {
-    var user = null;
-    for (var i = 0; i < appData.teamMembers.length; i++) {
-        if (appData.teamMembers[i].id === userId) {
-            user = appData.teamMembers[i];
-            break;
-        }
-    }
-    var report = getUserReport(userId, currentMonth, currentWeek);
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    if (month) {
-        for (var j = 0; j < month.weeks.length; j++) {
-            if (month.weeks[j].number === currentWeek) {
-                week = month.weeks[j];
-                break;
-            }
-        }
-    }
-    
-    if (!user || !report || !report.submitted) return;
-
-    var startDate = new Date(week.startDate).toLocaleDateString();
-    var endDate = new Date(week.endDate).toLocaleDateString();
-    var submittedDate = report.submittedDate;
-    if (typeof submittedDate === 'string') {
-        submittedDate = new Date(submittedDate);
-    }
-
-    var reportDetails = month.name + ' 2025 - ' + week.name + ' Report\n\n';
-    reportDetails += 'Name: ' + user.name + '\n';
-    reportDetails += 'Role: ' + user.role + '\n';
-    reportDetails += 'Week Period: ' + startDate + ' - ' + endDate + '\n';
-    reportDetails += 'Submitted: ' + submittedDate.toLocaleString() + '\n\n';
-    
-    reportDetails += 'ACTIVITIES COMPLETED:\n' + report.activitiesCompleted + '\n\n';
-    reportDetails += 'KEY ACHIEVEMENTS:\n' + report.keyAchievements + '\n\n';
-    
-    if (report.challengesFaced) {
-        reportDetails += 'CHALLENGES FACED:\n' + report.challengesFaced + '\n\n';
-    }
-    
-    if (report.lessonsLearned) {
-        reportDetails += 'LESSONS LEARNED:\n' + report.lessonsLearned + '\n\n';
-    }
-    
-    reportDetails += 'NEXT WEEK PLANS:\n' + report.nextWeekPlans + '\n\n';
-    
-    if (report.supportNeeded) {
-        reportDetails += 'SUPPORT NEEDED:\n' + report.supportNeeded + '\n\n';
-    }
-    
-    if (report.additionalComments) {
-        reportDetails += 'ADDITIONAL COMMENTS:\n' + report.additionalComments + '\n';
-    }
-
-    alert(reportDetails);
-}
-
-// Rendering functions
-function renderUsersGrid() {
-    var grid = document.getElementById('usersGrid');
-    grid.innerHTML = '';
-
-    for (var i = 0; i < appData.teamMembers.length; i++) {
-        var user = appData.teamMembers[i];
-        var status = getUserStatus(user.id, currentMonth, currentWeek);
-        var report = getUserReport(user.id, currentMonth, currentWeek);
-        
-        var card = document.createElement('div');
-        card.className = 'user-card ' + status;
-        
-        var statusBadge = '';
-        var actionButtons = '';
-
-        switch (status) {
-            case 'submitted':
-                statusBadge = '<span class="user-status status-submitted">✅ Submitted</span>';
-                actionButtons = '<button class="btn btn-secondary" onclick="viewUserReport(' + user.id + ')">👁️ View Report</button><button class="btn btn-secondary" onclick="showUserSummary(' + user.id + ')">📊 View Summary</button>';
-                break;
-            case 'overdue':
-                statusBadge = '<span class="user-status status-overdue">⚠️ Overdue</span>';
-                actionButtons = '<button class="btn btn-warning" disabled>🔒 Deadline Passed</button><button class="btn btn-secondary" onclick="showUserSummary(' + user.id + ')">📊 View Summary</button>';
-                break;
-            default:
-                statusBadge = '<span class="user-status status-pending">⏳ Pending</span>';
-                actionButtons = '<button class="btn btn-primary" onclick="showPinModal(' + user.id + ')">📝 Fill Report</button><button class="btn btn-secondary" onclick="showUserSummary(' + user.id + ')">📊 View Summary</button>';
-        }
-
-        card.innerHTML = '<div class="user-header"><img src="' + user.avatar + '" alt="' + user.name + '" class="user-avatar"><div class="user-info"><div class="user-name">' + user.name + '</div><div class="user-role">' + user.role + '</div>' + statusBadge + '</div></div><div class="user-actions">' + actionButtons + '</div>';
-
-        grid.appendChild(card);
-    }
-}
-
-function renderWeeksGrid() {
-    var grid = document.getElementById('weeksGrid');
-    grid.innerHTML = '';
-
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    if (!month) return;
-
-    for (var w = 0; w < month.weeks.length; w++) {
-        var week = month.weeks[w];
-        var status = getWeekStatus(week);
-        var startDate = new Date(week.startDate);
-        var endDate = new Date(week.endDate);
-        var dueDate = new Date(week.dueDate);
-        
-        // Count reports for this week
-        var weekReports = (appData.weeklyReports[currentMonth] && appData.weeklyReports[currentMonth][week.number]) ? appData.weeklyReports[currentMonth][week.number] : {};
-        var submittedCount = 0;
-        for (var key in weekReports) {
-            if (weekReports[key] && weekReports[key].submitted) {
-                submittedCount++;
-            }
-        }
-        
-        var card = document.createElement('div');
-        card.className = 'week-card ' + status;
-        card.onclick = function(weekNum) {
-            return function() { openWeekModal(weekNum); };
-        }(week.number);
-        
-        var statusBadge = '';
-        var statusColor = '';
-        var dueDateClass = '';
-        
-        switch (status) {
-            case 'current':
-                statusBadge = '📅 Current Week';
-                statusColor = 'week-status-current';
-                dueDateClass = 'current';
-                break;
-            case 'overdue':
-                statusBadge = '⚠️ Overdue';
-                statusColor = 'week-status-overdue';
-                dueDateClass = 'overdue';
-                break;
-            case 'upcoming':
-                statusBadge = '⏰ Upcoming';
-                statusColor = 'week-status-upcoming';
-                dueDateClass = '';
-                break;
-            default:
-                statusBadge = '✅ Active';
-                statusColor = 'week-status-active';
-                dueDateClass = '';
-        }
-
-        card.innerHTML = '<div class="week-header"><div class="week-info"><div class="week-name">' + week.name + '</div><div class="week-period">' + startDate.toLocaleDateString() + ' - ' + endDate.toLocaleDateString() + '</div></div><div class="week-due-date"><span class="week-due-label">Due Date</span><div class="week-due-value ' + dueDateClass + '">' + dueDate.toLocaleDateString() + '</div></div></div><div class="week-status-badge ' + statusColor + '">' + statusBadge + '</div><div class="week-summary"><div class="week-summary-item"><span class="week-summary-number">' + submittedCount + '</span><span class="week-summary-label">Submitted</span></div><div class="week-summary-item"><span class="week-summary-number">' + appData.teamMembers.length + '</span><span class="week-summary-label">Total Users</span></div><div class="week-summary-item"><span class="week-summary-number">' + Math.round((submittedCount / appData.teamMembers.length) * 100) + '%</span><span class="week-summary-label">Complete</span></div></div><div style="text-align: center; color: #8b949e; font-size: 12px; font-style: italic; margin-top: 10px;">👆 Click to manage reports</div>';
-
-        grid.appendChild(card);
-    }
-}
-
-function renderMonths() {
-    var grid = document.getElementById('monthsGrid');
-    grid.innerHTML = '';
-
-    for (var m = 0; m < MONTHS_2025.length; m++) {
-        var month = MONTHS_2025[m];
-        // Count reports for this month across all weeks
-        var monthSubmittedCount = 0;
-        var totalPossibleReports = appData.teamMembers.length * 4; // 4 weeks per month
-        
-        for (var w = 0; w < month.weeks.length; w++) {
-            var week = month.weeks[w];
-            var weekReports = (appData.weeklyReports[month.number] && appData.weeklyReports[month.number][week.number]) ? appData.weeklyReports[month.number][week.number] : {};
-            for (var key in weekReports) {
-                if (weekReports[key] && weekReports[key].submitted) {
-                    monthSubmittedCount++;
-                }
-            }
-        }
-        
-        var card = document.createElement('div');
-        card.className = 'month-card';
-        card.onclick = function(monthNum) {
-            return function() { openMonthModal(monthNum); };
-        }(month.number);
-        
-        // Determine overall month status based on current date
-        var now = new Date();
-        var currentMonthNum = getCurrentMonth();
-        var monthStatus = '';
-        var statusColor = '';
-        
-        if (month.number === currentMonthNum) {
-            monthStatus = '📅 Current Month';
-            statusColor = 'status-current';
-            card.classList.add('current-month');
-        } else if (month.number < currentMonthNum) {
-            monthStatus = '✅ Completed';
-            statusColor = 'status-active';
-        } else {
-            monthStatus = '⏰ Upcoming';
-            statusColor = 'status-upcoming';
-        }
-
-        card.innerHTML = '<div class="month-header"><div class="month-info"><div class="month-name">' + month.name + '</div><div class="month-year">2025</div></div><div class="due-date-info"><span class="due-date-label">4 Weeks</span><div class="due-date">' + month.weeks.length + ' weeks</div></div></div><div class="month-status"><span class="status-badge ' + statusColor + '">' + monthStatus + '</span></div><div class="reports-summary"><div class="summary-item"><span class="summary-number">' + monthSubmittedCount + '</span><span class="summary-label">Submitted</span></div><div class="summary-item"><span class="summary-number">' + totalPossibleReports + '</span><span class="summary-label">Total Reports</span></div><div class="summary-item"><span class="summary-number">' + Math.round((monthSubmittedCount / totalPossibleReports) * 100) + '%</span><span class="summary-label">Complete</span></div></div><div class="click-hint">👆 Click to manage weekly reports</div>';
-
-        grid.appendChild(card);
-    }
-}
-
-function updateStats() {
-    var totalReports = 0;
-    for (var month in appData.weeklyReports) {
-        for (var week in appData.weeklyReports[month]) {
-            for (var user in appData.weeklyReports[month][week]) {
-                if (appData.weeklyReports[month][week][user] && appData.weeklyReports[month][week][user].submitted) {
-                    totalReports++;
-                }
-            }
-        }
-    }
-
-    var currentMonthNum = getCurrentMonth();
-    var currentMonthName = 'Unknown';
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonthNum) {
-            currentMonthName = MONTHS_2025[i].name;
-            break;
-        }
-    }
-    
-    document.getElementById('totalReports').textContent = totalReports;
-    document.getElementById('currentMonth').textContent = currentMonthName + ' 2025';
-}
-
-function openMonthModal(monthNumber) {
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === monthNumber) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    if (!month) return;
-
-    currentMonth = monthNumber;
-    document.getElementById('weeksModalTitle').textContent = month.name + ' 2025 - Weekly Reports';
-    document.getElementById('weeksModalSubtitle').textContent = 'Select a week to manage team reports';
-
-    renderWeeksGrid();
-    document.getElementById('weeksModal').style.display = 'flex';
-}
-
-function closeWeeksModal() {
-    document.getElementById('weeksModal').style.display = 'none';
-    currentMonth = null;
-}
-
-function openWeekModal(weekNumber) {
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    if (month) {
-        for (var j = 0; j < month.weeks.length; j++) {
-            if (month.weeks[j].number === weekNumber) {
-                week = month.weeks[j];
-                break;
-            }
-        }
-    }
-    if (!week) return;
-
-    currentWeek = weekNumber;
-    document.getElementById('usersModalTitle').textContent = month.name + ' 2025 - ' + week.name + ' - Team Reports';
-    
-    var status = getWeekStatus(week);
-    var startDate = new Date(week.startDate).toLocaleDateString();
-    var endDate = new Date(week.endDate).toLocaleDateString();
-    var dueDate = new Date(week.dueDate).toLocaleDateString();
-    
-    if (status === 'overdue') {
-        document.getElementById('usersModalSubtitle').textContent = 'Deadline passed (' + dueDate + ') - View submitted reports only';
-    } else {
-        document.getElementById('usersModalSubtitle').textContent = 'Week Period: ' + startDate + ' - ' + endDate + ' | Due: ' + dueDate + ' - Click on a team member to submit their weekly report';
-    }
-
-    renderUsersGrid();
-    document.getElementById('usersModal').style.display = 'flex';
-}
-
-function closeUsersModal() {
-    document.getElementById('usersModal').style.display = 'none';
-    currentWeek = null;
-}
-
-function showAdminLoginModal() {
-    document.getElementById('adminLoginModal').style.display = 'flex';
-    setTimeout(function() {
-        document.getElementById('adminUsername').focus();
-    }, 100);
-}
-
-function hideAdminLoginModal() {
-    document.getElementById('adminLoginModal').style.display = 'none';
-}
-
+// Enhanced admin login with better data loading
 async function adminLogin() {
-    var user = document.getElementById('adminUsername').value.trim();
-    var pass = document.getElementById('adminPassword').value;
-    var errorMessage = document.getElementById('adminErrorMessage');
+    const user = document.getElementById('adminUsername').value.trim();
+    const pass = document.getElementById('adminPassword').value;
+    const errorMessage = document.getElementById('adminErrorMessage');
     
     errorMessage.style.display = 'none';
 
@@ -1052,9 +261,22 @@ async function adminLogin() {
         isAdminLoggedIn = true;
         hideAdminLoginModal();
         
-        // Load existing data from Google Sheets
-        await loadDataFromSheets();
+        // Test connection and load data
+        showToast('Testing connection and loading data...', 'info');
         
+        try {
+            // Test if Google Sheets is accessible
+            await testGoogleSheetsConnection();
+            
+            // Load existing data
+            await loadDataFromSheets();
+            
+        } catch (error) {
+            console.error('Error during login data loading:', error);
+            showToast('Login successful, but data loading failed', 'warning');
+        }
+        
+        // Show intro and update UI
         showIntroVideo();
         
         document.getElementById('currentUser').textContent = user;
@@ -1063,6 +285,7 @@ async function adminLogin() {
         // Clear form
         document.getElementById('adminUsername').value = '';
         document.getElementById('adminPassword').value = '';
+        
     } else {
         errorMessage.style.display = 'block';
         document.getElementById('adminPassword').value = '';
@@ -1070,48 +293,59 @@ async function adminLogin() {
     }
 }
 
-function showIntroVideo() {
-    var overlay = document.getElementById('introOverlay');
-    var mainContent = document.getElementById('mainContent');
-    
-    overlay.style.display = 'flex';
-    
-    setTimeout(function() {
-        overlay.style.display = 'none';
-        mainContent.classList.remove('main-content-hidden');
-        mainContent.classList.add('main-content-visible');
+// Enhanced connection test
+async function testGoogleSheetsConnection() {
+    try {
+        console.log('Testing Google Sheets connection...');
         
-        renderMonths();
-        updateStats();
-        showToast('Welcome to MPR 2025 Weekly Reports - Powered by ICF-SL');
-    }, 3000);
-}
-
-function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        isAdminLoggedIn = false;
-        document.getElementById('adminInfo').style.display = 'none';
-        document.getElementById('monthsGrid').innerHTML = '';
-        document.getElementById('mainContent').classList.remove('main-content-visible');
-        document.getElementById('mainContent').classList.add('main-content-hidden');
-        showAdminLoginModal();
-        showToast('Logged out successfully.');
+        // Test Google Apps Script
+        const gasResponse = await fetch(`${GOOGLE_SHEETS_CONFIG.webAppUrl}?spreadsheetId=${GOOGLE_SHEETS_CONFIG.spreadsheetId}&action=test`);
+        
+        if (gasResponse.ok) {
+            console.log('Google Apps Script connection: OK');
+            showToast('Connection successful!', 'success');
+            return true;
+        }
+        
+        // Fallback test with Sheets API
+        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+        const apiResponse = await fetch(apiUrl);
+        
+        if (apiResponse.ok) {
+            console.log('Google Sheets API connection: OK');
+            showToast('Fallback connection successful!', 'success');
+            return true;
+        }
+        
+        throw new Error('Both connection methods failed');
+        
+    } catch (error) {
+        console.error('Connection test failed:', error);
+        showToast(`Connection failed: ${error.message}`, 'error');
+        return false;
     }
 }
 
+// Enhanced toast function with info type
 function showToast(message, type) {
     if (currentToast) {
         clearTimeout(currentToast);
     }
 
-    var toast = document.getElementById('toast');
+    const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.className = 'toast';
+    
     if (type === 'error') {
         toast.className += ' error';
     } else if (type === 'warning') {
         toast.className += ' warning';
+    } else if (type === 'success') {
+        toast.className += ' success';
+    } else if (type === 'info') {
+        toast.className += ' info';
     }
+    
     toast.classList.add('show');
     
     currentToast = setTimeout(function() {
@@ -1119,66 +353,3 @@ function showToast(message, type) {
         currentToast = null;
     }, 4000);
 }
-
-// Initialize application
-document.addEventListener('DOMContentLoaded', function() {
-    var adminUsernameInput = document.getElementById('adminUsername');
-    var adminPasswordInput = document.getElementById('adminPassword');
-    var pinInput = document.getElementById('userPin');
-    
-    // Admin login form events
-    if (adminUsernameInput) {
-        adminUsernameInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                adminLogin();
-            }
-        });
-    }
-    
-    if (adminPasswordInput) {
-        adminPasswordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                adminLogin();
-            }
-        });
-    }
-
-    // PIN form events
-    if (pinInput) {
-        pinInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                verifyPin();
-            }
-        });
-
-        // Only allow numbers in PIN input
-        pinInput.addEventListener('input', function(e) {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        });
-    }
-
-    // Escape key to close modals
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            if (document.getElementById('usersModal').style.display === 'flex') {
-                closeUsersModal();
-            } else if (document.getElementById('weeksModal').style.display === 'flex') {
-                closeWeeksModal();
-            } else if (document.getElementById('pinModal').style.display === 'flex') {
-                closePinModal();
-            } else if (document.getElementById('reportModal').style.display === 'flex') {
-                closeReportModal();
-            } else if (document.getElementById('summaryModal').style.display === 'flex') {
-                closeSummaryModal();
-            }
-        }
-    });
-
-    // Show admin login modal initially
-    if (!isAdminLoggedIn) {
-        showAdminLoginModal();
-    }
-});
