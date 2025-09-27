@@ -5,73 +5,71 @@ var currentMonth = null;
 var currentWeek = null;
 var currentToast = null;
 
-// Store reports by month, week, and user
-var weeklyReports = {};
-
-// Admin credentials
-var adminCredentials = {
-    'admin': 'mpr2025'
+// Data will be loaded from info.json
+var appData = {
+    weeklyReports: {},
+    adminCredentials: {
+        'admin': 'mpr2025'
+    },
+    teamMembers: [
+        {
+            id: 1,
+            name: 'Dr. Sarah Johnson',
+            role: 'Pharmacy Lead',
+            avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
+            pin: '1234'
+        },
+        {
+            id: 2,
+            name: 'Dr. Michael Chen',
+            role: 'Hospital/PHU OPD Coordinator',
+            avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face',
+            pin: '5678'
+        },
+        {
+            id: 3,
+            name: 'Nurse Jane Smith',
+            role: 'In-patient Ward Supervisor',
+            avatar: 'https://images.unsplash.com/photo-1594824501085-4b1d66fc31fa?w=150&h=150&fit=crop&crop=face',
+            pin: '9012'
+        },
+        {
+            id: 4,
+            name: 'Dr. Robert Williams',
+            role: 'Hospital Laboratory Manager',
+            avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop&crop=face',
+            pin: '3456'
+        },
+        {
+            id: 5,
+            name: 'Dr. Emily Davis',
+            role: 'DHMT Coordinator',
+            avatar: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=150&h=150&fit=crop&crop=face',
+            pin: '7890'
+        },
+        {
+            id: 6,
+            name: 'James Rodriguez',
+            role: 'CHW Program Manager',
+            avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+            pin: '2468'
+        },
+        {
+            id: 7,
+            name: 'Dr. Maria Garcia',
+            role: 'ANC Specialist',
+            avatar: 'https://images.unsplash.com/photo-1594824501084-9be42d1b2ae8?w=150&h=150&fit=crop&crop=face',
+            pin: '1357'
+        },
+        {
+            id: 8,
+            name: 'David Thompson',
+            role: 'Community Engagement Lead',
+            avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+            pin: '9753'
+        }
+    ]
 };
-
-// Team members with their information and PINs
-var teamMembers = [
-    {
-        id: 1,
-        name: 'Dr. Sarah Johnson',
-        role: 'Pharmacy Lead',
-        avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
-        pin: '1234'
-    },
-    {
-        id: 2,
-        name: 'Dr. Michael Chen',
-        role: 'Hospital/PHU OPD Coordinator',
-        avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face',
-        pin: '5678'
-    },
-    {
-        id: 3,
-        name: 'Nurse Jane Smith',
-        role: 'In-patient Ward Supervisor',
-        avatar: 'https://images.unsplash.com/photo-1594824501085-4b1d66fc31fa?w=150&h=150&fit=crop&crop=face',
-        pin: '9012'
-    },
-    {
-        id: 4,
-        name: 'Dr. Robert Williams',
-        role: 'Hospital Laboratory Manager',
-        avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop&crop=face',
-        pin: '3456'
-    },
-    {
-        id: 5,
-        name: 'Dr. Emily Davis',
-        role: 'DHMT Coordinator',
-        avatar: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=150&h=150&fit=crop&crop=face',
-        pin: '7890'
-    },
-    {
-        id: 6,
-        name: 'James Rodriguez',
-        role: 'CHW Program Manager',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-        pin: '2468'
-    },
-    {
-        id: 7,
-        name: 'Dr. Maria Garcia',
-        role: 'ANC Specialist',
-        avatar: 'https://images.unsplash.com/photo-1594824501084-9be42d1b2ae8?w=150&h=150&fit=crop&crop=face',
-        pin: '1357'
-    },
-    {
-        id: 8,
-        name: 'David Thompson',
-        role: 'Community Engagement Lead',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-        pin: '9753'
-    }
-];
 
 // Month data for 2025 with weekly breakdown
 var MONTHS_2025 = [
@@ -221,6 +219,46 @@ var MONTHS_2025 = [
     }
 ];
 
+// File operations
+async function loadData() {
+    try {
+        const response = await fetch('./info.json');
+        if (response.ok) {
+            const data = await response.json();
+            appData = { ...appData, ...data };
+        }
+    } catch (error) {
+        console.log('No existing data file found, using defaults');
+    }
+}
+
+async function saveData() {
+    try {
+        // Convert dates to ISO strings for JSON serialization
+        const dataToSave = JSON.parse(JSON.stringify(appData, (key, value) => {
+            if (value instanceof Date) {
+                return value.toISOString();
+            }
+            return value;
+        }));
+
+        const blob = new Blob([JSON.stringify(dataToSave, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'info.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast('Data saved to info.json successfully!');
+    } catch (error) {
+        console.error('Error saving data:', error);
+        showToast('Error saving data: ' + error.message, 'error');
+    }
+}
+
 // Utility functions
 function getCurrentMonth() {
     var now = new Date();
@@ -269,23 +307,23 @@ function getWeekStatus(week) {
 }
 
 function getUserReport(userId, monthNumber, weekNumber) {
-    if (!weeklyReports[monthNumber]) {
-        weeklyReports[monthNumber] = {};
+    if (!appData.weeklyReports[monthNumber]) {
+        appData.weeklyReports[monthNumber] = {};
     }
-    if (!weeklyReports[monthNumber][weekNumber]) {
-        weeklyReports[monthNumber][weekNumber] = {};
+    if (!appData.weeklyReports[monthNumber][weekNumber]) {
+        appData.weeklyReports[monthNumber][weekNumber] = {};
     }
-    return weeklyReports[monthNumber][weekNumber][userId];
+    return appData.weeklyReports[monthNumber][weekNumber][userId];
 }
 
 function setUserReport(userId, monthNumber, weekNumber, report) {
-    if (!weeklyReports[monthNumber]) {
-        weeklyReports[monthNumber] = {};
+    if (!appData.weeklyReports[monthNumber]) {
+        appData.weeklyReports[monthNumber] = {};
     }
-    if (!weeklyReports[monthNumber][weekNumber]) {
-        weeklyReports[monthNumber][weekNumber] = {};
+    if (!appData.weeklyReports[monthNumber][weekNumber]) {
+        appData.weeklyReports[monthNumber][weekNumber] = {};
     }
-    weeklyReports[monthNumber][weekNumber][userId] = report;
+    appData.weeklyReports[monthNumber][weekNumber][userId] = report;
 }
 
 function getUserStatus(userId, monthNumber, weekNumber) {
@@ -319,9 +357,9 @@ function getUserStatus(userId, monthNumber, weekNumber) {
 // Modal functions
 function showPinModal(userId) {
     var user = null;
-    for (var i = 0; i < teamMembers.length; i++) {
-        if (teamMembers[i].id === userId) {
-            user = teamMembers[i];
+    for (var i = 0; i < appData.teamMembers.length; i++) {
+        if (appData.teamMembers[i].id === userId) {
+            user = appData.teamMembers[i];
             break;
         }
     }
@@ -439,7 +477,7 @@ function closeReportModal() {
     document.getElementById('reportErrorMessage').style.display = 'none';
 }
 
-function submitReport() {
+async function submitReport() {
     var activitiesCompleted = document.getElementById('activitiesCompleted').value.trim();
     var keyAchievements = document.getElementById('keyAchievements').value.trim();
     var challengesFaced = document.getElementById('challengesFaced').value.trim();
@@ -489,6 +527,9 @@ function submitReport() {
 
         setUserReport(currentUser.id, currentMonth, currentWeek, report);
 
+        // Save data to file
+        await saveData();
+
         closeReportModal();
         renderUsersGrid();
         renderWeeksGrid();
@@ -500,9 +541,9 @@ function submitReport() {
 
 function showUserSummary(userId) {
     var user = null;
-    for (var i = 0; i < teamMembers.length; i++) {
-        if (teamMembers[i].id === userId) {
-            user = teamMembers[i];
+    for (var i = 0; i < appData.teamMembers.length; i++) {
+        if (appData.teamMembers[i].id === userId) {
+            user = appData.teamMembers[i];
             break;
         }
     }
@@ -547,11 +588,15 @@ function showUserSummary(userId) {
             var reportData = userReports[r];
             var startDate = new Date(reportData.week.startDate).toLocaleDateString();
             var endDate = new Date(reportData.week.endDate).toLocaleDateString();
+            var submittedDate = reportData.report.submittedDate;
+            if (typeof submittedDate === 'string') {
+                submittedDate = new Date(submittedDate);
+            }
             
             summaryHtml += '<div class="report-summary-card">';
             summaryHtml += '<div class="report-month-header">';
             summaryHtml += '<div class="report-month-title">' + reportData.month.name + ' 2025 - ' + reportData.week.name + '</div>';
-            summaryHtml += '<div class="report-date">Period: ' + startDate + ' - ' + endDate + '<br>Submitted: ' + reportData.report.submittedDate.toLocaleDateString() + '</div>';
+            summaryHtml += '<div class="report-date">Period: ' + startDate + ' - ' + endDate + '<br>Submitted: ' + submittedDate.toLocaleDateString() + '</div>';
             summaryHtml += '</div>';
             
             summaryHtml += '<div class="report-section"><div class="report-section-title">Activities Completed</div><div class="report-section-content">' + reportData.report.activitiesCompleted + '</div></div>';
@@ -589,9 +634,9 @@ function closeSummaryModal() {
 
 function viewUserReport(userId) {
     var user = null;
-    for (var i = 0; i < teamMembers.length; i++) {
-        if (teamMembers[i].id === userId) {
-            user = teamMembers[i];
+    for (var i = 0; i < appData.teamMembers.length; i++) {
+        if (appData.teamMembers[i].id === userId) {
+            user = appData.teamMembers[i];
             break;
         }
     }
@@ -617,12 +662,16 @@ function viewUserReport(userId) {
 
     var startDate = new Date(week.startDate).toLocaleDateString();
     var endDate = new Date(week.endDate).toLocaleDateString();
+    var submittedDate = report.submittedDate;
+    if (typeof submittedDate === 'string') {
+        submittedDate = new Date(submittedDate);
+    }
 
     var reportDetails = month.name + ' 2025 - ' + week.name + ' Report\n\n';
     reportDetails += 'Name: ' + user.name + '\n';
     reportDetails += 'Role: ' + user.role + '\n';
     reportDetails += 'Week Period: ' + startDate + ' - ' + endDate + '\n';
-    reportDetails += 'Submitted: ' + report.submittedDate.toLocaleString() + '\n\n';
+    reportDetails += 'Submitted: ' + submittedDate.toLocaleString() + '\n\n';
     
     reportDetails += 'ACTIVITIES COMPLETED:\n' + report.activitiesCompleted + '\n\n';
     reportDetails += 'KEY ACHIEVEMENTS:\n' + report.keyAchievements + '\n\n';
@@ -653,8 +702,8 @@ function renderUsersGrid() {
     var grid = document.getElementById('usersGrid');
     grid.innerHTML = '';
 
-    for (var i = 0; i < teamMembers.length; i++) {
-        var user = teamMembers[i];
+    for (var i = 0; i < appData.teamMembers.length; i++) {
+        var user = appData.teamMembers[i];
         var status = getUserStatus(user.id, currentMonth, currentWeek);
         var report = getUserReport(user.id, currentMonth, currentWeek);
         
@@ -705,7 +754,7 @@ function renderWeeksGrid() {
         var dueDate = new Date(week.dueDate);
         
         // Count reports for this week
-        var weekReports = (weeklyReports[currentMonth] && weeklyReports[currentMonth][week.number]) ? weeklyReports[currentMonth][week.number] : {};
+        var weekReports = (appData.weeklyReports[currentMonth] && appData.weeklyReports[currentMonth][week.number]) ? appData.weeklyReports[currentMonth][week.number] : {};
         var submittedCount = 0;
         for (var key in weekReports) {
             if (weekReports[key] && weekReports[key].submitted) {
@@ -745,7 +794,7 @@ function renderWeeksGrid() {
                 dueDateClass = '';
         }
 
-        card.innerHTML = '<div class="week-header"><div class="week-info"><div class="week-name">' + week.name + '</div><div class="week-period">' + startDate.toLocaleDateString() + ' - ' + endDate.toLocaleDateString() + '</div></div><div class="week-due-date"><span class="week-due-label">Due Date</span><div class="week-due-value ' + dueDateClass + '">' + dueDate.toLocaleDateString() + '</div></div></div><div class="week-status-badge ' + statusColor + '">' + statusBadge + '</div><div class="week-summary"><div class="week-summary-item"><span class="week-summary-number">' + submittedCount + '</span><span class="week-summary-label">Submitted</span></div><div class="week-summary-item"><span class="week-summary-number">' + teamMembers.length + '</span><span class="week-summary-label">Total Users</span></div><div class="week-summary-item"><span class="week-summary-number">' + Math.round((submittedCount / teamMembers.length) * 100) + '%</span><span class="week-summary-label">Complete</span></div></div><div style="text-align: center; color: #8b949e; font-size: 12px; font-style: italic; margin-top: 10px;">👆 Click to manage reports</div>';
+        card.innerHTML = '<div class="week-header"><div class="week-info"><div class="week-name">' + week.name + '</div><div class="week-period">' + startDate.toLocaleDateString() + ' - ' + endDate.toLocaleDateString() + '</div></div><div class="week-due-date"><span class="week-due-label">Due Date</span><div class="week-due-value ' + dueDateClass + '">' + dueDate.toLocaleDateString() + '</div></div></div><div class="week-status-badge ' + statusColor + '">' + statusBadge + '</div><div class="week-summary"><div class="week-summary-item"><span class="week-summary-number">' + submittedCount + '</span><span class="week-summary-label">Submitted</span></div><div class="week-summary-item"><span class="week-summary-number">' + appData.teamMembers.length + '</span><span class="week-summary-label">Total Users</span></div><div class="week-summary-item"><span class="week-summary-number">' + Math.round((submittedCount / appData.teamMembers.length) * 100) + '%</span><span class="week-summary-label">Complete</span></div></div><div style="text-align: center; color: #8b949e; font-size: 12px; font-style: italic; margin-top: 10px;">👆 Click to manage reports</div>';
 
         grid.appendChild(card);
     }
@@ -759,11 +808,11 @@ function renderMonths() {
         var month = MONTHS_2025[m];
         // Count reports for this month across all weeks
         var monthSubmittedCount = 0;
-        var totalPossibleReports = teamMembers.length * 4; // 4 weeks per month
+        var totalPossibleReports = appData.teamMembers.length * 4; // 4 weeks per month
         
         for (var w = 0; w < month.weeks.length; w++) {
             var week = month.weeks[w];
-            var weekReports = (weeklyReports[month.number] && weeklyReports[month.number][week.number]) ? weeklyReports[month.number][week.number] : {};
+            var weekReports = (appData.weeklyReports[month.number] && appData.weeklyReports[month.number][week.number]) ? appData.weeklyReports[month.number][week.number] : {};
             for (var key in weekReports) {
                 if (weekReports[key] && weekReports[key].submitted) {
                     monthSubmittedCount++;
@@ -803,10 +852,10 @@ function renderMonths() {
 
 function updateStats() {
     var totalReports = 0;
-    for (var month in weeklyReports) {
-        for (var week in weeklyReports[month]) {
-            for (var user in weeklyReports[month][week]) {
-                if (weeklyReports[month][week][user] && weeklyReports[month][week][user].submitted) {
+    for (var month in appData.weeklyReports) {
+        for (var week in appData.weeklyReports[month]) {
+            for (var user in appData.weeklyReports[month][week]) {
+                if (appData.weeklyReports[month][week][user] && appData.weeklyReports[month][week][user].submitted) {
                     totalReports++;
                 }
             }
@@ -902,7 +951,7 @@ function hideAdminLoginModal() {
     document.getElementById('adminLoginModal').style.display = 'none';
 }
 
-function adminLogin() {
+async function adminLogin() {
     var user = document.getElementById('adminUsername').value.trim();
     var pass = document.getElementById('adminPassword').value;
     var errorMessage = document.getElementById('adminErrorMessage');
@@ -915,9 +964,12 @@ function adminLogin() {
         return;
     }
 
-    if (adminCredentials[user] && adminCredentials[user] === pass) {
+    if (appData.adminCredentials[user] && appData.adminCredentials[user] === pass) {
         isAdminLoggedIn = true;
         hideAdminLoginModal();
+        
+        // Load existing data
+        await loadData();
         
         showIntroVideo();
         
@@ -982,6 +1034,49 @@ function showToast(message, type) {
         toast.classList.remove('show');
         currentToast = null;
     }, 4000);
+}
+
+// Add export/import functionality
+function exportData() {
+    saveData();
+}
+
+function importData() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var importedData = JSON.parse(e.target.result);
+                    
+                    // Merge imported data with existing structure
+                    if (importedData.weeklyReports) {
+                        appData.weeklyReports = importedData.weeklyReports;
+                    }
+                    if (importedData.teamMembers) {
+                        appData.teamMembers = importedData.teamMembers;
+                    }
+                    if (importedData.adminCredentials) {
+                        appData.adminCredentials = importedData.adminCredentials;
+                    }
+                    
+                    // Re-render everything
+                    renderMonths();
+                    updateStats();
+                    
+                    showToast('Data imported successfully!');
+                } catch (error) {
+                    showToast('Error importing data: Invalid JSON file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+    input.click();
 }
 
 // Initialize application
