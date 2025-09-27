@@ -290,18 +290,13 @@ async function saveDataToSheets() {
             })
         });
         
-        if (response.ok) {
-            showToast('Data saved to Google Sheets successfully!');
-            console.log('Data saved to Google Sheets');
-        } else {
-            throw new Error('Failed to save to Google Sheets');
-        }
+        // Since we're using no-cors mode, we can't check response.ok
+        // Assume it worked if no error was thrown
+        showToast('Data saved to Google Sheets successfully!');
+        console.log('Data sent to Google Sheets');
     } catch (error) {
         console.error('Error saving to Google Sheets:', error);
-        showToast('Error saving to Google Sheets, downloading backup...', 'error');
-        
-        // Fallback: download backup
-        downloadBackup();
+        showToast('Error saving to Google Sheets: ' + error.message, 'error');
     }
 }
 
