@@ -1,4 +1,4 @@
-// Global variables
+// Global variables    
 var isAdminLoggedIn = false;
 var currentUser = null;
 var currentMonth = null;
