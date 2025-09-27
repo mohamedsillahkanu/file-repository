@@ -5,16 +5,31 @@ var currentMonth = null;
 var currentWeek = null;
 var currentToast = null;
 
-// Google Sheets configuration - UPDATE THE WEB APP URL HERE
-const GOOGLE_SHEETS_CONFIG = {
-    apiKey: 'AIzaSyBSxmmqw67fC349cpfVJ6ZltHo3wmdcGgE',
-    spreadsheetId: '1jqf7JFYbtaQxWla3TdYqLnpcnPmAbDIYOvn8PruO13M',
-    range: 'MPRData!A1:B1',
-    // REPLACE THIS URL WITH YOUR NEW GOOGLE APPS SCRIPT WEB APP URL
-    webAppUrl: 'https://script.google.com/macros/s/YOUR_NEW_WEB_APP_URL_HERE/exec'
+// Configuration for multiple backup methods
+const BACKUP_CONFIG = {
+    // Python Backend (Primary)
+    pythonBackend: {
+        baseUrl: 'http://localhost:5000/api',  // Change to your deployed URL
+        enabled: true,
+        timeout: 30000
+    },
+    
+    // Google Sheets (Secondary)
+    googleSheets: {
+        apiKey: 'AIzaSyBSxmmqw67fC349cpfVJ6ZltHo3wmdcGgE',
+        spreadsheetId: '1jqf7JFYbtaQxWla3TdYqLnpcnPmAbDIYOvn8PruO13M',
+        webAppUrl: 'https://script.google.com/macros/s/YOUR_WEB_APP_URL_HERE/exec',
+        enabled: true
+    },
+    
+    // Local Storage (Tertiary)
+    localStorage: {
+        enabled: true,
+        key: 'mpr_data_backup'
+    }
 };
 
-// Data will be loaded from Google Sheets
+// Data structure
 var appData = {
     weeklyReports: {},
     adminCredentials: {
@@ -80,13 +95,10 @@ var appData = {
     ]
 };
 
-// Month data for 2025 with weekly breakdown
+// Month data for 2025
 var MONTHS_2025 = [
     { 
-        number: 1, 
-        name: 'January', 
-        dueDate: '2025-01-31T23:59:59', 
-        days: 31,
+        number: 1, name: 'January', dueDate: '2025-01-31T23:59:59', days: 31,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-01-01', endDate: '2025-01-07', dueDate: '2025-01-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-01-08', endDate: '2025-01-14', dueDate: '2025-01-15T23:59:59' },
@@ -95,10 +107,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 2, 
-        name: 'February', 
-        dueDate: '2025-02-28T23:59:59', 
-        days: 28,
+        number: 2, name: 'February', dueDate: '2025-02-28T23:59:59', days: 28,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-02-01', endDate: '2025-02-07', dueDate: '2025-02-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-02-08', endDate: '2025-02-14', dueDate: '2025-02-15T23:59:59' },
@@ -107,10 +116,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 3, 
-        name: 'March', 
-        dueDate: '2025-03-31T23:59:59', 
-        days: 31,
+        number: 3, name: 'March', dueDate: '2025-03-31T23:59:59', days: 31,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-03-01', endDate: '2025-03-07', dueDate: '2025-03-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-03-08', endDate: '2025-03-14', dueDate: '2025-03-15T23:59:59' },
@@ -119,10 +125,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 4, 
-        name: 'April', 
-        dueDate: '2025-04-30T23:59:59', 
-        days: 30,
+        number: 4, name: 'April', dueDate: '2025-04-30T23:59:59', days: 30,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-04-01', endDate: '2025-04-07', dueDate: '2025-04-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-04-08', endDate: '2025-04-14', dueDate: '2025-04-15T23:59:59' },
@@ -131,10 +134,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 5, 
-        name: 'May', 
-        dueDate: '2025-05-31T23:59:59', 
-        days: 31,
+        number: 5, name: 'May', dueDate: '2025-05-31T23:59:59', days: 31,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-05-01', endDate: '2025-05-07', dueDate: '2025-05-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-05-08', endDate: '2025-05-14', dueDate: '2025-05-15T23:59:59' },
@@ -143,10 +143,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 6, 
-        name: 'June', 
-        dueDate: '2025-06-30T23:59:59', 
-        days: 30,
+        number: 6, name: 'June', dueDate: '2025-06-30T23:59:59', days: 30,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-06-01', endDate: '2025-06-07', dueDate: '2025-06-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-06-08', endDate: '2025-06-14', dueDate: '2025-06-15T23:59:59' },
@@ -155,10 +152,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 7, 
-        name: 'July', 
-        dueDate: '2025-07-31T23:59:59', 
-        days: 31,
+        number: 7, name: 'July', dueDate: '2025-07-31T23:59:59', days: 31,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-07-01', endDate: '2025-07-07', dueDate: '2025-07-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-07-08', endDate: '2025-07-14', dueDate: '2025-07-15T23:59:59' },
@@ -167,10 +161,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 8, 
-        name: 'August', 
-        dueDate: '2025-08-31T23:59:59', 
-        days: 31,
+        number: 8, name: 'August', dueDate: '2025-08-31T23:59:59', days: 31,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-08-01', endDate: '2025-08-07', dueDate: '2025-08-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-08-08', endDate: '2025-08-14', dueDate: '2025-08-15T23:59:59' },
@@ -179,10 +170,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 9, 
-        name: 'September', 
-        dueDate: '2025-09-30T23:59:59', 
-        days: 30,
+        number: 9, name: 'September', dueDate: '2025-09-30T23:59:59', days: 30,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-09-01', endDate: '2025-09-07', dueDate: '2025-09-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-09-08', endDate: '2025-09-14', dueDate: '2025-09-15T23:59:59' },
@@ -191,10 +179,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 10, 
-        name: 'October', 
-        dueDate: '2025-10-31T23:59:59', 
-        days: 31,
+        number: 10, name: 'October', dueDate: '2025-10-31T23:59:59', days: 31,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-10-01', endDate: '2025-10-07', dueDate: '2025-10-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-10-08', endDate: '2025-10-14', dueDate: '2025-10-15T23:59:59' },
@@ -203,10 +188,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 11, 
-        name: 'November', 
-        dueDate: '2025-11-30T23:59:59', 
-        days: 30,
+        number: 11, name: 'November', dueDate: '2025-11-30T23:59:59', days: 30,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-11-01', endDate: '2025-11-07', dueDate: '2025-11-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-11-08', endDate: '2025-11-14', dueDate: '2025-11-15T23:59:59' },
@@ -215,10 +197,7 @@ var MONTHS_2025 = [
         ]
     },
     { 
-        number: 12, 
-        name: 'December', 
-        dueDate: '2025-12-31T23:59:59', 
-        days: 31,
+        number: 12, name: 'December', dueDate: '2025-12-31T23:59:59', days: 31,
         weeks: [
             { number: 1, name: 'Week 1', startDate: '2025-12-01', endDate: '2025-12-07', dueDate: '2025-12-08T23:59:59' },
             { number: 2, name: 'Week 2', startDate: '2025-12-08', endDate: '2025-12-14', dueDate: '2025-12-15T23:59:59' },
@@ -228,112 +207,357 @@ var MONTHS_2025 = [
     }
 ];
 
-// Enhanced Google Sheets API functions
-async function loadDataFromSheets() {
+// ===== PYTHON BACKEND FUNCTIONS =====
+
+async function saveDataToPythonBackend() {
     try {
-        console.log('Starting data load from Google Sheets...');
-        showToast('Loading saved data...', 'info');
+        console.log('Saving data to Python backend...');
+        showToast('Saving to GitHub via Python backend...', 'info');
         
-        // Method 1: Try Google Apps Script first (more reliable)
-        try {
-            const gasResponse = await fetch(`${GOOGLE_SHEETS_CONFIG.webAppUrl}?spreadsheetId=${GOOGLE_SHEETS_CONFIG.spreadsheetId}&action=load`);
-            
-            if (gasResponse.ok) {
-                const gasResult = await gasResponse.json();
-                console.log('Google Apps Script response:', gasResult);
-                
-                if (gasResult.success && gasResult.data) {
-                    await processLoadedData(gasResult.data, 'Google Apps Script');
-                    return;
-                } else if (gasResult.error) {
-                    console.log('Google Apps Script error:', gasResult.error);
-                }
-            }
-        } catch (gasError) {
-            console.log('Google Apps Script method failed:', gasError.message);
+        const dataToSave = {
+            ...appData,
+            lastUpdated: new Date().toISOString(),
+            source: 'MPR_Web_App',
+            version: (appData.version || 0) + 1
+        };
+        
+        const response = await fetch(`${BACKUP_CONFIG.pythonBackend.baseUrl}/save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dataToSave)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP ${response.status}`);
         }
         
-        // Method 2: Fallback to Google Sheets API
-        console.log('Trying Google Sheets API as fallback...');
-        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/MPRData!A1:E10?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+        const result = await response.json();
         
-        const apiResponse = await fetch(apiUrl);
-        if (!apiResponse.ok) {
-            throw new Error(`Sheets API failed: ${apiResponse.status} ${apiResponse.statusText}`);
+        if (result.success) {
+            console.log('Data saved to Python backend successfully');
+            showToast('Data saved to GitHub successfully!', 'success');
+            return true;
+        } else {
+            throw new Error(result.error || 'Unknown error');
         }
-        
-        const apiData = await apiResponse.json();
-        console.log('Google Sheets API response:', apiData);
-        
-        if (apiData.values && apiData.values.length > 1) {
-            // Look for data in row 2, column 2 (where the script saves it)
-            const dataCell = apiData.values[1] && apiData.values[1][1];
-            if (dataCell) {
-                await processLoadedData(dataCell, 'Google Sheets API');
-                return;
-            }
-        }
-        
-        // No data found
-        console.log('No data found in Google Sheets');
-        showToast('No existing data found - using defaults', 'warning');
         
     } catch (error) {
-        console.error('Error loading from Google Sheets:', error);
-        showToast(`Failed to load data: ${error.message}`, 'error');
+        console.error('Python backend save failed:', error);
+        throw error;
     }
 }
 
-// Helper function to process loaded data
-async function processLoadedData(rawData, source) {
+async function loadDataFromPythonBackend() {
     try {
-        let jsonString = rawData;
+        console.log('Loading data from Python backend...');
+        showToast('Loading from GitHub...', 'info');
         
-        // Handle MPR_DATA prefix
-        if (typeof rawData === 'string' && rawData.startsWith('MPR_DATA{')) {
-            jsonString = rawData.substring(8); // Remove "MPR_DATA" prefix
-            console.log('Removed MPR_DATA prefix');
+        const response = await fetch(`${BACKUP_CONFIG.pythonBackend.baseUrl}/load`, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                console.log('No data found in GitHub');
+                return false;
+            }
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP ${response.status}`);
         }
         
-        // Parse JSON
-        const jsonData = JSON.parse(jsonString);
-        console.log('Parsed JSON data:', jsonData);
+        const result = await response.json();
         
-        // Convert date strings back to Date objects
-        convertDatesInObject(jsonData);
-        
-        // Merge data
-        if (jsonData.weeklyReports) {
-            appData.weeklyReports = mergeWeeklyReports(appData.weeklyReports, jsonData.weeklyReports);
+        if (result.success && result.data) {
+            mergeLoadedData(result.data, 'GitHub');
+            return true;
+        } else {
+            throw new Error(result.error || 'No data returned');
         }
         
-        if (jsonData.teamMembers && Array.isArray(jsonData.teamMembers)) {
-            appData.teamMembers = mergeTeamMembers(appData.teamMembers, jsonData.teamMembers);
-        }
-        
-        if (jsonData.adminCredentials) {
-            appData.adminCredentials = { ...appData.adminCredentials, ...jsonData.adminCredentials };
-        }
-        
-        // Count reports for user feedback
-        const reportCount = countSubmittedReports(appData.weeklyReports);
-        
-        console.log('Data successfully loaded and merged');
-        showToast(`Data loaded via ${source}! Found ${reportCount} submitted reports.`, 'success');
-        
-        // Update UI if logged in
-        if (isAdminLoggedIn) {
-            renderMonths();
-            updateStats();
-        }
-        
-    } catch (parseError) {
-        console.error('Error processing loaded data:', parseError);
-        showToast('Data found but could not be parsed', 'error');
+    } catch (error) {
+        console.error('Python backend load failed:', error);
+        throw error;
     }
 }
 
-// Helper function to merge weekly reports
+async function testPythonBackendConnection() {
+    try {
+        const response = await fetch(`${BACKUP_CONFIG.pythonBackend.baseUrl}/test`, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Python backend connection: OK', result);
+            return true;
+        } else {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+    } catch (error) {
+        console.error('Python backend connection failed:', error);
+        return false;
+    }
+}
+
+// ===== GOOGLE SHEETS FUNCTIONS =====
+
+async function saveDataToGoogleSheets() {
+    try {
+        console.log('Saving data to Google Sheets...');
+        showToast('Saving to Google Sheets...', 'info');
+        
+        const dataToSave = JSON.stringify(appData, (key, value) => {
+            if (value instanceof Date) {
+                return value.toISOString();
+            }
+            return value;
+        });
+        
+        const prefixedData = 'MPR_DATA' + dataToSave;
+        
+        const formData = new FormData();
+        formData.append('spreadsheetId', BACKUP_CONFIG.googleSheets.spreadsheetId);
+        formData.append('data', prefixedData);
+        formData.append('timestamp', new Date().toISOString());
+        formData.append('action', 'save');
+        
+        const response = await fetch(BACKUP_CONFIG.googleSheets.webAppUrl, {
+            method: 'POST',
+            body: formData,
+            mode: 'cors'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.text();
+        
+        if (result.includes('SUCCESS')) {
+            console.log('Data saved to Google Sheets successfully');
+            showToast('Data saved to Google Sheets!', 'success');
+            return true;
+        } else {
+            throw new Error(result.replace('ERROR: ', ''));
+        }
+        
+    } catch (error) {
+        console.error('Google Sheets save failed:', error);
+        throw error;
+    }
+}
+
+async function loadDataFromGoogleSheets() {
+    try {
+        console.log('Loading data from Google Sheets...');
+        
+        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${BACKUP_CONFIG.googleSheets.spreadsheetId}/values/MPRData!A1:E10?key=${BACKUP_CONFIG.googleSheets.apiKey}`;
+        
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error(`Sheets API failed: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.values && data.values.length > 1) {
+            const dataCell = data.values[1] && data.values[1][1];
+            if (dataCell) {
+                let jsonString = dataCell;
+                if (dataCell.startsWith('MPR_DATA{')) {
+                    jsonString = dataCell.substring(8);
+                }
+                
+                const jsonData = JSON.parse(jsonString);
+                mergeLoadedData(jsonData, 'Google Sheets');
+                return true;
+            }
+        }
+        
+        console.log('No data found in Google Sheets');
+        return false;
+        
+    } catch (error) {
+        console.error('Google Sheets load failed:', error);
+        throw error;
+    }
+}
+
+// ===== LOCAL STORAGE FUNCTIONS =====
+
+function saveToLocalStorage() {
+    try {
+        const dataToSave = JSON.stringify(appData, (key, value) => {
+            if (value instanceof Date) {
+                return value.toISOString();
+            }
+            return value;
+        });
+        
+        localStorage.setItem(BACKUP_CONFIG.localStorage.key, dataToSave);
+        localStorage.setItem(BACKUP_CONFIG.localStorage.key + '_timestamp', new Date().toISOString());
+        
+        console.log('Data saved to local storage');
+        return true;
+    } catch (error) {
+        console.error('Local storage save failed:', error);
+        return false;
+    }
+}
+
+function loadFromLocalStorage() {
+    try {
+        const savedData = localStorage.getItem(BACKUP_CONFIG.localStorage.key);
+        const timestamp = localStorage.getItem(BACKUP_CONFIG.localStorage.key + '_timestamp');
+        
+        if (savedData) {
+            const jsonData = JSON.parse(savedData);
+            mergeLoadedData(jsonData, 'Local Storage');
+            
+            if (timestamp) {
+                showToast(`Data loaded from local backup (${new Date(timestamp).toLocaleDateString()})`, 'info');
+            }
+            return true;
+        }
+        
+        return false;
+    } catch (error) {
+        console.error('Local storage load failed:', error);
+        return false;
+    }
+}
+
+// ===== UNIFIED SAVE/LOAD FUNCTIONS =====
+
+async function saveDataWithMultipleBackups() {
+    console.log('Starting multi-backup save process...');
+    let successCount = 0;
+    let lastError = null;
+    
+    // Save to local storage first (always works)
+    if (BACKUP_CONFIG.localStorage.enabled) {
+        if (saveToLocalStorage()) {
+            successCount++;
+        }
+    }
+    
+    // Try Python backend
+    if (BACKUP_CONFIG.pythonBackend.enabled) {
+        try {
+            if (await saveDataToPythonBackend()) {
+                successCount++;
+            }
+        } catch (error) {
+            lastError = error;
+            console.log('Python backend save failed, trying Google Sheets...');
+        }
+    }
+    
+    // Try Google Sheets if Python failed or is disabled
+    if (BACKUP_CONFIG.googleSheets.enabled && successCount < 2) {
+        try {
+            if (await saveDataToGoogleSheets()) {
+                successCount++;
+            }
+        } catch (error) {
+            lastError = error;
+            console.log('Google Sheets save also failed');
+        }
+    }
+    
+    // Provide feedback
+    if (successCount === 0) {
+        showToast('All save methods failed! Data only in browser memory.', 'error');
+        downloadBackup(); // Emergency download
+    } else if (successCount === 1) {
+        showToast('Data saved to 1 location. Some backups failed.', 'warning');
+    } else {
+        showToast(`Data successfully saved to ${successCount} locations!`, 'success');
+    }
+    
+    console.log(`Save completed: ${successCount} successful saves`);
+}
+
+async function loadDataWithFallbacks() {
+    console.log('Starting data load with fallbacks...');
+    let loadedFrom = null;
+    
+    // Try Python backend first
+    if (BACKUP_CONFIG.pythonBackend.enabled) {
+        try {
+            if (await loadDataFromPythonBackend()) {
+                loadedFrom = 'Python Backend (GitHub)';
+            }
+        } catch (error) {
+            console.log('Python backend load failed, trying Google Sheets...');
+        }
+    }
+    
+    // Try Google Sheets if Python failed
+    if (!loadedFrom && BACKUP_CONFIG.googleSheets.enabled) {
+        try {
+            if (await loadDataFromGoogleSheets()) {
+                loadedFrom = 'Google Sheets';
+            }
+        } catch (error) {
+            console.log('Google Sheets load failed, trying local storage...');
+        }
+    }
+    
+    // Try local storage as last resort
+    if (!loadedFrom && BACKUP_CONFIG.localStorage.enabled) {
+        if (loadFromLocalStorage()) {
+            loadedFrom = 'Local Storage';
+        }
+    }
+    
+    if (loadedFrom) {
+        console.log(`Data loaded from: ${loadedFrom}`);
+        showToast(`Data loaded from ${loadedFrom}`, 'success');
+    } else {
+        console.log('No data found in any location, using defaults');
+        showToast('No existing data found - starting fresh', 'info');
+    }
+}
+
+// ===== HELPER FUNCTIONS =====
+
+function mergeLoadedData(loadedData, source) {
+    console.log(`Merging data from ${source}:`, loadedData);
+    
+    // Convert dates
+    convertDatesInObject(loadedData);
+    
+    // Merge data structures
+    if (loadedData.weeklyReports) {
+        appData.weeklyReports = mergeWeeklyReports(appData.weeklyReports, loadedData.weeklyReports);
+    }
+    
+    if (loadedData.teamMembers && Array.isArray(loadedData.teamMembers)) {
+        appData.teamMembers = mergeTeamMembers(appData.teamMembers, loadedData.teamMembers);
+    }
+    
+    if (loadedData.adminCredentials) {
+        appData.adminCredentials = { ...appData.adminCredentials, ...loadedData.adminCredentials };
+    }
+    
+    // Update metadata
+    appData.lastLoaded = new Date().toISOString();
+    appData.loadedFrom = source;
+    
+    // Count reports
+    const reportCount = countSubmittedReports(appData.weeklyReports);
+    console.log(`Merged data: ${reportCount} reports found`);
+    
+    // Update UI if logged in
+    if (isAdminLoggedIn) {
+        renderMonths();
+        updateStats();
+    }
+}
+
 function mergeWeeklyReports(existing, loaded) {
     const merged = { ...existing };
     
@@ -352,7 +576,6 @@ function mergeWeeklyReports(existing, loaded) {
     return merged;
 }
 
-// Helper function to merge team members
 function mergeTeamMembers(existing, loaded) {
     const merged = [...existing];
     
@@ -368,7 +591,6 @@ function mergeTeamMembers(existing, loaded) {
     return merged;
 }
 
-// Helper function to convert date strings
 function convertDatesInObject(obj) {
     if (obj && typeof obj === 'object') {
         for (let key in obj) {
@@ -385,7 +607,6 @@ function convertDatesInObject(obj) {
     }
 }
 
-// Helper function to count submitted reports
 function countSubmittedReports(weeklyReports) {
     let count = 0;
     Object.keys(weeklyReports).forEach(month => {
@@ -398,64 +619,6 @@ function countSubmittedReports(weeklyReports) {
         });
     });
     return count;
-}
-
-async function saveDataToSheets() {
-    try {
-        console.log('Starting save to Google Sheets...');
-        showToast('Saving data...', 'info');
-        
-        // Prepare data
-        const dataToSave = JSON.stringify(appData, (key, value) => {
-            if (value instanceof Date) {
-                return value.toISOString();
-            }
-            return value;
-        });
-        
-        // Add MPR_DATA prefix for consistency
-        const prefixedData = 'MPR_DATA' + dataToSave;
-        
-        console.log('Data size:', prefixedData.length, 'characters');
-        
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('spreadsheetId', GOOGLE_SHEETS_CONFIG.spreadsheetId);
-        formData.append('data', prefixedData);
-        formData.append('timestamp', new Date().toISOString());
-        formData.append('action', 'save');
-        
-        // Send to Google Apps Script
-        const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
-            method: 'POST',
-            body: formData,
-            mode: 'cors'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const result = await response.text();
-        console.log('Save response:', result);
-        
-        if (result.includes('SUCCESS')) {
-            showToast('Data saved successfully!', 'success');
-        } else if (result.includes('ERROR')) {
-            throw new Error(result.replace('ERROR: ', ''));
-        } else {
-            console.warn('Unexpected response:', result);
-            showToast('Save completed with unexpected response', 'warning');
-        }
-        
-    } catch (error) {
-        console.error('Error saving to Google Sheets:', error);
-        showToast(`Save failed: ${error.message}`, 'error');
-        
-        // Create local backup as fallback
-        downloadBackup();
-        showToast('Local backup created as fallback', 'info');
-    }
 }
 
 function downloadBackup() {
@@ -471,74 +634,33 @@ function downloadBackup() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'mpr-backup-' + new Date().toISOString().split('T')[0] + '.json';
+        a.download = `mpr-emergency-backup-${new Date().toISOString().split('T')[0]}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        console.log('Backup downloaded successfully');
+        console.log('Emergency backup downloaded');
+        showToast('Emergency backup file downloaded', 'info');
     } catch (error) {
-        console.error('Error creating backup:', error);
-        showToast(`Backup failed: ${error.message}`, 'error');
+        console.error('Emergency backup failed:', error);
     }
 }
 
-// Enhanced connection test
-async function testGoogleSheetsConnection() {
-    try {
-        console.log('Testing Google Sheets connection...');
-        
-        // Test Google Apps Script
-        const gasResponse = await fetch(`${GOOGLE_SHEETS_CONFIG.webAppUrl}?spreadsheetId=${GOOGLE_SHEETS_CONFIG.spreadsheetId}&action=test`);
-        
-        if (gasResponse.ok) {
-            const result = await gasResponse.json();
-            console.log('Google Apps Script connection: OK', result);
-            showToast('Connection successful!', 'success');
-            return true;
-        }
-        
-        // Fallback test with Sheets API
-        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
-        const apiResponse = await fetch(apiUrl);
-        
-        if (apiResponse.ok) {
-            console.log('Google Sheets API connection: OK');
-            showToast('Fallback connection successful!', 'success');
-            return true;
-        }
-        
-        throw new Error('Both connection methods failed');
-        
-    } catch (error) {
-        console.error('Connection test failed:', error);
-        showToast(`Connection failed: ${error.message}`, 'error');
-        return false;
-    }
-}
+// ===== UTILITY FUNCTIONS =====
 
-// Utility functions
 function getCurrentMonth() {
-    var now = new Date();
-    return now.getMonth() + 1;
+    return new Date().getMonth() + 1;
 }
 
 function getCurrentWeek() {
     var now = new Date();
     var currentMonthNum = getCurrentMonth();
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonthNum) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
+    var month = MONTHS_2025.find(m => m.number === currentMonthNum);
     
     if (!month) return 1;
     
-    for (var j = 0; j < month.weeks.length; j++) {
-        var week = month.weeks[j];
+    for (var week of month.weeks) {
         var startDate = new Date(week.startDate);
         var endDate = new Date(week.endDate);
         if (now >= startDate && now <= endDate) {
@@ -587,20 +709,8 @@ function setUserReport(userId, monthNumber, weekNumber, report) {
 
 function getUserStatus(userId, monthNumber, weekNumber) {
     var report = getUserReport(userId, monthNumber, weekNumber);
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === monthNumber) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    for (var j = 0; j < month.weeks.length; j++) {
-        if (month.weeks[j].number === weekNumber) {
-            week = month.weeks[j];
-            break;
-        }
-    }
+    var month = MONTHS_2025.find(m => m.number === monthNumber);
+    var week = month ? month.weeks.find(w => w.number === weekNumber) : null;
     var now = new Date();
     var dueDate = new Date(week.dueDate);
     
@@ -613,31 +723,13 @@ function getUserStatus(userId, monthNumber, weekNumber) {
     }
 }
 
-// Modal functions
+// ===== MODAL FUNCTIONS =====
+
 function showPinModal(userId) {
-    var user = null;
-    for (var i = 0; i < appData.teamMembers.length; i++) {
-        if (appData.teamMembers[i].id === userId) {
-            user = appData.teamMembers[i];
-            break;
-        }
-    }
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    if (month) {
-        for (var j = 0; j < month.weeks.length; j++) {
-            if (month.weeks[j].number === currentWeek) {
-                week = month.weeks[j];
-                break;
-            }
-        }
-    }
+    var user = appData.teamMembers.find(u => u.id === userId);
+    var month = MONTHS_2025.find(m => m.number === currentMonth);
+    var week = month ? month.weeks.find(w => w.number === currentWeek) : null;
+    
     if (!user || !week) return;
 
     var status = getUserStatus(userId, currentMonth, currentWeek);
@@ -647,11 +739,9 @@ function showPinModal(userId) {
     }
 
     currentUser = user;
-    document.getElementById('pinUserName').textContent = 'Hello ' + user.name + ', please enter your 4-digit PIN to submit your ' + month.name + ' 2025 ' + week.name + ' report';
+    document.getElementById('pinUserName').textContent = `Hello ${user.name}, please enter your 4-digit PIN to submit your ${month.name} 2025 ${week.name} report`;
     document.getElementById('pinModal').style.display = 'flex';
-    setTimeout(function() {
-        document.getElementById('userPin').focus();
-    }, 100);
+    setTimeout(() => document.getElementById('userPin').focus(), 100);
 }
 
 function closePinModal() {
@@ -685,50 +775,21 @@ function verifyPin() {
 function showReportModal() {
     if (!currentUser || !currentMonth || !currentWeek) return;
 
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    if (month) {
-        for (var j = 0; j < month.weeks.length; j++) {
-            if (month.weeks[j].number === currentWeek) {
-                week = month.weeks[j];
-                break;
-            }
-        }
-    }
+    var month = MONTHS_2025.find(m => m.number === currentMonth);
+    var week = month ? month.weeks.find(w => w.number === currentWeek) : null;
     var existingReport = getUserReport(currentUser.id, currentMonth, currentWeek);
 
-    document.getElementById('reportUserName').textContent = currentUser.name + ' - ' + month.name + ' 2025 ' + week.name + ' Report';
+    document.getElementById('reportUserName').textContent = `${currentUser.name} - ${month.name} 2025 ${week.name} Report`;
     
     // Pre-fill existing data if available
-    if (existingReport) {
-        document.getElementById('activitiesCompleted').value = existingReport.activitiesCompleted || '';
-        document.getElementById('keyAchievements').value = existingReport.keyAchievements || '';
-        document.getElementById('challengesFaced').value = existingReport.challengesFaced || '';
-        document.getElementById('lessonsLearned').value = existingReport.lessonsLearned || '';
-        document.getElementById('nextWeekPlans').value = existingReport.nextWeekPlans || '';
-        document.getElementById('supportNeeded').value = existingReport.supportNeeded || '';
-        document.getElementById('additionalComments').value = existingReport.additionalComments || '';
-    } else {
-        // Clear form
-        document.getElementById('activitiesCompleted').value = '';
-        document.getElementById('keyAchievements').value = '';
-        document.getElementById('challengesFaced').value = '';
-        document.getElementById('lessonsLearned').value = '';
-        document.getElementById('nextWeekPlans').value = '';
-        document.getElementById('supportNeeded').value = '';
-        document.getElementById('additionalComments').value = '';
-    }
+    const fields = ['activitiesCompleted', 'keyAchievements', 'challengesFaced', 'lessonsLearned', 'nextWeekPlans', 'supportNeeded', 'additionalComments'];
+    
+    fields.forEach(field => {
+        document.getElementById(field).value = existingReport ? (existingReport[field] || '') : '';
+    });
     
     document.getElementById('reportModal').style.display = 'flex';
-    setTimeout(function() {
-        document.getElementById('activitiesCompleted').focus();
-    }, 100);
+    setTimeout(() => document.getElementById('activitiesCompleted').focus(), 100);
 }
 
 function closeReportModal() {
@@ -737,123 +798,82 @@ function closeReportModal() {
 }
 
 async function submitReport() {
-    var activitiesCompleted = document.getElementById('activitiesCompleted').value.trim();
-    var keyAchievements = document.getElementById('keyAchievements').value.trim();
-    var challengesFaced = document.getElementById('challengesFaced').value.trim();
-    var lessonsLearned = document.getElementById('lessonsLearned').value.trim();
-    var nextWeekPlans = document.getElementById('nextWeekPlans').value.trim();
-    var supportNeeded = document.getElementById('supportNeeded').value.trim();
-    var additionalComments = document.getElementById('additionalComments').value.trim();
-    var errorMessage = document.getElementById('reportErrorMessage');
+    const fields = {
+        activitiesCompleted: document.getElementById('activitiesCompleted').value.trim(),
+        keyAchievements: document.getElementById('keyAchievements').value.trim(),
+        challengesFaced: document.getElementById('challengesFaced').value.trim(),
+        lessonsLearned: document.getElementById('lessonsLearned').value.trim(),
+        nextWeekPlans: document.getElementById('nextWeekPlans').value.trim(),
+        supportNeeded: document.getElementById('supportNeeded').value.trim(),
+        additionalComments: document.getElementById('additionalComments').value.trim()
+    };
     
+    const errorMessage = document.getElementById('reportErrorMessage');
     errorMessage.style.display = 'none';
 
-    if (!activitiesCompleted || !keyAchievements || !nextWeekPlans) {
+    if (!fields.activitiesCompleted || !fields.keyAchievements || !fields.nextWeekPlans) {
         errorMessage.textContent = 'Please fill in all required fields (Activities, Achievements, and Next Week Plans).';
         errorMessage.style.display = 'block';
         return;
     }
 
     if (currentUser && currentMonth && currentWeek) {
-        var month = null;
-        for (var i = 0; i < MONTHS_2025.length; i++) {
-            if (MONTHS_2025[i].number === currentMonth) {
-                month = MONTHS_2025[i];
-                break;
-            }
-        }
-        var week = null;
-        if (month) {
-            for (var j = 0; j < month.weeks.length; j++) {
-                if (month.weeks[j].number === currentWeek) {
-                    week = month.weeks[j];
-                    break;
-                }
-            }
-        }
-        
-        var report = {
+        const report = {
             submitted: true,
             submittedDate: new Date(),
-            activitiesCompleted: activitiesCompleted,
-            keyAchievements: keyAchievements,
-            challengesFaced: challengesFaced,
-            lessonsLearned: lessonsLearned,
-            nextWeekPlans: nextWeekPlans,
-            supportNeeded: supportNeeded,
-            additionalComments: additionalComments
+            ...fields
         };
 
         console.log('Saving report for user:', currentUser.name, 'Month:', currentMonth, 'Week:', currentWeek);
         setUserReport(currentUser.id, currentMonth, currentWeek, report);
-        
-        console.log('Current appData after saving:', appData);
 
-        // Save data to Google Sheets automatically
-        try {
-            await saveDataToSheets();
-            console.log('Successfully saved to Google Sheets');
-        } catch (error) {
-            console.error('Failed to save to Google Sheets:', error);
-            showToast('Failed to save to Google Sheets: ' + error.message, 'error');
-        }
+        // Save with multiple backups
+        await saveDataWithMultipleBackups();
 
         closeReportModal();
         renderUsersGrid();
         renderWeeksGrid();
         renderMonths();
         updateStats();
-        showToast(month.name + ' 2025 ' + week.name + ' report submitted successfully for ' + currentUser.name + '!');
+        
+        const month = MONTHS_2025.find(m => m.number === currentMonth);
+        const week = month.weeks.find(w => w.number === currentWeek);
+        showToast(`${month.name} 2025 ${week.name} report submitted successfully for ${currentUser.name}!`, 'success');
     }
 }
 
 function showUserSummary(userId) {
-    var user = null;
-    for (var i = 0; i < appData.teamMembers.length; i++) {
-        if (appData.teamMembers[i].id === userId) {
-            user = appData.teamMembers[i];
-            break;
-        }
-    }
+    var user = appData.teamMembers.find(u => u.id === userId);
     if (!user) return;
 
-    document.getElementById('summaryUserName').textContent = user.name + ' - Complete Report History';
+    document.getElementById('summaryUserName').textContent = `${user.name} - Complete Report History`;
     
-    // Collect all reports for this user across all months and weeks
+    // Collect all reports for this user
     var userReports = [];
-    for (var m = 0; m < MONTHS_2025.length; m++) {
-        var month = MONTHS_2025[m];
-        for (var w = 0; w < month.weeks.length; w++) {
-            var week = month.weeks[w];
+    MONTHS_2025.forEach(month => {
+        month.weeks.forEach(week => {
             var report = getUserReport(userId, month.number, week.number);
             if (report && report.submitted) {
-                userReports.push({
-                    month: month,
-                    week: week,
-                    report: report
-                });
+                userReports.push({ month, week, report });
             }
-        }
-    }
+        });
+    });
 
-    // Generate summary content
+    // Generate summary HTML
     var summaryHtml = '';
 
     if (userReports.length === 0) {
-        summaryHtml = '<div class="no-reports-message"><h3>No Reports Submitted Yet</h3><p>' + user.name + ' hasn\'t submitted any weekly reports yet.</p></div>';
+        summaryHtml = `<div class="no-reports-message"><h3>No Reports Submitted Yet</h3><p>${user.name} hasn't submitted any weekly reports yet.</p></div>`;
     } else {
-        var totalPossibleReports = 12 * 4; // 12 months × 4 weeks
+        var totalPossibleReports = 12 * 4;
         
-        // Add statistics
         summaryHtml += '<div class="summary-stats">';
-        summaryHtml += '<div class="summary-stat"><span class="summary-stat-number">' + userReports.length + '</span><span class="summary-stat-label">Reports Submitted</span></div>';
-        summaryHtml += '<div class="summary-stat"><span class="summary-stat-number">' + (totalPossibleReports - userReports.length) + '</span><span class="summary-stat-label">Pending</span></div>';
-        summaryHtml += '<div class="summary-stat"><span class="summary-stat-number">' + Math.round((userReports.length / totalPossibleReports) * 100) + '%</span><span class="summary-stat-label">Completion Rate</span></div>';
+        summaryHtml += `<div class="summary-stat"><span class="summary-stat-number">${userReports.length}</span><span class="summary-stat-label">Reports Submitted</span></div>`;
+        summaryHtml += `<div class="summary-stat"><span class="summary-stat-number">${totalPossibleReports - userReports.length}</span><span class="summary-stat-label">Pending</span></div>`;
+        summaryHtml += `<div class="summary-stat"><span class="summary-stat-number">${Math.round((userReports.length / totalPossibleReports) * 100)}%</span><span class="summary-stat-label">Completion Rate</span></div>`;
         summaryHtml += '</div>';
 
-        // Add individual reports
-        for (var r = 0; r < userReports.length; r++) {
-            var reportData = userReports[r];
+        userReports.forEach(reportData => {
             var startDate = new Date(reportData.week.startDate).toLocaleDateString();
             var endDate = new Date(reportData.week.endDate).toLocaleDateString();
             var submittedDate = reportData.report.submittedDate;
@@ -862,34 +882,30 @@ function showUserSummary(userId) {
             }
             
             summaryHtml += '<div class="report-summary-card">';
-            summaryHtml += '<div class="report-month-header">';
-            summaryHtml += '<div class="report-month-title">' + reportData.month.name + ' 2025 - ' + reportData.week.name + '</div>';
-            summaryHtml += '<div class="report-date">Period: ' + startDate + ' - ' + endDate + '<br>Submitted: ' + submittedDate.toLocaleDateString() + '</div>';
-            summaryHtml += '</div>';
-            
-            summaryHtml += '<div class="report-section"><div class="report-section-title">Activities Completed</div><div class="report-section-content">' + reportData.report.activitiesCompleted + '</div></div>';
-            summaryHtml += '<div class="report-section"><div class="report-section-title">Key Achievements</div><div class="report-section-content">' + reportData.report.keyAchievements + '</div></div>';
+            summaryHtml += `<div class="report-month-header"><div class="report-month-title">${reportData.month.name} 2025 - ${reportData.week.name}</div><div class="report-date">Period: ${startDate} - ${endDate}<br>Submitted: ${submittedDate.toLocaleDateString()}</div></div>`;
+            summaryHtml += `<div class="report-section"><div class="report-section-title">Activities Completed</div><div class="report-section-content">${reportData.report.activitiesCompleted}</div></div>`;
+            summaryHtml += `<div class="report-section"><div class="report-section-title">Key Achievements</div><div class="report-section-content">${reportData.report.keyAchievements}</div></div>`;
             
             if (reportData.report.challengesFaced) {
-                summaryHtml += '<div class="report-section"><div class="report-section-title">Challenges Faced</div><div class="report-section-content">' + reportData.report.challengesFaced + '</div></div>';
+                summaryHtml += `<div class="report-section"><div class="report-section-title">Challenges Faced</div><div class="report-section-content">${reportData.report.challengesFaced}</div></div>`;
             }
             
             if (reportData.report.lessonsLearned) {
-                summaryHtml += '<div class="report-section"><div class="report-section-title">Lessons Learned</div><div class="report-section-content">' + reportData.report.lessonsLearned + '</div></div>';
+                summaryHtml += `<div class="report-section"><div class="report-section-title">Lessons Learned</div><div class="report-section-content">${reportData.report.lessonsLearned}</div></div>`;
             }
             
-            summaryHtml += '<div class="report-section"><div class="report-section-title">Next Week Plans</div><div class="report-section-content">' + reportData.report.nextWeekPlans + '</div></div>';
+            summaryHtml += `<div class="report-section"><div class="report-section-title">Next Week Plans</div><div class="report-section-content">${reportData.report.nextWeekPlans}</div></div>`;
             
             if (reportData.report.supportNeeded) {
-                summaryHtml += '<div class="report-section"><div class="report-section-title">Support Needed</div><div class="report-section-content">' + reportData.report.supportNeeded + '</div></div>';
+                summaryHtml += `<div class="report-section"><div class="report-section-title">Support Needed</div><div class="report-section-content">${reportData.report.supportNeeded}</div></div>`;
             }
             
             if (reportData.report.additionalComments) {
-                summaryHtml += '<div class="report-section"><div class="report-section-title">Additional Comments</div><div class="report-section-content">' + reportData.report.additionalComments + '</div></div>';
+                summaryHtml += `<div class="report-section"><div class="report-section-title">Additional Comments</div><div class="report-section-content">${reportData.report.additionalComments}</div></div>`;
             }
             
             summaryHtml += '</div>';
-        }
+        });
     }
 
     document.getElementById('summaryContent').innerHTML = summaryHtml;
@@ -901,30 +917,10 @@ function closeSummaryModal() {
 }
 
 function viewUserReport(userId) {
-    var user = null;
-    for (var i = 0; i < appData.teamMembers.length; i++) {
-        if (appData.teamMembers[i].id === userId) {
-            user = appData.teamMembers[i];
-            break;
-        }
-    }
+    var user = appData.teamMembers.find(u => u.id === userId);
     var report = getUserReport(userId, currentMonth, currentWeek);
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    if (month) {
-        for (var j = 0; j < month.weeks.length; j++) {
-            if (month.weeks[j].number === currentWeek) {
-                week = month.weeks[j];
-                break;
-            }
-        }
-    }
+    var month = MONTHS_2025.find(m => m.number === currentMonth);
+    var week = month ? month.weeks.find(w => w.number === currentWeek) : null;
     
     if (!user || !report || !report.submitted) return;
 
@@ -935,48 +931,45 @@ function viewUserReport(userId) {
         submittedDate = new Date(submittedDate);
     }
 
-    var reportDetails = month.name + ' 2025 - ' + week.name + ' Report\n\n';
-    reportDetails += 'Name: ' + user.name + '\n';
-    reportDetails += 'Role: ' + user.role + '\n';
-    reportDetails += 'Week Period: ' + startDate + ' - ' + endDate + '\n';
-    reportDetails += 'Submitted: ' + submittedDate.toLocaleString() + '\n\n';
-    
-    reportDetails += 'ACTIVITIES COMPLETED:\n' + report.activitiesCompleted + '\n\n';
-    reportDetails += 'KEY ACHIEVEMENTS:\n' + report.keyAchievements + '\n\n';
+    var reportDetails = `${month.name} 2025 - ${week.name} Report\n\n`;
+    reportDetails += `Name: ${user.name}\n`;
+    reportDetails += `Role: ${user.role}\n`;
+    reportDetails += `Week Period: ${startDate} - ${endDate}\n`;
+    reportDetails += `Submitted: ${submittedDate.toLocaleString()}\n\n`;
+    reportDetails += `ACTIVITIES COMPLETED:\n${report.activitiesCompleted}\n\n`;
+    reportDetails += `KEY ACHIEVEMENTS:\n${report.keyAchievements}\n\n`;
     
     if (report.challengesFaced) {
-        reportDetails += 'CHALLENGES FACED:\n' + report.challengesFaced + '\n\n';
+        reportDetails += `CHALLENGES FACED:\n${report.challengesFaced}\n\n`;
     }
     
     if (report.lessonsLearned) {
-        reportDetails += 'LESSONS LEARNED:\n' + report.lessonsLearned + '\n\n';
+        reportDetails += `LESSONS LEARNED:\n${report.lessonsLearned}\n\n`;
     }
     
-    reportDetails += 'NEXT WEEK PLANS:\n' + report.nextWeekPlans + '\n\n';
+    reportDetails += `NEXT WEEK PLANS:\n${report.nextWeekPlans}\n\n`;
     
     if (report.supportNeeded) {
-        reportDetails += 'SUPPORT NEEDED:\n' + report.supportNeeded + '\n\n';
+        reportDetails += `SUPPORT NEEDED:\n${report.supportNeeded}\n\n`;
     }
     
     if (report.additionalComments) {
-        reportDetails += 'ADDITIONAL COMMENTS:\n' + report.additionalComments + '\n';
+        reportDetails += `ADDITIONAL COMMENTS:\n${report.additionalComments}\n`;
     }
 
     alert(reportDetails);
 }
 
-// Rendering functions
+// ===== RENDERING FUNCTIONS =====
+
 function renderUsersGrid() {
     var grid = document.getElementById('usersGrid');
     grid.innerHTML = '';
 
-    for (var i = 0; i < appData.teamMembers.length; i++) {
-        var user = appData.teamMembers[i];
+    appData.teamMembers.forEach(user => {
         var status = getUserStatus(user.id, currentMonth, currentWeek);
-        var report = getUserReport(user.id, currentMonth, currentWeek);
-        
         var card = document.createElement('div');
-        card.className = 'user-card ' + status;
+        card.className = `user-card ${status}`;
         
         var statusBadge = '';
         var actionButtons = '';
@@ -984,38 +977,31 @@ function renderUsersGrid() {
         switch (status) {
             case 'submitted':
                 statusBadge = '<span class="user-status status-submitted">✅ Submitted</span>';
-                actionButtons = '<button class="btn btn-secondary" onclick="viewUserReport(' + user.id + ')">👁️ View Report</button><button class="btn btn-secondary" onclick="showUserSummary(' + user.id + ')">📊 View Summary</button>';
+                actionButtons = `<button class="btn btn-secondary" onclick="viewUserReport(${user.id})">👁️ View Report</button><button class="btn btn-secondary" onclick="showUserSummary(${user.id})">📊 View Summary</button>`;
                 break;
             case 'overdue':
                 statusBadge = '<span class="user-status status-overdue">⚠️ Overdue</span>';
-                actionButtons = '<button class="btn btn-warning" disabled>🔒 Deadline Passed</button><button class="btn btn-secondary" onclick="showUserSummary(' + user.id + ')">📊 View Summary</button>';
+                actionButtons = `<button class="btn btn-warning" disabled>🔒 Deadline Passed</button><button class="btn btn-secondary" onclick="showUserSummary(${user.id})">📊 View Summary</button>`;
                 break;
             default:
                 statusBadge = '<span class="user-status status-pending">⏳ Pending</span>';
-                actionButtons = '<button class="btn btn-primary" onclick="showPinModal(' + user.id + ')">📝 Fill Report</button><button class="btn btn-secondary" onclick="showUserSummary(' + user.id + ')">📊 View Summary</button>';
+                actionButtons = `<button class="btn btn-primary" onclick="showPinModal(${user.id})">📝 Fill Report</button><button class="btn btn-secondary" onclick="showUserSummary(${user.id})">📊 View Summary</button>`;
         }
 
-        card.innerHTML = '<div class="user-header"><img src="' + user.avatar + '" alt="' + user.name + '" class="user-avatar"><div class="user-info"><div class="user-name">' + user.name + '</div><div class="user-role">' + user.role + '</div>' + statusBadge + '</div></div><div class="user-actions">' + actionButtons + '</div>';
+        card.innerHTML = `<div class="user-header"><img src="${user.avatar}" alt="${user.name}" class="user-avatar"><div class="user-info"><div class="user-name">${user.name}</div><div class="user-role">${user.role}</div>${statusBadge}</div></div><div class="user-actions">${actionButtons}</div>`;
 
         grid.appendChild(card);
-    }
+    });
 }
 
 function renderWeeksGrid() {
     var grid = document.getElementById('weeksGrid');
     grid.innerHTML = '';
 
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
+    var month = MONTHS_2025.find(m => m.number === currentMonth);
     if (!month) return;
 
-    for (var w = 0; w < month.weeks.length; w++) {
-        var week = month.weeks[w];
+    month.weeks.forEach(week => {
         var status = getWeekStatus(week);
         var startDate = new Date(week.startDate);
         var endDate = new Date(week.endDate);
@@ -1023,18 +1009,11 @@ function renderWeeksGrid() {
         
         // Count reports for this week
         var weekReports = (appData.weeklyReports[currentMonth] && appData.weeklyReports[currentMonth][week.number]) ? appData.weeklyReports[currentMonth][week.number] : {};
-        var submittedCount = 0;
-        for (var key in weekReports) {
-            if (weekReports[key] && weekReports[key].submitted) {
-                submittedCount++;
-            }
-        }
+        var submittedCount = Object.keys(weekReports).filter(key => weekReports[key] && weekReports[key].submitted).length;
         
         var card = document.createElement('div');
-        card.className = 'week-card ' + status;
-        card.onclick = function(weekNum) {
-            return function() { openWeekModal(weekNum); };
-        }(week.number);
+        card.className = `week-card ${status}`;
+        card.onclick = () => openWeekModal(week.number);
         
         var statusBadge = '';
         var statusColor = '';
@@ -1062,40 +1041,30 @@ function renderWeeksGrid() {
                 dueDateClass = '';
         }
 
-        card.innerHTML = '<div class="week-header"><div class="week-info"><div class="week-name">' + week.name + '</div><div class="week-period">' + startDate.toLocaleDateString() + ' - ' + endDate.toLocaleDateString() + '</div></div><div class="week-due-date"><span class="week-due-label">Due Date</span><div class="week-due-value ' + dueDateClass + '">' + dueDate.toLocaleDateString() + '</div></div></div><div class="week-status-badge ' + statusColor + '">' + statusBadge + '</div><div class="week-summary"><div class="week-summary-item"><span class="week-summary-number">' + submittedCount + '</span><span class="week-summary-label">Submitted</span></div><div class="week-summary-item"><span class="week-summary-number">' + appData.teamMembers.length + '</span><span class="week-summary-label">Total Users</span></div><div class="week-summary-item"><span class="week-summary-number">' + Math.round((submittedCount / appData.teamMembers.length) * 100) + '%</span><span class="week-summary-label">Complete</span></div></div><div style="text-align: center; color: #8b949e; font-size: 12px; font-style: italic; margin-top: 10px;">👆 Click to manage reports</div>';
+        card.innerHTML = `<div class="week-header"><div class="week-info"><div class="week-name">${week.name}</div><div class="week-period">${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</div></div><div class="week-due-date"><span class="week-due-label">Due Date</span><div class="week-due-value ${dueDateClass}">${dueDate.toLocaleDateString()}</div></div></div><div class="week-status-badge ${statusColor}">${statusBadge}</div><div class="week-summary"><div class="week-summary-item"><span class="week-summary-number">${submittedCount}</span><span class="week-summary-label">Submitted</span></div><div class="week-summary-item"><span class="week-summary-number">${appData.teamMembers.length}</span><span class="week-summary-label">Total Users</span></div><div class="week-summary-item"><span class="week-summary-number">${Math.round((submittedCount / appData.teamMembers.length) * 100)}%</span><span class="week-summary-label">Complete</span></div></div><div style="text-align: center; color: #8b949e; font-size: 12px; font-style: italic; margin-top: 10px;">👆 Click to manage reports</div>`;
 
         grid.appendChild(card);
-    }
+    });
 }
 
 function renderMonths() {
     var grid = document.getElementById('monthsGrid');
     grid.innerHTML = '';
 
-    for (var m = 0; m < MONTHS_2025.length; m++) {
-        var month = MONTHS_2025[m];
-        // Count reports for this month across all weeks
+    MONTHS_2025.forEach(month => {
+        // Count reports for this month
         var monthSubmittedCount = 0;
-        var totalPossibleReports = appData.teamMembers.length * 4; // 4 weeks per month
+        var totalPossibleReports = appData.teamMembers.length * 4;
         
-        for (var w = 0; w < month.weeks.length; w++) {
-            var week = month.weeks[w];
+        month.weeks.forEach(week => {
             var weekReports = (appData.weeklyReports[month.number] && appData.weeklyReports[month.number][week.number]) ? appData.weeklyReports[month.number][week.number] : {};
-            for (var key in weekReports) {
-                if (weekReports[key] && weekReports[key].submitted) {
-                    monthSubmittedCount++;
-                }
-            }
-        }
+            monthSubmittedCount += Object.keys(weekReports).filter(key => weekReports[key] && weekReports[key].submitted).length;
+        });
         
         var card = document.createElement('div');
         card.className = 'month-card';
-        card.onclick = function(monthNum) {
-            return function() { openMonthModal(monthNum); };
-        }(month.number);
+        card.onclick = () => openMonthModal(month.number);
         
-        // Determine overall month status based on current date
-        var now = new Date();
         var currentMonthNum = getCurrentMonth();
         var monthStatus = '';
         var statusColor = '';
@@ -1112,49 +1081,37 @@ function renderMonths() {
             statusColor = 'status-upcoming';
         }
 
-        card.innerHTML = '<div class="month-header"><div class="month-info"><div class="month-name">' + month.name + '</div><div class="month-year">2025</div></div><div class="due-date-info"><span class="due-date-label">4 Weeks</span><div class="due-date">' + month.weeks.length + ' weeks</div></div></div><div class="month-status"><span class="status-badge ' + statusColor + '">' + monthStatus + '</span></div><div class="reports-summary"><div class="summary-item"><span class="summary-number">' + monthSubmittedCount + '</span><span class="summary-label">Submitted</span></div><div class="summary-item"><span class="summary-number">' + totalPossibleReports + '</span><span class="summary-label">Total Reports</span></div><div class="summary-item"><span class="summary-number">' + Math.round((monthSubmittedCount / totalPossibleReports) * 100) + '%</span><span class="summary-label">Complete</span></div></div><div class="click-hint">👆 Click to manage weekly reports</div>';
+        card.innerHTML = `<div class="month-header"><div class="month-info"><div class="month-name">${month.name}</div><div class="month-year">2025</div></div><div class="due-date-info"><span class="due-date-label">4 Weeks</span><div class="due-date">${month.weeks.length} weeks</div></div></div><div class="month-status"><span class="status-badge ${statusColor}">${monthStatus}</span></div><div class="reports-summary"><div class="summary-item"><span class="summary-number">${monthSubmittedCount}</span><span class="summary-label">Submitted</span></div><div class="summary-item"><span class="summary-number">${totalPossibleReports}</span><span class="summary-label">Total Reports</span></div><div class="summary-item"><span class="summary-number">${Math.round((monthSubmittedCount / totalPossibleReports) * 100)}%</span><span class="summary-label">Complete</span></div></div><div class="click-hint">👆 Click to manage weekly reports</div>`;
 
         grid.appendChild(card);
-    }
+    });
 }
 
 function updateStats() {
     var totalReports = 0;
-    for (var month in appData.weeklyReports) {
-        for (var week in appData.weeklyReports[month]) {
-            for (var user in appData.weeklyReports[month][week]) {
+    Object.keys(appData.weeklyReports).forEach(month => {
+        Object.keys(appData.weeklyReports[month]).forEach(week => {
+            Object.keys(appData.weeklyReports[month][week]).forEach(user => {
                 if (appData.weeklyReports[month][week][user] && appData.weeklyReports[month][week][user].submitted) {
                     totalReports++;
                 }
-            }
-        }
-    }
+            });
+        });
+    });
 
     var currentMonthNum = getCurrentMonth();
-    var currentMonthName = 'Unknown';
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonthNum) {
-            currentMonthName = MONTHS_2025[i].name;
-            break;
-        }
-    }
+    var currentMonthName = MONTHS_2025.find(m => m.number === currentMonthNum)?.name || 'Unknown';
     
     document.getElementById('totalReports').textContent = totalReports;
-    document.getElementById('currentMonth').textContent = currentMonthName + ' 2025';
+    document.getElementById('currentMonth').textContent = `${currentMonthName} 2025`;
 }
 
 function openMonthModal(monthNumber) {
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === monthNumber) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
+    var month = MONTHS_2025.find(m => m.number === monthNumber);
     if (!month) return;
 
     currentMonth = monthNumber;
-    document.getElementById('weeksModalTitle').textContent = month.name + ' 2025 - Weekly Reports';
+    document.getElementById('weeksModalTitle').textContent = `${month.name} 2025 - Weekly Reports`;
     document.getElementById('weeksModalSubtitle').textContent = 'Select a week to manage team reports';
 
     renderWeeksGrid();
@@ -1167,26 +1124,12 @@ function closeWeeksModal() {
 }
 
 function openWeekModal(weekNumber) {
-    var month = null;
-    for (var i = 0; i < MONTHS_2025.length; i++) {
-        if (MONTHS_2025[i].number === currentMonth) {
-            month = MONTHS_2025[i];
-            break;
-        }
-    }
-    var week = null;
-    if (month) {
-        for (var j = 0; j < month.weeks.length; j++) {
-            if (month.weeks[j].number === weekNumber) {
-                week = month.weeks[j];
-                break;
-            }
-        }
-    }
+    var month = MONTHS_2025.find(m => m.number === currentMonth);
+    var week = month ? month.weeks.find(w => w.number === weekNumber) : null;
     if (!week) return;
 
     currentWeek = weekNumber;
-    document.getElementById('usersModalTitle').textContent = month.name + ' 2025 - ' + week.name + ' - Team Reports';
+    document.getElementById('usersModalTitle').textContent = `${month.name} 2025 - ${week.name} - Team Reports`;
     
     var status = getWeekStatus(week);
     var startDate = new Date(week.startDate).toLocaleDateString();
@@ -1194,9 +1137,9 @@ function openWeekModal(weekNumber) {
     var dueDate = new Date(week.dueDate).toLocaleDateString();
     
     if (status === 'overdue') {
-        document.getElementById('usersModalSubtitle').textContent = 'Deadline passed (' + dueDate + ') - View submitted reports only';
+        document.getElementById('usersModalSubtitle').textContent = `Deadline passed (${dueDate}) - View submitted reports only`;
     } else {
-        document.getElementById('usersModalSubtitle').textContent = 'Week Period: ' + startDate + ' - ' + endDate + ' | Due: ' + dueDate + ' - Click on a team member to submit their weekly report';
+        document.getElementById('usersModalSubtitle').textContent = `Week Period: ${startDate} - ${endDate} | Due: ${dueDate} - Click on a team member to submit their weekly report`;
     }
 
     renderUsersGrid();
@@ -1210,9 +1153,7 @@ function closeUsersModal() {
 
 function showAdminLoginModal() {
     document.getElementById('adminLoginModal').style.display = 'flex';
-    setTimeout(function() {
-        document.getElementById('adminUsername').focus();
-    }, 100);
+    setTimeout(() => document.getElementById('adminUsername').focus(), 100);
 }
 
 function hideAdminLoginModal() {
@@ -1236,22 +1177,24 @@ async function adminLogin() {
         isAdminLoggedIn = true;
         hideAdminLoginModal();
         
-        // Test connection and load data
-        showToast('Testing connection and loading data...', 'info');
+        showToast('Testing connections and loading data...', 'info');
         
         try {
-            // Test if Google Sheets is accessible
-            await testGoogleSheetsConnection();
+            // Test connections and load data
+            if (BACKUP_CONFIG.pythonBackend.enabled) {
+                const backendOk = await testPythonBackendConnection();
+                if (backendOk) {
+                    showToast('Python backend connected successfully', 'success');
+                }
+            }
             
-            // Load existing data
-            await loadDataFromSheets();
+            await loadDataWithFallbacks();
             
         } catch (error) {
-            console.error('Error during login data loading:', error);
-            showToast('Login successful, but data loading failed', 'warning');
+            console.error('Error during login:', error);
+            showToast('Login successful, but some data loading failed', 'warning');
         }
         
-        // Show intro and update UI
         showIntroVideo();
         
         document.getElementById('currentUser').textContent = user;
@@ -1274,7 +1217,7 @@ function showIntroVideo() {
     
     overlay.style.display = 'flex';
     
-    setTimeout(function() {
+    setTimeout(() => {
         overlay.style.display = 'none';
         mainContent.classList.remove('main-content-hidden');
         mainContent.classList.add('main-content-visible');
@@ -1287,6 +1230,9 @@ function showIntroVideo() {
 
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
+        // Save before logout
+        saveDataWithMultipleBackups();
+        
         isAdminLoggedIn = false;
         document.getElementById('adminInfo').style.display = 'none';
         document.getElementById('monthsGrid').innerHTML = '';
@@ -1318,19 +1264,20 @@ function showToast(message, type) {
     
     toast.classList.add('show');
     
-    currentToast = setTimeout(function() {
+    currentToast = setTimeout(() => {
         toast.classList.remove('show');
         currentToast = null;
     }, 4000);
 }
 
-// Initialize application
+// ===== INITIALIZATION =====
+
 document.addEventListener('DOMContentLoaded', function() {
-    var adminUsernameInput = document.getElementById('adminUsername');
-    var adminPasswordInput = document.getElementById('adminPassword');
-    var pinInput = document.getElementById('userPin');
+    // Setup event listeners
+    const adminUsernameInput = document.getElementById('adminUsername');
+    const adminPasswordInput = document.getElementById('adminPassword');
+    const pinInput = document.getElementById('userPin');
     
-    // Admin login form events
     if (adminUsernameInput) {
         adminUsernameInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -1349,7 +1296,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // PIN form events
     if (pinInput) {
         pinInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -1358,7 +1304,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Only allow numbers in PIN input
         pinInput.addEventListener('input', function(e) {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
@@ -1381,15 +1326,100 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Auto-save every 5 minutes if logged in
+    setInterval(() => {
+        if (isAdminLoggedIn) {
+            console.log('Auto-saving data...');
+            saveToLocalStorage(); // Quick local save
+        }
+    }, 5 * 60 * 1000); // 5 minutes
+
     // Show admin login modal initially
     if (!isAdminLoggedIn) {
         showAdminLoginModal();
     }
+    
+    console.log('MPR Application initialized successfully');
+    console.log('Backup methods available:', {
+        pythonBackend: BACKUP_CONFIG.pythonBackend.enabled,
+        googleSheets: BACKUP_CONFIG.googleSheets.enabled,
+        localStorage: BACKUP_CONFIG.localStorage.enabled
+    });
 });
 
-// Test function for debugging - remove in production
-function testConnection() {
-    console.log('Testing connection...');
-    testGoogleSheetsConnection();
-    loadDataFromSheets();
+// ===== DEBUG AND TESTING FUNCTIONS =====
+
+// Test all backup methods (for debugging)
+async function testAllBackupMethods() {
+    console.log('=== Testing All Backup Methods ===');
+    
+    // Test Python Backend
+    if (BACKUP_CONFIG.pythonBackend.enabled) {
+        console.log('Testing Python Backend...');
+        const pythonOk = await testPythonBackendConnection();
+        console.log('Python Backend:', pythonOk ? 'OK' : 'FAILED');
+    }
+    
+    // Test Local Storage
+    if (BACKUP_CONFIG.localStorage.enabled) {
+        console.log('Testing Local Storage...');
+        const localOk = saveToLocalStorage();
+        console.log('Local Storage:', localOk ? 'OK' : 'FAILED');
+    }
+    
+    // Test Google Sheets (if configured)
+    if (BACKUP_CONFIG.googleSheets.enabled && BACKUP_CONFIG.googleSheets.webAppUrl !== 'https://script.google.com/macros/s/YOUR_WEB_APP_URL_HERE/exec') {
+        console.log('Testing Google Sheets...');
+        try {
+            await saveDataToGoogleSheets();
+            console.log('Google Sheets: OK');
+        } catch (error) {
+            console.log('Google Sheets: FAILED -', error.message);
+        }
+    }
+    
+    console.log('=== Test Complete ===');
+}
+
+// Force save to all available methods
+async function forceSaveToAll() {
+    console.log('Force saving to all methods...');
+    await saveDataWithMultipleBackups();
+}
+
+// Show backup status
+function showBackupStatus() {
+    const status = {
+        pythonBackend: BACKUP_CONFIG.pythonBackend.enabled ? 'Enabled' : 'Disabled',
+        googleSheets: BACKUP_CONFIG.googleSheets.enabled ? 'Enabled' : 'Disabled',
+        localStorage: BACKUP_CONFIG.localStorage.enabled ? 'Enabled' : 'Disabled',
+        lastSaved: appData.lastUpdated || 'Never',
+        totalReports: countSubmittedReports(appData.weeklyReports)
+    };
+    
+    console.table(status);
+    
+    // Show in UI
+    const statusMessage = `Backup Status:
+- Python Backend (GitHub): ${status.pythonBackend}
+- Google Sheets: ${status.googleSheets}
+- Local Storage: ${status.localStorage}
+- Last Saved: ${status.lastSaved}
+- Total Reports: ${status.totalReports}`;
+    
+    alert(statusMessage);
+}
+
+// Export functions for debugging (attach to window for console access)
+if (typeof window !== 'undefined') {
+    window.MPR_DEBUG = {
+        testAllBackupMethods,
+        forceSaveToAll,
+        showBackupStatus,
+        saveDataWithMultipleBackups,
+        loadDataWithFallbacks,
+        appData
+    };
+    
+    console.log('Debug functions available via window.MPR_DEBUG');
 }
