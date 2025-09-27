@@ -229,7 +229,7 @@ var MONTHS_2025 = [
 // Google Sheets API functions
 async function loadDataFromSheets() {
     try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/MPRData!A1:B1?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/MPRData!A1:C1?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
         
         const response = await fetch(url);
         if (!response.ok) {
@@ -239,6 +239,7 @@ async function loadDataFromSheets() {
         
         const data = await response.json();
         if (data.values && data.values.length > 0 && data.values[0].length > 1) {
+            // The data is stored in column B (index 1)
             const jsonData = JSON.parse(data.values[0][1]);
             
             // Merge loaded data with default structure
