@@ -242,6 +242,21 @@ async function loadDataFromSheets() {
             // The data is stored in column B (index 1)
             const jsonData = JSON.parse(data.values[0][1]);
             
+            // Convert date strings back to Date objects
+            function convertDates(obj) {
+                if (obj && typeof obj === 'object') {
+                    for (let key in obj) {
+                        if (key === 'submittedDate' && typeof obj[key] === 'string') {
+                            obj[key] = new Date(obj[key]);
+                        } else if (typeof obj[key] === 'object') {
+                            convertDates(obj[key]);
+                        }
+                    }
+                }
+            }
+            
+            convertDates(jsonData);
+            
             // Merge loaded data with default structure
             if (jsonData.weeklyReports) {
                 appData.weeklyReports = jsonData.weeklyReports;
@@ -253,7 +268,7 @@ async function loadDataFromSheets() {
                 appData.adminCredentials = jsonData.adminCredentials;
             }
             
-            console.log('Data loaded from Google Sheets successfully');
+            console.log('Data loaded from Google Sheets successfully:', appData);
             showToast('Data loaded from Google Sheets successfully!');
         }
     } catch (error) {
@@ -585,10 +600,19 @@ async function submitReport() {
             additionalComments: additionalComments
         };
 
+        console.log('Saving report for user:', currentUser.name, 'Month:', currentMonth, 'Week:', currentWeek);
         setUserReport(currentUser.id, currentMonth, currentWeek, report);
+        
+        console.log('Current appData after saving:', appData);
 
         // Save data to Google Sheets automatically
-        await saveDataToSheets();
+        try {
+            await saveDataToSheets();
+            console.log('Successfully saved to Google Sheets');
+        } catch (error) {
+            console.error('Failed to save to Google Sheets:', error);
+            showToast('Failed to save to Google Sheets: ' + error.message, 'error');
+        }
 
         closeReportModal();
         renderUsersGrid();
