@@ -105,7 +105,7 @@ async function processLoadedData(rawData, source) {
         console.log('Data successfully loaded and merged');
         showToast(`Data loaded via ${source}! Found ${reportCount} submitted reports.`, 'success');
         
-        // Update UI if logged in
+        // Update UI if logged in   
         if (isAdminLoggedIn) {
             renderMonths();
             updateStats();
