@@ -263,9 +263,6 @@ async function loadDataFromSheets() {
 
 async function saveDataToSheets() {
     try {
-        // Get the current spreadsheet metadata first to set up proper writing
-        const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
-        
         // Prepare data for Google Sheets
         const dataToSave = JSON.stringify(appData, (key, value) => {
             if (value instanceof Date) {
@@ -275,23 +272,18 @@ async function saveDataToSheets() {
         });
         
         // Use Google Apps Script Web App as proxy for writing data
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbyas4WB2RdzBb6ncd7uANJamecxZ3TzNIE8KP88oF7pZVLneF31ykanpv4AHa3GByh6fQ/exec';
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbzZ-dlOG7mNW3-ToxmByuJDajekGm5xsYJ_ISKNtK10ETi9vhtsPShCfz1siZN4AELJ6g/exec';
+        
+        const formData = new FormData();
+        formData.append('spreadsheetId', GOOGLE_SHEETS_CONFIG.spreadsheetId);
+        formData.append('data', dataToSave);
+        formData.append('timestamp', new Date().toISOString());
         
         const response = await fetch(webAppUrl, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                spreadsheetId: GOOGLE_SHEETS_CONFIG.spreadsheetId,
-                data: dataToSave,
-                timestamp: new Date().toISOString()
-            })
+            body: formData
         });
         
-        // Since we're using no-cors mode, we can't check response.ok
-        // Assume it worked if no error was thrown
         showToast('Data saved to Google Sheets successfully!');
         console.log('Data sent to Google Sheets');
     } catch (error) {
