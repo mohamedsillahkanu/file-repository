@@ -279,7 +279,7 @@ async function saveDataToSheets() {
         
         const response = await fetch(webAppUrl, {
             method: 'POST',
-            mode: 'cors',
+            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -1169,4 +1169,4 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!isAdminLoggedIn) {
         showAdminLoginModal();
     }
-});G
+});
