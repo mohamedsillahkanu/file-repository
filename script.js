@@ -5,7 +5,14 @@ var currentMonth = null;
 var currentWeek = null;
 var currentToast = null;
 
-// Data will be loaded from info.json
+// Google Sheets configuration
+const GOOGLE_SHEETS_CONFIG = {
+    apiKey: 'AIzaSyBSxmmqw67fC349cpfVJ6ZltHo3wmdcGgE',
+    spreadsheetId: '1jqf7JFYbtaQxWla3TdYqLnpcnPmAbDIYOvn8PruO13M',
+    range: 'MPRData!A1:B1'
+};
+
+// Data will be loaded from Google Sheets
 var appData = {
     weeklyReports: {},
     adminCredentials: {
@@ -219,43 +226,108 @@ var MONTHS_2025 = [
     }
 ];
 
-// File operations
-async function loadData() {
+// Google Sheets API functions
+async function loadDataFromSheets() {
     try {
-        const response = await fetch('./info.json');
-        if (response.ok) {
-            const data = await response.json();
-            appData = { ...appData, ...data };
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/MPRData!A1:B1?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.log('No existing data in Google Sheets, using defaults');
+            return;
+        }
+        
+        const data = await response.json();
+        if (data.values && data.values.length > 0 && data.values[0].length > 1) {
+            const jsonData = JSON.parse(data.values[0][1]);
+            
+            // Merge loaded data with default structure
+            if (jsonData.weeklyReports) {
+                appData.weeklyReports = jsonData.weeklyReports;
+            }
+            if (jsonData.teamMembers) {
+                appData.teamMembers = jsonData.teamMembers;
+            }
+            if (jsonData.adminCredentials) {
+                appData.adminCredentials = jsonData.adminCredentials;
+            }
+            
+            console.log('Data loaded from Google Sheets successfully');
+            showToast('Data loaded from Google Sheets successfully!');
         }
     } catch (error) {
-        console.log('No existing data file found, using defaults');
+        console.log('Error loading from Google Sheets:', error);
+        showToast('Using default data - Google Sheets unavailable', 'warning');
     }
 }
 
-async function saveData() {
+async function saveDataToSheets() {
     try {
-        // Convert dates to ISO strings for JSON serialization
-        const dataToSave = JSON.parse(JSON.stringify(appData, (key, value) => {
+        // Get the current spreadsheet metadata first to set up proper writing
+        const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+        
+        // Prepare data for Google Sheets
+        const dataToSave = JSON.stringify(appData, (key, value) => {
             if (value instanceof Date) {
                 return value.toISOString();
             }
             return value;
-        }));
+        });
+        
+        // Use Google Apps Script Web App as proxy for writing data
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbyas4WB2RdzBb6ncd7uANJamecxZ3TzNIE8KP88oF7pZVLneF31ykanpv4AHa3GByh6fQ/exec';
+        
+        const response = await fetch(webAppUrl, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                spreadsheetId: GOOGLE_SHEETS_CONFIG.spreadsheetId,
+                data: dataToSave,
+                timestamp: new Date().toISOString()
+            })
+        });
+        
+        if (response.ok) {
+            showToast('Data saved to Google Sheets successfully!');
+            console.log('Data saved to Google Sheets');
+        } else {
+            throw new Error('Failed to save to Google Sheets');
+        }
+    } catch (error) {
+        console.error('Error saving to Google Sheets:', error);
+        showToast('Error saving to Google Sheets, downloading backup...', 'error');
+        
+        // Fallback: download backup
+        downloadBackup();
+    }
+}
 
-        const blob = new Blob([JSON.stringify(dataToSave, null, 2)], { type: 'application/json' });
+function downloadBackup() {
+    try {
+        const dataToSave = JSON.stringify(appData, (key, value) => {
+            if (value instanceof Date) {
+                return value.toISOString();
+            }
+            return value;
+        }, 2);
+
+        const blob = new Blob([dataToSave], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'info.json';
+        a.download = 'mpr-backup-' + new Date().toISOString().split('T')[0] + '.json';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        showToast('Data saved to info.json successfully!');
+        showToast('Backup downloaded as fallback');
     } catch (error) {
-        console.error('Error saving data:', error);
-        showToast('Error saving data: ' + error.message, 'error');
+        console.error('Error creating backup:', error);
+        showToast('Error creating backup: ' + error.message, 'error');
     }
 }
 
@@ -527,8 +599,8 @@ async function submitReport() {
 
         setUserReport(currentUser.id, currentMonth, currentWeek, report);
 
-        // Save data to file
-        await saveData();
+        // Save data to Google Sheets automatically
+        await saveDataToSheets();
 
         closeReportModal();
         renderUsersGrid();
@@ -968,8 +1040,8 @@ async function adminLogin() {
         isAdminLoggedIn = true;
         hideAdminLoginModal();
         
-        // Load existing data
-        await loadData();
+        // Load existing data from Google Sheets
+        await loadDataFromSheets();
         
         showIntroVideo();
         
@@ -1036,49 +1108,6 @@ function showToast(message, type) {
     }, 4000);
 }
 
-// Add export/import functionality
-function exportData() {
-    saveData();
-}
-
-function importData() {
-    var input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = function(event) {
-        var file = event.target.files[0];
-        if (file) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    var importedData = JSON.parse(e.target.result);
-                    
-                    // Merge imported data with existing structure
-                    if (importedData.weeklyReports) {
-                        appData.weeklyReports = importedData.weeklyReports;
-                    }
-                    if (importedData.teamMembers) {
-                        appData.teamMembers = importedData.teamMembers;
-                    }
-                    if (importedData.adminCredentials) {
-                        appData.adminCredentials = importedData.adminCredentials;
-                    }
-                    
-                    // Re-render everything
-                    renderMonths();
-                    updateStats();
-                    
-                    showToast('Data imported successfully!');
-                } catch (error) {
-                    showToast('Error importing data: Invalid JSON file', 'error');
-                }
-            };
-            reader.readAsText(file);
-        }
-    };
-    input.click();
-}
-
 // Initialize application
 document.addEventListener('DOMContentLoaded', function() {
     var adminUsernameInput = document.getElementById('adminUsername');
@@ -1140,4 +1169,4 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!isAdminLoggedIn) {
         showAdminLoginModal();
     }
-});
+});G
