@@ -33,7 +33,7 @@ const BACKUP_CONFIG = {
 var appData = {
     weeklyReports: {},
     adminCredentials: {
-        'admin': 'mpr2025'
+        'admin': 'itn2026'
     },
     teamMembers: [
         {
