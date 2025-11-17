@@ -1,5 +1,5 @@
 // Global variables
-var isAdminLoggedIn = false;
+var isAdminLoggedIn = false;   
 var currentUser = null;
 var currentMonth = null;
 var currentWeek = null;
