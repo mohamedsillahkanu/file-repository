@@ -40,57 +40,55 @@ var appData = {
             id: 1,
             name: 'Ishaka Sheriff',
             role: 'ICF Country Lead',
-            avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
             pin: '1234'
         },
         {
             id: 2,
             name: 'Randwulf A.J. Tucker',
             role: 'ICF Consultant',
-            avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face',
             pin: '5678'
         },
         {
             id: 3,
             name: 'Alusine Mansaray',
             role: 'ICF COnsultant',
-            avatar: 'https://images.unsplash.com/photo-1594824501085-4b1d66fc31fa?w=150&h=150&fit=crop&crop=face',
             pin: '9012'
         },
         {
             id: 4,
             name: 'Zainab Kamara',
             role: 'ICF Consultant',
-            avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop&crop=face',
             pin: '3456'
         },
         {
             id: 5,
             name: 'Morlai Alimamy Kargbo',
             role: 'ICF Consultant',
-            avatar: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=150&h=150&fit=crop&crop=face',
             pin: '7890'
         },
         {
             id: 6,
             name: 'Lucy Henrietta Kawa',
             role: 'ICF Consultant',
-            avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
             pin: '2468'
         },
         {
             id: 7,
             name: 'Hawanatu Ahyesa Sheriff',
             role: 'ICF Consultant',
-            avatar: 'https://images.unsplash.com/photo-1594824501084-9be42d1b2ae8?w=150&h=150&fit=crop&crop=face',
             pin: '1357'
         },
         {
             id: 8,
             name: 'Angella Nyuma',
             role: 'ICF Consultant',
-            avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
             pin: '9753'
+        },
+        {
+            id: 9,
+            name: 'Ann-Marie Rowlena Conteh',
+            role: 'ICF Consultant',
+            pin: '2222'
         }
     ]
 };
